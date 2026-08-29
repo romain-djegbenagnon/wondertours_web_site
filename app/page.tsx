@@ -4,7 +4,7 @@ import { WhatsAppButton } from "@/components/common/whatsapp-button";
 import { Hero } from "@/components/hero/hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { CircuitCard } from "@/components/circuits/circuit-card";
-import { ServiceCard } from "@/components/services/service-card";
+import { ServicesCarousel } from "@/components/services/services-carousel";
 import { TestimonialCard } from "@/components/testimonials/testimonial-card";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Button } from "@/components/ui/button";
@@ -145,17 +145,7 @@ export default function Home() {
             <SectionHeading
               title="Nos services touristiques"
             />
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {SERVICES.map((service) => (
-                <ServiceCard
-                  key={service.id}
-                  title={service.title}
-                  description={service.description}
-                  icon={service.icon}
-                  href={service.href}
-                />
-              ))}
-            </div>
+            <ServicesCarousel services={SERVICES as any} />
           </div>
         </section>
 
