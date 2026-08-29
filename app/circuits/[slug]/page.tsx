@@ -14,6 +14,12 @@ interface CircuitPageProps {
   };
 }
 
+export function generateStaticParams() {
+  return CIRCUITS.map((circuit) => ({
+    slug: circuit.slug,
+  }));
+}
+
 export default function CircuitPage({ params }: CircuitPageProps) {
   const circuit = CIRCUITS.find((c) => c.slug === params.slug);
 

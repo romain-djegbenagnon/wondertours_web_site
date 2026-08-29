@@ -89,7 +89,7 @@ export default function Home() {
             />
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {WHY_CHOOSE_US.map((item, index) => (
-                <div key={item.id} className="text-center">
+                <div key={item.id} className="text-center p-6 border-2 border-amber-500 rounded-xl">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-2xl font-bold text-primary">{index + 1}</span>
                   </div>
