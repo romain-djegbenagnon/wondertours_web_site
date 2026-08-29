@@ -193,8 +193,8 @@ export default function Home() {
             <SectionHeading
               title="Ils ont voyagé avec Wonder Tours"
             />
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {TESTIMONIALS.map((testimonial) => (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {TESTIMONIALS.slice(0, 3).map((testimonial) => (
                 <TestimonialCard key={testimonial.id} testimonial={testimonial} />
               ))}
             </div>

@@ -29,7 +29,7 @@ export const TESTIMONIALS: Testimonial[] = [
     id: "3",
     name: "[NOM CLIENT À INTÉGRER]",
     country: "Canada",
-    rating: 4,
+    rating: 5,
     text: "[TÉMOIGNAGE CLIENT À INTÉGRER]",
     date: "2024-03-10"
   },
