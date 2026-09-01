@@ -4,6 +4,7 @@ import "./globals.css";
 import { SITE_CONFIG } from "@/lib/constants";
 import { generateMetadata } from "@/lib/seo";
 import { LanguageProvider } from "@/contexts/language-context";
+import { ReservationsProvider } from "@/contexts/reservations-context";
 
 const playfairDisplay = Playfair_Display({
   variable: "--font-playfair-display",
@@ -26,7 +27,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${playfairDisplay.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <LanguageProvider>{children}</LanguageProvider>
+        <ReservationsProvider>
+          <LanguageProvider>{children}</LanguageProvider>
+        </ReservationsProvider>
       </body>
     </html>
   );

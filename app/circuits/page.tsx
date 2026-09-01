@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
@@ -10,10 +10,13 @@ import { CircuitCard } from "@/components/circuits/circuit-card";
 import { Button } from "@/components/ui/button";
 import { CIRCUITS } from "@/lib/data/circuits";
 import { CATEGORIES, DESTINATIONS } from "@/lib/constants";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function CircuitsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedDestination, setSelectedDestination] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const circuitsPerPage = 6;
 
   const filteredCircuits = CIRCUITS.filter((circuit) => {
     if (selectedCategory !== "all" && circuit.category !== selectedCategory) {
@@ -25,10 +28,40 @@ export default function CircuitsPage() {
     return true;
   });
 
+  const totalPages = Math.ceil(filteredCircuits.length / circuitsPerPage);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, selectedDestination]);
+
+  const getCurrentCircuits = () => {
+    const startIndex = (currentPage - 1) * circuitsPerPage;
+    const endIndex = startIndex + circuitsPerPage;
+    return filteredCircuits.slice(startIndex, endIndex);
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const goToPrevious = () => {
+    if (currentPage > 1) {
+      goToPage(currentPage - 1);
+    }
+  };
+
+  const goToNext = () => {
+    if (currentPage < totalPages) {
+      goToPage(currentPage + 1);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero */}
         <Hero
@@ -68,7 +101,7 @@ export default function CircuitsPage() {
                   </button>
                 ))}
               </div>
-              
+
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setSelectedDestination("all")}
@@ -106,13 +139,58 @@ export default function CircuitsPage() {
                 {filteredCircuits.length} circuit{filteredCircuits.length > 1 ? "s" : ""} trouvé{filteredCircuits.length > 1 ? "s" : ""}
               </p>
             </div>
-            
+
             {filteredCircuits.length > 0 ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredCircuits.map((circuit) => (
-                  <CircuitCard key={circuit.id} circuit={circuit} />
-                ))}
-              </div>
+              <>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {getCurrentCircuits().map((circuit) => (
+                    <CircuitCard key={circuit.id} circuit={circuit} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-4 mt-12">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={goToPrevious}
+                      disabled={currentPage === 1}
+                      className="rounded-full px-4"
+                    >
+                      <ChevronLeft className="w-4 h-4 mr-1" />
+                      Précédent
+                    </Button>
+
+                    <div className="flex gap-2">
+                      {Array.from({ length: totalPages }).map((_, index) => (
+                        <button
+                          key={index + 1}
+                          onClick={() => goToPage(index + 1)}
+                          className={`w-10 h-10 rounded-full font-medium transition-all ${
+                            currentPage === index + 1
+                              ? "bg-primary text-white"
+                              : "bg-white text-text hover:bg-gray-100"
+                          }`}
+                        >
+                          {index + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={goToNext}
+                      disabled={currentPage === totalPages}
+                      className="rounded-full px-4"
+                    >
+                      Suivant
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-20">
                 <p className="text-text-secondary text-xl mb-6">
