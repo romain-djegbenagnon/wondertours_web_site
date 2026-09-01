@@ -61,7 +61,7 @@ export function Header() {
                 )}
               >
                 {pathname === item.href && (
-                  <div className="absolute -top-1 left-0 right-0 h-1 bg-amber-600 rounded-full" />
+                  <div className="absolute -bottom-1 left-0 right-0 h-1 bg-amber-600 rounded-full" />
                 )}
                 {locale === "fr" ? item.name : item.nameEn}
               </Link>
