@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { BLOG_POSTS } from "@/lib/data/blog";
 import { Calendar, Clock, Share2 } from "lucide-react";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 interface BlogPostPageProps {
   params: {
@@ -59,24 +60,111 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
         {/* Content */}
         <article className="py-20 bg-white">
           <div className="container mx-auto px-4 lg:px-8">
-            <div className="max-w-4xl mx-auto">
-              <div className="prose prose-lg max-w-none">
-                <p className="text-text-secondary text-xl leading-relaxed mb-6">
-                  {post.excerpt}
-                </p>
-                <div className="text-text-secondary leading-relaxed">
-                  {post.content}
+            <div className="grid lg:grid-cols-3 gap-12">
+              {/* Main Content */}
+              <div className="lg:col-span-2">
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-text-secondary text-xl leading-relaxed mb-6">
+                    {post.excerpt}
+                  </p>
+                  <div className="text-text-secondary leading-relaxed">
+                    {post.content}
+                  </div>
+                </div>
+
+                {/* Share */}
+                <div className="flex items-center gap-4 mt-12 pt-8 border-t">
+                  <span className="text-text font-medium">Partager :</span>
+                  <button className="flex items-center gap-2 text-text-secondary hover:text-primary transition-colors">
+                    <Share2 className="w-5 h-5" />
+                    Copier le lien
+                  </button>
+                </div>
+
+                {/* Comments Section */}
+                <div className="mt-12 pt-8 border-t">
+                  <h3 className="font-heading text-2xl font-bold text-text mb-6">
+                    Laisser un commentaire
+                  </h3>
+                  <form className="space-y-4">
+                    <div>
+                      <label htmlFor="comment" className="block text-sm font-medium text-text mb-2">
+                        Commentaire
+                      </label>
+                      <textarea
+                        id="comment"
+                        rows={5}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none resize-none"
+                        placeholder="Votre commentaire..."
+                      />
+                    </div>
+                    <Button variant="primary" type="submit">
+                      Envoyer le commentaire
+                    </Button>
+                  </form>
                 </div>
               </div>
 
-              {/* Share */}
-              <div className="flex items-center gap-4 mt-12 pt-8 border-t">
-                <span className="text-text font-medium">Partager :</span>
-                <button className="flex items-center gap-2 text-text-secondary hover:text-primary transition-colors">
-                  <Share2 className="w-5 h-5" />
-                  Copier le lien
-                </button>
-              </div>
+              {/* Sidebar */}
+              <aside className="lg:col-span-1 space-y-8">
+                {/* Recent Posts */}
+                <div className="bg-background p-6 rounded-xl">
+                  <h3 className="font-heading text-xl font-bold text-text mb-4">
+                    Articles récents
+                  </h3>
+                  <div className="space-y-4">
+                    {BLOG_POSTS.filter((p) => p.id !== post.id).slice(0, 5).map((recentPost) => (
+                      <Link
+                        key={recentPost.id}
+                        href={`/blog/${recentPost.slug}`}
+                        className="block group"
+                      >
+                        <div className="flex gap-3">
+                          <img
+                            src={recentPost.image}
+                            alt={recentPost.title}
+                            className="w-16 h-16 object-cover rounded-lg"
+                          />
+                          <div>
+                            <h4 className="font-medium text-text text-sm group-hover:text-primary transition-colors line-clamp-2">
+                              {recentPost.title}
+                            </h4>
+                            <p className="text-text-secondary text-xs mt-1">
+                              {new Date(recentPost.date).toLocaleDateString('fr-FR', {
+                                day: 'numeric',
+                                month: 'short'
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Categories */}
+                <div className="bg-background p-6 rounded-xl">
+                  <h3 className="font-heading text-xl font-bold text-text mb-4">
+                    Catégories
+                  </h3>
+                  <div className="space-y-2">
+                    {Array.from(new Set(BLOG_POSTS.map((p) => p.category))).map((category) => (
+                      <Link
+                        key={category}
+                        href={`/blog?category=${category}`}
+                        className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors group"
+                      >
+                        <span className="text-text-secondary group-hover:text-primary transition-colors">
+                          {category}
+                        </span>
+                        <span className="text-text-secondary text-sm">
+                          {BLOG_POSTS.filter((p) => p.category === category).length}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </aside>
             </div>
           </div>
         </article>
