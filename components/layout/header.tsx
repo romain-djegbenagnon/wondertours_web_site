@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { Menu, X, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import { NAVIGATION, SITE_CONFIG } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isReservationsOpen, setIsReservationsOpen] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,12 +28,24 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: "smooth" });
+    }
+  };
+
   return (
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled
-          ? "bg-white/95 backdrop-blur-md shadow-md"
+          ? "bg-amber-600/95 backdrop-blur-md shadow-md"
           : "bg-transparent"
       )}
     >
@@ -42,7 +55,7 @@ export function Header() {
           <Link href="/" className="flex items-center">
             <span className={cn(
               "font-heading font-bold text-xl",
-              isScrolled ? "text-text" : "text-white"
+              isScrolled ? "text-white" : "text-white"
             )}>
               Wonder Tours
             </span>
@@ -55,13 +68,13 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "hover:text-amber-600 transition-colors font-medium relative",
-                  isScrolled ? "text-text-secondary" : "text-white",
-                  pathname === item.href && "text-amber-600"
+                  "hover:text-white transition-colors font-medium relative",
+                  isScrolled ? "text-white/80" : "text-white",
+                  pathname === item.href && "text-white"
                 )}
               >
                 {pathname === item.href && (
-                  <div className="absolute -bottom-1 left-0 right-0 h-1 bg-amber-600 rounded-full" />
+                  <div className="absolute -bottom-1 left-0 right-0 h-1 bg-white rounded-full" />
                 )}
                 {locale === "fr" ? item.name : item.nameEn}
               </Link>
@@ -73,8 +86,8 @@ export function Header() {
             <button
               onClick={() => setIsReservationsOpen(true)}
               className={cn(
-                "relative flex items-center space-x-2 hover:text-primary/80 transition-all duration-300 hover:animate-bounce",
-                isScrolled ? "text-primary" : "text-white"
+                "relative flex items-center space-x-2 hover:text-white transition-all duration-300 hover:animate-bounce",
+                isScrolled ? "text-white" : "text-white"
               )}
             >
               <ShoppingCart className="w-6 h-6" />
@@ -89,96 +102,113 @@ export function Header() {
           {/* Language Switcher */}
           <div className={cn(
             "hidden lg:flex items-center space-x-2 pl-4",
-            isScrolled ? "border-l border-gray-200" : "border-l border-white/30"
+            isScrolled ? "border-l border-white/30" : "border-l border-white/30"
           )}>
             <button
               onClick={() => setLocale("fr")}
               className={cn(
                 "font-medium transition-all duration-300 hover:animate-bounce",
-                isScrolled ? "text-text" : "text-white"
+                isScrolled ? "text-white" : "text-white"
               )}
             >FR</button>
             <span className={cn(
-              isScrolled ? "text-text-secondary" : "text-white/70"
+              isScrolled ? "text-white/70" : "text-white/70"
             )}>|</span>
             <button
               onClick={() => setLocale("en")}
               className={cn(
-                "hover:text-text transition-all duration-300 hover:animate-bounce",
-                isScrolled ? "text-text-secondary" : "text-white/70"
+                "hover:text-white transition-all duration-300 hover:animate-bounce",
+                isScrolled ? "text-white/70" : "text-white/70"
               )}
             >
               EN
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={cn(
-              "lg:hidden p-2",
-              isScrolled ? "text-text" : "text-white"
-            )}
-            aria-label="Toggle menu"
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+          {/* Mobile Actions */}
+          <div className="lg:hidden flex items-center space-x-3">
+            <button
+              onClick={() => setIsReservationsOpen(true)}
+              className="relative flex items-center space-x-2 text-white hover:text-white/80 transition-all duration-300 hover:animate-bounce"
+            >
+              <ShoppingCart className="w-6 h-6" />
+              {reservations.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center animate-bounce">
+                  {reservations.length}
+                </span>
+              )}
+            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setLocale("fr")}
+                className={cn(
+                  "font-medium transition-all duration-300 hover:animate-bounce",
+                  locale === "fr" ? "text-white" : "text-white/70"
+                )}
+              >FR</button>
+              <span className="text-white/70">|</span>
+              <button
+                onClick={() => setLocale("en")}
+                className={cn(
+                  "font-medium transition-all duration-300 hover:animate-bounce",
+                  locale === "en" ? "text-white" : "text-white/70"
+                )}
+              >
+                EN
+              </button>
+            </div>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 text-white"
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
         </div>
       </nav>
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t">
-          <nav className="container mx-auto px-4 py-6 space-y-4">
-            {NAVIGATION.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="block text-text hover:text-primary transition-colors font-medium py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {locale === "fr" ? item.name : item.nameEn}
-              </Link>
-            ))}
-            <div className="pt-4 border-t space-y-3">
+        <div className="lg:hidden bg-amber-50 border-t">
+          <nav className="container mx-auto px-4 py-6">
+            <div className="flex items-center gap-2">
               <button
-                onClick={() => setIsReservationsOpen(true)}
-                className="flex items-center justify-center space-x-2 py-3 text-primary hover:text-primary/80 transition-colors font-medium w-full"
+                onClick={scrollLeft}
+                className="flex-shrink-0 p-2 bg-amber-100 rounded-full hover:bg-amber-200 transition-colors text-amber-600"
+                aria-label="Défiler à gauche"
               >
-                <div className="relative">
-                  <ShoppingCart className="w-6 h-6" />
-                  {reservations.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                      {reservations.length}
-                    </span>
-                  )}
-                </div>
-                <span>Mes réservations</span>
+                <ChevronLeft className="w-5 h-5" />
               </button>
-            </div>
-            <div className="flex items-center justify-center space-x-4 pt-4 border-t">
-              <button
-                onClick={() => setLocale("fr")}
-                className={cn(
-                  "font-medium transition-colors",
-                  locale === "fr" ? "text-text" : "text-text-secondary hover:text-text"
-                )}
+              <div
+                ref={scrollContainerRef}
+                className="flex flex-row space-x-3 overflow-x-auto scrollbar-hide pb-2 flex-1"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                FR
-              </button>
-              <span className="text-text-secondary">|</span>
+                {NAVIGATION.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex-shrink-0 font-medium py-3 px-4 rounded-lg transition-colors whitespace-nowrap",
+                      pathname === item.href ? "bg-amber-600 text-white" : "text-text hover:bg-amber-100"
+                    )}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {locale === "fr" ? item.name : item.nameEn}
+                  </Link>
+                ))}
+              </div>
               <button
-                onClick={() => setLocale("en")}
-                className={cn(
-                  "transition-colors",
-                  locale === "en" ? "text-text" : "text-text-secondary hover:text-text"
-                )}
+                onClick={scrollRight}
+                className="flex-shrink-0 p-2 bg-amber-100 rounded-full hover:bg-amber-200 transition-colors text-amber-600"
+                aria-label="Défiler à droite"
               >
-                EN
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           </nav>
