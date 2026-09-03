@@ -3,7 +3,7 @@ import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
 import { Hero } from "@/components/hero/hero";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { TestimonialCard } from "@/components/testimonials/testimonial-card";
+import { TestimonialsContent } from "@/components/testimonials/testimonials-content";
 import { Button } from "@/components/ui/button";
 import { TESTIMONIALS } from "@/lib/data/testimonials";
 import { Star } from "lucide-react";
@@ -67,11 +67,7 @@ export default function TestimonialsPage() {
             <SectionHeading
               title="Ils ont voyagé avec Wonder Tours"
             />
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {TESTIMONIALS.map((testimonial) => (
-                <TestimonialCard key={testimonial.id} testimonial={testimonial} />
-              ))}
-            </div>
+            <TestimonialsContent />
           </div>
         </section>
 

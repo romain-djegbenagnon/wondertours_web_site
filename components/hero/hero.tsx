@@ -87,7 +87,7 @@ export function Hero({
               </Button>
             )}
             {secondaryCta && (
-              <Button variant="outline" size="lg" href={secondaryCta.href} className="border-white text-white hover:bg-white hover:text-text w-full sm:w-auto">
+              <Button variant="outline" size="lg" href={secondaryCta.href} className="border-white text-white hover:bg-amber-600 hover:border-amber-600 w-full sm:w-auto">
                 {secondaryCta.text}
               </Button>
             )}

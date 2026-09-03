@@ -234,10 +234,10 @@ export default function Home() {
               Laissez-nous imaginer avec vous une expérience adaptée à vos envies.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="secondary" size="lg" href="/contact">
+              <Button variant="primary" size="lg" href="/contact">
                 Planifier mon voyage
               </Button>
-              <Button variant="outline" size="lg" href="/contact" className="border-white text-white hover:bg-white hover:text-primary">
+              <Button variant="outline" size="lg" href="/contact" className="border-white text-white hover:bg-amber-600 hover:border-amber-600">
                 Nous contacter
               </Button>
             </div>

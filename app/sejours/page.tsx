@@ -150,7 +150,7 @@ export default function SejoursPage() {
             <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-200">
               Contactez-nous pour discuter de votre projet de voyage au Bénin.
             </p>
-            <Button variant="secondary" size="lg" href="/contact">
+            <Button variant="primary" size="lg" href="/contact">
               Créer mon séjour
             </Button>
           </div>

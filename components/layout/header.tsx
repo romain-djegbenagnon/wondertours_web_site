@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { NAVIGATION, SITE_CONFIG } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -173,47 +174,66 @@ export function Header() {
       </nav>
 
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-amber-50 border-t">
-          <nav className="container mx-auto px-4 py-6">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={scrollLeft}
-                className="flex-shrink-0 p-2 bg-amber-100 rounded-full hover:bg-amber-200 transition-colors text-amber-600"
-                aria-label="Défiler à gauche"
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="lg:hidden bg-amber-50 border-t overflow-hidden"
+          >
+            <nav className="container mx-auto px-4 py-6">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.3 }}
+                className="flex items-center gap-2"
               >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <div
-                ref={scrollContainerRef}
-                className="flex flex-row space-x-3 overflow-x-auto scrollbar-hide pb-2 flex-1"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                {NAVIGATION.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "flex-shrink-0 font-medium py-3 px-4 rounded-lg transition-colors whitespace-nowrap",
-                      pathname === item.href ? "bg-amber-600 text-white" : "text-text hover:bg-amber-100"
-                    )}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {locale === "fr" ? item.name : item.nameEn}
-                  </Link>
-                ))}
-              </div>
-              <button
-                onClick={scrollRight}
-                className="flex-shrink-0 p-2 bg-amber-100 rounded-full hover:bg-amber-200 transition-colors text-amber-600"
-                aria-label="Défiler à droite"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          </nav>
-        </div>
-      )}
+                <button
+                  onClick={scrollLeft}
+                  className="flex-shrink-0 p-2 bg-amber-100 rounded-full hover:bg-amber-200 transition-colors text-amber-600"
+                  aria-label="Défiler à gauche"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <div
+                  ref={scrollContainerRef}
+                  className="flex flex-row space-x-3 overflow-x-auto scrollbar-hide pb-2 flex-1"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                  {NAVIGATION.map((item, index) => (
+                    <motion.div
+                      key={item.href}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 + (index * 0.05), duration: 0.3 }}
+                    >
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "flex-shrink-0 font-medium py-3 px-4 rounded-lg transition-colors whitespace-nowrap",
+                          pathname === item.href ? "bg-amber-600 text-white" : "text-text hover:bg-amber-100"
+                        )}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {locale === "fr" ? item.name : item.nameEn}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+                <button
+                  onClick={scrollRight}
+                  className="flex-shrink-0 p-2 bg-amber-100 rounded-full hover:bg-amber-200 transition-colors text-amber-600"
+                  aria-label="Défiler à droite"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </motion.div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Reservations Sidebar */}
       <ReservationsSidebar
