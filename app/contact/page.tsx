@@ -222,10 +222,17 @@ export default function ContactPage() {
                     title="Notre localisation"
                     align="left"
                   />
-                  <div className="bg-gray-200 rounded-2xl h-64 flex items-center justify-center">
-                    <p className="text-text-secondary">
-                      [CARTE GOOGLE MAPS À INTÉGRER]
-                    </p>
+                  <div className="rounded-2xl overflow-hidden h-64">
+                    <iframe
+                      src={SITE_CONFIG.map.embedUrl}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Carte Google Maps - Wonder Tours"
+                    />
                   </div>
                 </div>
 
