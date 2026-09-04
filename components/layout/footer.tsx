@@ -57,7 +57,7 @@ export function Footer() {
 
           {/* Navigation */}
           <div>
-            <h3 className="font-heading font-semibold text-lg mb-4 text-primary">Navigation</h3>
+            <h3 className="font-heading font-semibold text-lg mb-4 text-primary text-[#FFA500]">Navigation</h3>
             <ul className="space-y-2">
               {NAVIGATION.map((item) => (
                 <li key={item.href}>
@@ -74,7 +74,7 @@ export function Footer() {
 
           {/* Services */}
           <div>
-            <h3 className="font-heading font-semibold text-lg mb-4 text-primary">Services</h3>
+            <h3 className="font-heading font-semibold text-lg mb-4 text-primary text-[#FFA500]">Services</h3>
             <ul className="space-y-2">
               {SERVICES.map((service) => (
                 <li key={service.id}>
@@ -91,7 +91,7 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="font-heading font-semibold text-lg mb-4 text-primary">Contact</h3>
+            <h3 className="font-heading font-semibold text-lg mb-4 text-primary text-[#FFA500]">Contact</h3>
             <ul className="space-y-3">
               <li className="flex items-start space-x-3 text-text-secondary text-sm">
                 <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
