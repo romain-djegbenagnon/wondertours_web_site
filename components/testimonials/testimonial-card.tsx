@@ -36,7 +36,7 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
                   className="w-12 h-12 rounded-full object-cover border-2 border-amber-500"
                 />
               ) : (
-                <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-white font-semibold text-lg border-2 border-amber-500">
+                <div className="w-12 h-12 rounded-full bg-text flex items-center justify-center text-white font-semibold text-lg border-2 border-amber-500 bg-black">
                   {getInitials(testimonial.name)}
                 </div>
               )}
