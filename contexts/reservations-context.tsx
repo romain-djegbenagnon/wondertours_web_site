@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useCallback, useContext, useSyncExternalStore, ReactNode } from "react";
 
 export interface ReservationItem {
   id: string;
@@ -20,6 +20,9 @@ interface ReservationsContextType {
   getCurrentUserReservations: () => ReservationItem[];
 }
 
+const STORAGE_KEY = "reservations";
+const EMPTY_RESERVATIONS: ReservationItem[] = [];
+
 const ReservationsContext = createContext<ReservationsContextType | undefined>(undefined);
 
 // Simuler un ID utilisateur (en production, cela viendrait de l'auth)
@@ -32,51 +35,80 @@ const getCurrentUserId = () => {
   return newUserId;
 };
 
-export function ReservationsProvider({ children }: { children: ReactNode }) {
-  const [reservations, setReservations] = useState<ReservationItem[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
+// Store externe localStorage consommé via useSyncExternalStore :
+// évite tout setState dans un effet et synchronise les autres onglets ("storage").
+let cachedReservations: ReservationItem[] | null = null;
+const listeners = new Set<() => void>();
 
-  useEffect(() => {
-    setIsMounted(true);
-    const stored = localStorage.getItem("reservations");
-    if (stored) {
-      setReservations(JSON.parse(stored));
+const readReservations = (): ReservationItem[] => {
+  if (typeof window === "undefined") return EMPTY_RESERVATIONS;
+  if (cachedReservations === null) {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      cachedReservations = stored
+        ? (JSON.parse(stored) as ReservationItem[])
+        : EMPTY_RESERVATIONS;
+    } catch {
+      cachedReservations = EMPTY_RESERVATIONS;
     }
-  }, []);
+  }
+  return cachedReservations;
+};
 
-  const addReservation = (item: Omit<ReservationItem, "id" | "userId">) => {
-    if (!isMounted) return;
+const writeReservations = (items: ReservationItem[]) => {
+  cachedReservations = items;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  listeners.forEach((listener) => listener());
+};
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === STORAGE_KEY) {
+      cachedReservations = null;
+      listener();
+    }
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
+const getSnapshot = (): ReservationItem[] => readReservations();
+const getServerSnapshot = (): ReservationItem[] => EMPTY_RESERVATIONS;
+
+export function ReservationsProvider({ children }: { children: ReactNode }) {
+  const allReservations = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
+  );
+
+  const addReservation = useCallback((item: Omit<ReservationItem, "id" | "userId">) => {
     const userId = getCurrentUserId();
     const newReservation: ReservationItem = {
       ...item,
       id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       userId,
     };
-    const updated = [...reservations, newReservation];
-    setReservations(updated);
-    localStorage.setItem("reservations", JSON.stringify(updated));
-  };
+    writeReservations([...readReservations(), newReservation]);
+  }, []);
 
-  const removeReservation = (id: string) => {
-    if (!isMounted) return;
-    const updated = reservations.filter((r) => r.id !== id);
-    setReservations(updated);
-    localStorage.setItem("reservations", JSON.stringify(updated));
-  };
+  const removeReservation = useCallback((id: string) => {
+    writeReservations(readReservations().filter((r) => r.id !== id));
+  }, []);
 
-  const clearReservations = () => {
-    if (!isMounted) return;
+  const clearReservations = useCallback(() => {
     const userId = getCurrentUserId();
-    const updated = reservations.filter((r) => r.userId !== userId);
-    setReservations(updated);
-    localStorage.setItem("reservations", JSON.stringify(updated));
-  };
+    writeReservations(readReservations().filter((r) => r.userId !== userId));
+  }, []);
 
-  const getCurrentUserReservations = () => {
-    if (!isMounted) return [];
+  const getCurrentUserReservations = useCallback(() => {
     const userId = getCurrentUserId();
-    return reservations.filter((r) => r.userId === userId);
-  };
+    return allReservations.filter((r) => r.userId === userId);
+  }, [allReservations]);
 
   return (
     <ReservationsContext.Provider

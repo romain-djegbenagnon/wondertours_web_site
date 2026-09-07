@@ -25,16 +25,57 @@ export default function HotelsPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+    setErrorMessage(null);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          subject: "Demande de réservation d'hébergement",
+          requestType: "hotel",
+          travelDate: formData.arrivalDate,
+          travelers: formData.travelers ? Number(formData.travelers) : undefined,
+          message: [
+            `Type d'hébergement souhaité : ${formData.accommodationType}`,
+            `Budget approximatif par nuit : ${formData.budget}`,
+            `Date de départ : ${formData.departureDate || "non précisée"}`,
+            "",
+            formData.message,
+          ]
+            .filter(Boolean)
+            .join("\n"),
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        const details = Array.isArray((data as { details?: unknown[] })?.details)
+          ? ` (${(data as { details: { message?: string }[] }).details.map((d) => d.message).join(", ")})`
+          : "";
+        setErrorMessage(
+          (data as { error?: string })?.error
+            ? `${(data as { error: string }).error}${details}`
+            : "Une erreur est survenue lors de l'envoi. Veuillez réessayer."
+        );
+        return;
+      }
+
+      setIsSubmitted(true);
+    } catch {
+      setErrorMessage("Impossible de contacter le serveur. Vérifiez votre connexion et réessayez.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {
@@ -114,6 +155,11 @@ export default function HotelsPage() {
                 title="Faites une demande de réservation"
               />
               <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg space-y-6">
+                {errorMessage && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                    {errorMessage}
+                  </div>
+                )}
                 <Input
                   label="Nom complet"
                   value={formData.name}

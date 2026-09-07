@@ -8,11 +8,13 @@ import { ServicesCarousel } from "@/components/services/services-carousel";
 import { TestimonialCard } from "@/components/testimonials/testimonial-card";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Button } from "@/components/ui/button";
-import { CIRCUITS } from "@/lib/data/circuits";
-import { SERVICES } from "@/lib/constants";
-import { TESTIMONIALS } from "@/lib/data/testimonials";
-import { BLOG_POSTS } from "@/lib/data/blog";
-import { WHY_CHOOSE_US, DESTINATIONS } from "@/lib/constants";
+import { listCircuits } from "@/lib/services/circuits";
+import { listTestimonials } from "@/lib/services/testimonials";
+import { listBlogPosts } from "@/lib/services/blog";
+import { listServices } from "@/lib/services/services";
+import { listDestinations } from "@/lib/services/destinations";
+import { toCircuitVM, toTestimonialVM, toBlogPostVM } from "@/lib/view-models";
+import { WHY_CHOOSE_US } from "@/lib/constants";
 import { generateMetadata } from "@/lib/seo";
 
 export const metadata = generateMetadata({
@@ -21,7 +23,20 @@ export const metadata = generateMetadata({
   path: "/"
 });
 
-export default function Home() {
+export default async function Home() {
+  // Rendu dynamique : données fraîches de la base à chaque requête.
+  const [circuitsPage, testimonialsPage, postsPage, services, destinations] =
+    await Promise.all([
+      listCircuits({ active: true, pageSize: 6 }),
+      listTestimonials({ active: true }),
+      listBlogPosts({ published: true, pageSize: 3 }),
+      listServices({ active: true }),
+      listDestinations({ active: true }),
+    ]);
+
+  const circuits = circuitsPage.items.map(toCircuitVM);
+  const testimonials = testimonialsPage.items.map(toTestimonialVM);
+  const posts = postsPage.items.map(toBlogPostVM);
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -69,7 +84,7 @@ export default function Home() {
               title="Découvrez les destinations qui font la richesse du Bénin"
             />
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {CIRCUITS.slice(0, 6).map((circuit) => (
+              {circuits.map((circuit) => (
                 <CircuitCard key={circuit.id} circuit={circuit} />
               ))}
             </div>
@@ -124,12 +139,12 @@ export default function Home() {
               D'Ouidah à Abomey, de Porto-Novo à Ganvié, découvrez un pays riche en histoire, en culture et en paysages exceptionnels.
             </p>
             <div className="flex flex-wrap justify-center gap-3 mb-8">
-              {DESTINATIONS.map((destination) => (
+              {destinations.items.map((destination) => (
                 <span
-                  key={destination}
+                  key={destination.id}
                   className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white"
                 >
-                  {destination}
+                  {destination.name}
                 </span>
               ))}
             </div>
@@ -145,7 +160,15 @@ export default function Home() {
             <SectionHeading
               title="Nos services touristiques"
             />
-            <ServicesCarousel services={SERVICES as any} />
+            <ServicesCarousel
+              services={services.items.map((service) => ({
+                id: service.id,
+                title: service.title,
+                description: service.description ?? "",
+                icon: service.icon ?? "Map",
+                href: service.href ?? "/contact",
+              }))}
+            />
           </div>
         </section>
 
@@ -183,8 +206,8 @@ export default function Home() {
             <SectionHeading
               title="Ils ont voyagé avec Wonder Tours"
             />
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {TESTIMONIALS.slice(0, 3).map((testimonial) => (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {testimonials.slice(0, 4).map((testimonial) => (
                 <TestimonialCard key={testimonial.id} testimonial={testimonial} />
               ))}
             </div>
@@ -204,7 +227,7 @@ export default function Home() {
               title="Conseils, culture et actualités"
             />
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {BLOG_POSTS.slice(0, 3).map((post) => (
+              {posts.map((post) => (
                 <BlogCard key={post.id} post={post} />
               ))}
             </div>

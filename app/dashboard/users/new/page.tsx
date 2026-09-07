@@ -1,17 +1,77 @@
 "use client";
 
+import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
-import Link from "next/link";
-import { ArrowLeft, Save, User, Shield, Mail, Phone, MapPin } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
+import { readApiError } from "@/components/dashboard/api-error";
+
+const EMPTY = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  passwordConfirm: "",
+  role: "editor",
+  isActive: true,
+};
 
 export default function NewUserPage() {
+  const router = useRouter();
+  const [form, setForm] = useState(EMPTY);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  function update<K extends keyof typeof EMPTY>(key: K, value: (typeof EMPTY)[K]) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    if (!form.email.trim()) {
+      setError("L'email est requis.");
+      return;
+    }
+    if (form.password.length < 8) {
+      setError("Le mot de passe doit contenir au moins 8 caractères.");
+      return;
+    }
+    if (form.password !== form.passwordConfirm) {
+      setError("Les mots de passe ne correspondent pas.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const response = await fetch("/api/dashboard/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+          firstName: form.firstName,
+          lastName: form.lastName,
+          role: form.role,
+          isActive: form.isActive,
+        }),
+      });
+      if (!response.ok) {
+        setError(await readApiError(response));
+        return;
+      }
+      router.push("/dashboard/users");
+    } catch {
+      setError("Erreur réseau");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" href="/dashboard/users">
@@ -23,275 +83,104 @@ export default function NewUserPage() {
             <p className="text-gray-600 mt-1">Ajoutez un nouvel utilisateur au dashboard</p>
           </div>
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline">Brouillon</Button>
-          <Button>
-            <Save className="w-4 h-4 mr-2" />
-            Créer
-          </Button>
-        </div>
+        <Button type="submit" disabled={busy}>
+          <Save className="w-4 h-4 mr-2" />
+          {busy ? "Création…" : "Créer"}
+        </Button>
       </div>
 
+      {error && (
+        <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+          {error}
+        </p>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Form */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Personal Information */}
           <Card>
             <CardHeader>
               <CardTitle>Informations personnelles</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Prénom *
-                  </label>
-                  <Input placeholder="Eric" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nom *
-                  </label>
-                  <Input placeholder="BOKOSSA" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email *
-                </label>
-                <Input type="email" placeholder="eric@wondertours.bj" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Téléphone
-                </label>
-                <Input type="tel" placeholder="+229 97 00 00 00" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Adresse
-                </label>
-                <Input placeholder="Cotonou, Bénin" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Bio
-                </label>
-                <Textarea
-                  rows={3}
-                  placeholder="Courte description de l'utilisateur..."
+                <Input
+                  label="Prénom *"
+                  placeholder="Eric"
+                  value={form.firstName}
+                  onChange={(e) => update("firstName", e.target.value)}
+                />
+                <Input
+                  label="Nom *"
+                  placeholder="BOKOSSA"
+                  value={form.lastName}
+                  onChange={(e) => update("lastName", e.target.value)}
                 />
               </div>
+              <Input
+                label="Email *"
+                type="email"
+                placeholder="eric@wondertours.bj"
+                value={form.email}
+                onChange={(e) => update("email", e.target.value)}
+              />
             </CardContent>
           </Card>
 
-          {/* Account Information */}
           <Card>
             <CardHeader>
               <CardTitle>Informations du compte</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mot de passe *
-                </label>
-                <Input type="password" placeholder="••••••••" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirmer le mot de passe *
-                </label>
-                <Input type="password" placeholder="••••••••" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Rôle *
-                </label>
-                <Select
-                  options={[
-                    { value: "", label: "Sélectionner un rôle" },
-                    { value: "admin", label: "Administrateur" },
-                    { value: "editor", label: "Éditeur" },
-                    { value: "viewer", label: "Lecteur" },
-                  ]}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Permissions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Permissions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      Gestion des circuits
-                    </label>
-                    <p className="text-xs text-gray-500">Créer, modifier, supprimer des circuits</p>
-                  </div>
-                  <input type="checkbox" className="rounded" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      Gestion des destinations
-                    </label>
-                    <p className="text-xs text-gray-500">Créer, modifier, supprimer des destinations</p>
-                  </div>
-                  <input type="checkbox" className="rounded" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      Gestion du blog
-                    </label>
-                    <p className="text-xs text-gray-500">Créer, modifier, supprimer des articles</p>
-                  </div>
-                  <input type="checkbox" className="rounded" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      Gestion des réservations
-                    </label>
-                    <p className="text-xs text-gray-500">Voir et gérer les réservations</p>
-                  </div>
-                  <input type="checkbox" className="rounded" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      Gestion des utilisateurs
-                    </label>
-                    <p className="text-xs text-gray-500">Créer, modifier, supprimer des utilisateurs</p>
-                  </div>
-                  <input type="checkbox" className="rounded" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      Accès aux paramètres
-                    </label>
-                    <p className="text-xs text-gray-500">Modifier les paramètres du site</p>
-                  </div>
-                  <input type="checkbox" className="rounded" />
-                </div>
-              </div>
+              <Input
+                label="Mot de passe *"
+                type="password"
+                placeholder="••••••••"
+                value={form.password}
+                onChange={(e) => update("password", e.target.value)}
+              />
+              <Input
+                label="Confirmer le mot de passe *"
+                type="password"
+                placeholder="••••••••"
+                value={form.passwordConfirm}
+                onChange={(e) => update("passwordConfirm", e.target.value)}
+              />
+              <Select
+                label="Rôle *"
+                options={[
+                  { value: "admin", label: "Administrateur" },
+                  { value: "editor", label: "Éditeur" },
+                  { value: "viewer", label: "Lecteur" },
+                ]}
+                value={form.role}
+                onChange={(e) => update("role", e.target.value)}
+              />
             </CardContent>
           </Card>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6">
-          {/* Profile Picture */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Photo de profil</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center space-y-4">
-                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center">
-                  <User className="w-12 h-12 text-gray-400" />
-                </div>
-                <Button variant="outline" size="sm">
-                  Changer la photo
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Account Status */}
           <Card>
             <CardHeader>
               <CardTitle>Statut du compte</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Statut
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <label htmlFor="user-active" className="text-sm font-medium text-gray-700">
+                  Actif
                 </label>
-                <Select
-                  options={[
-                    { value: "active", label: "Actif" },
-                    { value: "inactive", label: "Inactif" },
-                    { value: "suspended", label: "Suspendu" },
-                  ]}
+                <input
+                  id="user-active"
+                  type="checkbox"
+                  className="rounded"
+                  checked={form.isActive}
+                  onChange={(e) => update("isActive", e.target.checked)}
                 />
-              </div>
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700">
-                  Vérifié
-                </label>
-                <input type="checkbox" className="rounded" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date d'expiration
-                </label>
-                <Input type="date" />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Notifications */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Notifications</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700">
-                  Notifications par email
-                </label>
-                <input type="checkbox" className="rounded" defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700">
-                  Notifications de réservation
-                </label>
-                <input type="checkbox" className="rounded" defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700">
-                  Notifications de contact
-                </label>
-                <input type="checkbox" className="rounded" defaultChecked />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Security */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Sécurité</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Authentification à deux facteurs
-                </label>
-                <Select
-                  options={[
-                    { value: "disabled", label: "Désactivé" },
-                    { value: "email", label: "Par email" },
-                    { value: "sms", label: "Par SMS" },
-                  ]}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Dernière connexion
-                </label>
-                <Input disabled placeholder="Jamais" />
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
+    </form>
   );
 }

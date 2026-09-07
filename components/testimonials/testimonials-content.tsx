@@ -2,17 +2,22 @@
 
 import { useState } from "react";
 import { TestimonialCard } from "@/components/testimonials/testimonial-card";
-import { TESTIMONIALS } from "@/lib/data/testimonials";
+import type { Testimonial } from "@/lib/data/testimonials";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function TestimonialsContent() {
+interface TestimonialsContentProps {
+  /** Témoignages actifs issus de la base (view-models). */
+  testimonials: Testimonial[];
+}
+
+export function TestimonialsContent({ testimonials }: TestimonialsContentProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-  const totalPages = Math.ceil(TESTIMONIALS.length / itemsPerPage);
+  const totalPages = Math.ceil(testimonials.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentTestimonials = TESTIMONIALS.slice(startIndex, endIndex);
+  const currentTestimonials = testimonials.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
