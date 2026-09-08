@@ -1,3 +1,5 @@
+"use client";
+
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
@@ -6,6 +8,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { Button } from "@/components/ui/button";
 import { SITE_CONFIG } from "@/lib/constants";
 import { generateMetadata } from "@/lib/seo";
+import { useLanguage } from "@/contexts/language-context";
 
 export const metadata = generateMetadata({
   title: "À propos - Wonder Tours and Services",
@@ -14,6 +17,8 @@ export const metadata = generateMetadata({
 });
 
 export default function AboutPage() {
+  const { t, locale } = useLanguage();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -22,10 +27,10 @@ export default function AboutPage() {
         {/* Hero */}
         <Hero
           subtitle="NOTRE HISTOIRE"
-          title="Une passion pour le voyage. Une expertise du Bénin."
-          description="Depuis plus de 20 ans, Wonder Tours and Services accompagne les voyageurs dans la découverte des trésors du Bénin."
-          primaryCta={{ text: "Découvrir nos circuits", href: "/circuits" }}
-          secondaryCta={{ text: "Nous contacter", href: "/contact" }}
+          title={locale === "fr" ? "Une passion pour le voyage. Une expertise du Bénin." : "A passion for travel. Expertise in Benin."}
+          description={locale === "fr" ? "Depuis plus de 20 ans, Wonder Tours and Services accompagne les voyageurs dans la découverte des trésors du Bénin." : "For over 20 years, Wonder Tours and Services has accompanied travelers in discovering Benin's treasures."}
+          primaryCta={{ text: t.common.viewAll, href: "/circuits" }}
+          secondaryCta={{ text: t.common.contact, href: "/contact" }}
           image="[PHOTO HERO À PROPOS À REMPLACER]"
         />
 
@@ -33,25 +38,25 @@ export default function AboutPage() {
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4 lg:px-8">
             <SectionHeading
-              title="Notre histoire"
+              title={locale === "fr" ? "Notre histoire" : "Our history"}
               align="left"
             />
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <p className="text-text-secondary leading-relaxed mb-6">
-                  Wonder Tours and Services est né d'une passion profonde pour le Bénin et de la volonté de partager la richesse culturelle et naturelle de ce pays avec le monde entier.
+                  {locale === "fr" ? "Wonder Tours and Services est né d'une passion profonde pour le Bénin et de la volonté de partager la richesse culturelle et naturelle de ce pays avec le monde entier." : "Wonder Tours and Services was born from a deep passion for Benin and the desire to share the country's cultural and natural richness with the world."}
                 </p>
                 <p className="text-text-secondary leading-relaxed mb-6">
-                  Fondée par Eric Sylvestre BOKOSSA, notre entreprise s'est construite sur plus de deux décennies d'expérience dans l'organisation d'excursions, de circuits et de séjours touristiques au Bénin et à l'international.
+                  {locale === "fr" ? "Fondée par Eric Sylvestre BOKOSSA, notre entreprise s'est construite sur plus de deux décennies d'expérience dans l'organisation d'excursions, de circuits et de séjours touristiques au Bénin et à l'international." : "Founded by Eric Sylvestre BOKOSSA, our company has been built on over two decades of experience in organizing excursions, tours and tourist stays in Benin and internationally."}
                 </p>
                 <p className="text-text-secondary leading-relaxed">
-                  Notre mission : offrir des expériences authentiques, respectueuses des cultures locales et inoubliables à chaque voyageur qui nous fait confiance.
+                  {locale === "fr" ? "Notre mission : offrir des expériences authentiques, respectueuses des cultures locales et inoubliables à chaque voyageur qui nous fait confiance." : "Our mission: to offer authentic experiences, respectful of local cultures and unforgettable to every traveler who trusts us."}
                 </p>
               </div>
               <div className="relative">
                 <img
                   src="[PHOTO HISTOIRE À REMPLACER]"
-                  alt="Notre histoire"
+                  alt={locale === "fr" ? "Notre histoire" : "Our history"}
                   className="rounded-2xl shadow-2xl"
                 />
               </div>
@@ -64,7 +69,7 @@ export default function AboutPage() {
           <div className="absolute inset-0">
             <img
               src="[PHOTO EXPÉRIENCE À REMPLACER]"
-              alt="Notre expérience"
+              alt={locale === "fr" ? "Notre expérience" : "Our experience"}
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-primary/90" />
@@ -72,10 +77,10 @@ export default function AboutPage() {
           <div className="relative z-10 container mx-auto px-4 lg:px-8 text-center text-white">
             <div className="text-7xl font-heading font-bold mb-4">20+</div>
             <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">
-              années d'expérience
+              {locale === "fr" ? "années d'expérience" : "years of experience"}
             </h2>
             <p className="text-xl max-w-2xl mx-auto text-gray-200">
-              Deux décennies d'expertise pour vous faire découvrir le meilleur du Bénin
+              {locale === "fr" ? "Deux décennies d'expertise pour vous faire découvrir le meilleur du Bénin" : "Two decades of expertise to help you discover the best of Benin"}
             </p>
           </div>
         </section>

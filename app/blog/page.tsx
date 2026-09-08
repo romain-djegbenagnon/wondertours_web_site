@@ -10,8 +10,10 @@ import { BlogCard } from "@/components/blog/blog-card";
 import { Button } from "@/components/ui/button";
 import { BLOG_POSTS } from "@/lib/data/blog";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
 
 export default function BlogPage() {
+  const { t, locale } = useLanguage();
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 6;
   const totalPages = Math.ceil(BLOG_POSTS.length / postsPerPage);
@@ -47,9 +49,9 @@ export default function BlogPage() {
         {/* Hero */}
         <Hero
           subtitle="CARNET DE VOYAGE"
-          title="Conseils, culture et actualités"
-          description="Découvrez nos articles pour préparer votre voyage au Bénin : conseils pratiques, découvertes culturelles et inspirations."
-          primaryCta={{ text: "Explorer les articles", href: "#articles" }}
+          title={locale === "fr" ? "Conseils, culture et actualités" : "Tips, culture and news"}
+          description={locale === "fr" ? "Découvrez nos articles pour préparer votre voyage au Bénin : conseils pratiques, découvertes culturelles et inspirations." : "Discover our articles to prepare your trip to Benin: practical tips, cultural discoveries and inspirations."}
+          primaryCta={{ text: locale === "fr" ? "Explorer les articles" : "Explore articles", href: "#articles" }}
           image="[PHOTO HERO BLOG À REMPLACER]"
         />
 

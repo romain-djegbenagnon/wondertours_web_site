@@ -1,3 +1,5 @@
+"use client";
+
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
@@ -8,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { TESTIMONIALS } from "@/lib/data/testimonials";
 import { Star } from "lucide-react";
 import { generateMetadata } from "@/lib/seo";
+import { useLanguage } from "@/contexts/language-context";
 
 export const metadata = generateMetadata({
   title: "Témoignages - Wonder Tours and Services",
@@ -16,6 +19,7 @@ export const metadata = generateMetadata({
 });
 
 export default function TestimonialsPage() {
+  const { t, locale } = useLanguage();
   const averageRating = TESTIMONIALS.reduce((acc, t) => acc + t.rating, 0) / TESTIMONIALS.length;
 
   return (
@@ -26,9 +30,9 @@ export default function TestimonialsPage() {
         {/* Hero */}
         <Hero
           subtitle="TÉMOIGNAGES"
-          title="Des voyages qui laissent des souvenirs"
-          description="Découvrez les expériences de nos voyageurs et laissez-vous inspirer pour votre prochaine aventure au Bénin."
-          primaryCta={{ text: "Partager mon expérience", href: "/contact" }}
+          title={locale === "fr" ? "Des voyages qui laissent des souvenirs" : "Trips that leave memories"}
+          description={locale === "fr" ? "Découvrez les expériences de nos voyageurs et laissez-vous inspirer pour votre prochaine aventure au Bénin." : "Discover our travelers' experiences and get inspired for your next adventure in Benin."}
+          primaryCta={{ text: locale === "fr" ? "Partager mon expérience" : "Share my experience", href: "/contact" }}
           image="[PHOTO HERO TÉMOIGNAGES À REMPLACER]"
         />
 
