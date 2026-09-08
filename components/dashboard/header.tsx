@@ -1,11 +1,16 @@
 "use client";
 
-import { Bell, Search, User, LogOut, X, Check, AlertCircle, Info } from "lucide-react";
+import { Bell, Search, User, LogOut, X, Check, AlertCircle, Info, Menu, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-export function Header() {
+interface HeaderProps {
+  onMenuClick?: () => void;
+}
+
+export function Header({ onMenuClick }: HeaderProps) {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const notifications = [
     {
@@ -68,10 +73,18 @@ export function Header() {
 
   return (
     <>
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <header className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
         <div className="flex items-center justify-between">
+          {/* Mobile menu button */}
+          <button
+            onClick={onMenuClick}
+            className="lg:hidden p-2 text-gray-600 hover:text-primary transition-colors mr-4"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+
           {/* Search */}
-          <div className="relative w-96">
+          <div className="relative w-full md:w-96">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
@@ -81,7 +94,7 @@ export function Header() {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4 ml-4">
             {/* Notifications */}
             <button
               onClick={() => setShowNotifications(!showNotifications)}
@@ -92,17 +105,58 @@ export function Header() {
             </button>
 
             {/* User Menu */}
-            <div className="flex items-center space-x-3 pl-4 border-l border-gray-200">
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">Admin</p>
-                <p className="text-xs text-gray-500">admin@wondertours.bj</p>
-              </div>
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
-                A
-              </div>
-              <button className="p-2 text-gray-600 hover:text-red-600 transition-colors">
-                <LogOut className="w-5 h-5" />
+            <div className="relative">
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="flex items-center space-x-2 md:space-x-3 pl-2 md:pl-4 border-l border-gray-200"
+              >
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-900 hidden md:block">Admin</p>
+                  <p className="text-xs text-gray-500 hidden md:block">admin@wondertours.bj</p>
+                </div>
+                <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white font-semibold text-lg border-2 border-amber-500">
+                  A
+                </div>
+                <ChevronDown className="w-4 h-4 text-gray-600 md:hidden" />
+                <button 
+                  className="hidden md:block p-2 text-gray-600 hover:text-red-600 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Handle logout
+                  }}
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
               </button>
+
+              {/* Mobile User Dropdown */}
+              {showUserMenu && (
+                <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50 md:hidden">
+                  <div className="p-4 border-b border-gray-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center text-white font-semibold text-lg border-2 border-amber-500">
+                        A
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">Admin</p>
+                        <p className="text-sm text-gray-500">admin@wondertours.bj</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-2">
+                    <button
+                      className="w-full flex items-center gap-3 px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      onClick={() => {
+                        // Handle logout
+                        setShowUserMenu(false);
+                      }}
+                    >
+                      <LogOut className="w-5 h-5 text-red-600" />
+                      <span className="text-red-600">Déconnexion</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -110,11 +164,11 @@ export function Header() {
 
       {/* Notification Sidebar */}
       {showNotifications && (
-        <div className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out">
+        <div className="fixed right-0 top-0 h-full w-80 md:w-96 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out">
           <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Notifications</h2>
+            <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900">Notifications</h2>
               <button
                 onClick={() => setShowNotifications(false)}
                 className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -136,7 +190,7 @@ export function Header() {
                     <div
                       key={notification.id}
                       className={cn(
-                        "p-4 hover:bg-gray-50 cursor-pointer transition-colors",
+                        "p-3 md:p-4 hover:bg-gray-50 cursor-pointer transition-colors",
                         !notification.read && "bg-blue-50"
                       )}
                     >

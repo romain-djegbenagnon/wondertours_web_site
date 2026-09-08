@@ -83,7 +83,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Recent Bookings */}
         <Card>
           <CardHeader>

@@ -16,6 +16,7 @@ import {
   Settings,
   Image as ImageIcon,
   Users,
+  X,
 } from "lucide-react";
 
 const navigation = [
@@ -33,20 +34,30 @@ const navigation = [
   { name: "Paramètres", href: "/dashboard/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
+    <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
       {/* Logo */}
-      <div className="p-6 border-b border-gray-200">
-        <Link href="/dashboard" className="flex items-center">
+      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+        <Link href="/dashboard" className="flex items-center" onClick={onClose}>
           <span className="font-heading font-bold text-xl text-primary">
             Wonder Tours
           </span>
         </Link>
-        <p className="text-sm text-gray-500 mt-1">Panel d'administration</p>
+        <button
+          onClick={onClose}
+          className="lg:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
+      <p className="text-sm text-gray-500 px-6 pb-4">Panel d'administration</p>
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -56,6 +67,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onClose}
               className={cn(
                 "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                 isActive
