@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
@@ -12,6 +12,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { SITE_CONFIG } from "@/lib/constants";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
+
+interface SiteConfig {
+  map: {
+    embedUrl: string;
+  };
+}
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -26,6 +32,23 @@ export default function ContactPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [mapEmbedUrl, setMapEmbedUrl] = useState<string>("");
+
+  useEffect(() => {
+    fetchConfig();
+  }, []);
+
+  const fetchConfig = async () => {
+    try {
+      const response = await fetch('/api/settings');
+      const data: SiteConfig = await response.json();
+      if (data.map?.embedUrl) {
+        setMapEmbedUrl(data.map.embedUrl);
+      }
+    } catch (error) {
+      console.error('Error fetching config:', error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,7 +247,7 @@ export default function ContactPage() {
                   />
                   <div className="rounded-2xl overflow-hidden h-64">
                     <iframe
-                      src={SITE_CONFIG.map.embedUrl}
+                      src={mapEmbedUrl}
                       width="100%"
                       height="100%"
                       style={{ border: 0 }}

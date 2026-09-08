@@ -4,11 +4,103 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Save, Globe, Mail, Phone, MapPin, Trash2, X, RotateCcw, AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { Save, Globe, Mail, Phone, MapPin, Trash2, X, RotateCcw, AlertCircle, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+
+interface SiteConfig {
+  name: string;
+  description: string;
+  url: string;
+  ogImage: string;
+  links: {
+    whatsapp: string;
+    facebook: string;
+    instagram: string;
+    youtube: string;
+  };
+  contact: {
+    email: string;
+    phone: string;
+    address: string;
+  };
+  founder: {
+    name: string;
+    title: string;
+  };
+  map: {
+    embedUrl: string;
+  };
+}
 
 export default function SettingsPage() {
   const [showTrashModal, setShowTrashModal] = useState(false);
+  const [config, setConfig] = useState<SiteConfig | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    fetchConfig();
+  }, []);
+
+  const fetchConfig = async () => {
+    try {
+      const response = await fetch('/api/settings');
+      const data = await response.json();
+      setConfig(data);
+    } catch (error) {
+      console.error('Error fetching config:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!config) return;
+    setIsSaving(true);
+    setSaveSuccess(false);
+    try {
+      await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config),
+      });
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (error) {
+      console.error('Error saving config:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const updateConfig = (path: string, value: string) => {
+    if (!config) return;
+    const keys = path.split('.');
+    const newConfig = { ...config };
+    let current: any = newConfig;
+    for (let i = 0; i < keys.length - 1; i++) {
+      current = current[keys[i]];
+    }
+    current[keys[keys.length - 1]] = value;
+    setConfig(newConfig);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!config) {
+    return (
+      <div className="text-center text-gray-500">
+        Erreur lors du chargement de la configuration
+      </div>
+    );
+  }
 
   const deletedItems = [
     { id: 1, type: "circuit", name: "Circuit Abomey (ancien)", deletedAt: "2024-01-20", deletedBy: "Eric BOKOSSA" },
@@ -75,7 +167,10 @@ export default function SettingsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Nom du site
               </label>
-              <Input defaultValue="Wonder Tours and Services" />
+              <Input 
+                value={config.name}
+                onChange={(e) => updateConfig('name', e.target.value)}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -83,7 +178,8 @@ export default function SettingsPage() {
               </label>
               <Textarea
                 rows={3}
-                defaultValue="Découvrez le Bénin à travers des expériences authentiques avec plus de 20 ans d'expertise touristique."
+                value={config.description}
+                onChange={(e) => updateConfig('description', e.target.value)}
               />
             </div>
           </CardContent>
@@ -100,21 +196,45 @@ export default function SettingsPage() {
                 <Mail className="w-4 h-4 inline mr-1" />
                 Email
               </label>
-              <Input defaultValue="contact@wondertours.bj" />
+              <Input 
+                value={config.contact.email}
+                onChange={(e) => updateConfig('contact.email', e.target.value)}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 <Phone className="w-4 h-4 inline mr-1" />
                 Téléphone
               </label>
-              <Input defaultValue="+229 97 00 00 00" />
+              <Input 
+                value={config.contact.phone}
+                onChange={(e) => updateConfig('contact.phone', e.target.value)}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 <MapPin className="w-4 h-4 inline mr-1" />
                 Adresse
               </label>
-              <Input defaultValue="Ouidah, Bénin" />
+              <Input 
+                value={config.contact.address}
+                onChange={(e) => updateConfig('contact.address', e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                <Globe className="w-4 h-4 inline mr-1" />
+                URL Google Maps (embed)
+              </label>
+              <Textarea
+                rows={3}
+                placeholder="Collez l'URL d'embed de Google Maps ici..."
+                value={config.map.embedUrl}
+                onChange={(e) => updateConfig('map.embedUrl', e.target.value)}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Obtenez l'URL depuis Google Maps → Partager → Intégrer une carte
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -129,25 +249,37 @@ export default function SettingsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Facebook
               </label>
-              <Input defaultValue="https://facebook.com/wondertours" />
+              <Input 
+                value={config.links.facebook}
+                onChange={(e) => updateConfig('links.facebook', e.target.value)}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Instagram
               </label>
-              <Input defaultValue="https://instagram.com/wondertours" />
+              <Input 
+                value={config.links.instagram}
+                onChange={(e) => updateConfig('links.instagram', e.target.value)}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 YouTube
               </label>
-              <Input defaultValue="https://youtube.com/@wondertours" />
+              <Input 
+                value={config.links.youtube}
+                onChange={(e) => updateConfig('links.youtube', e.target.value)}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 WhatsApp
               </label>
-              <Input defaultValue="https://wa.me/22990000000" />
+              <Input 
+                value={config.links.whatsapp}
+                onChange={(e) => updateConfig('links.whatsapp', e.target.value)}
+              />
             </div>
           </CardContent>
         </Card>
@@ -162,13 +294,19 @@ export default function SettingsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 URL du site
               </label>
-              <Input defaultValue="https://wondertours.bj" />
+              <Input 
+                value={config.url}
+                onChange={(e) => updateConfig('url', e.target.value)}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Image Open Graph
               </label>
-              <Input defaultValue="/og-image.jpg" />
+              <Input 
+                value={config.ogImage}
+                onChange={(e) => updateConfig('ogImage', e.target.value)}
+              />
             </div>
           </CardContent>
         </Card>
@@ -209,10 +347,20 @@ export default function SettingsPage() {
         </Card>
       </div>
 
-      <div className="flex justify-end">
-        <Button>
-          <Save className="w-4 h-4 mr-2" />
-          Enregistrer les modifications
+      <div className="flex justify-end gap-3">
+        {saveSuccess && (
+          <div className="flex items-center text-green-600">
+            <Save className="w-4 h-4 mr-2" />
+            Modifications enregistrées avec succès
+          </div>
+        )}
+        <Button onClick={handleSave} disabled={isSaving}>
+          {isSaving ? (
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Save className="w-4 h-4 mr-2" />
+          )}
+          {isSaving ? "Enregistrement..." : "Enregistrer les modifications"}
         </Button>
       </div>
 

@@ -1,0 +1,24 @@
+{
+  "name": "Wonder Tours and Services",
+  "description": "Découvrez le Bénin à travers des expériences authentiques avec plus de 20 ans d'expertise touristique.",
+  "url": "https://wondertours.bj",
+  "ogImage": "/og-image.jpg",
+  "links": {
+    "whatsapp": "https://wa.me/22990000000",
+    "facebook": "https://facebook.com/wondertours",
+    "instagram": "https://instagram.com/wondertours",
+    "youtube": "https://youtube.com/@wondertours"
+  },
+  "contact": {
+    "email": "contact@wondertours.bj",
+    "phone": "+229 97 00 00 00",
+    "address": "Ouidah, Bénin"
+  },
+  "founder": {
+    "name": "Eric Sylvestre BOKOSSA",
+    "title": "Fondateur"
+  },
+  "map": {
+    "embedUrl": ""
+  }
+}
