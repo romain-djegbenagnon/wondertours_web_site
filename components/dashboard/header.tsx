@@ -105,28 +105,28 @@ export function Header({ onMenuClick }: HeaderProps) {
             </button>
 
             {/* User Menu */}
-            <div className="relative">
+            <div className="flex items-center space-x-2 md:space-x-3 pl-2 md:pl-4 border-l border-gray-200 relative">
+              <div className="text-right">
+                <p className="text-sm font-medium text-gray-900 hidden md:block">Admin</p>
+                <p className="text-xs text-gray-500 hidden md:block">admin@wondertours.bj</p>
+              </div>
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-2 md:space-x-3 pl-2 md:pl-4 border-l border-gray-200"
+                className="flex items-center gap-2"
               >
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900 hidden md:block">Admin</p>
-                  <p className="text-xs text-gray-500 hidden md:block">admin@wondertours.bj</p>
-                </div>
                 <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white font-semibold text-lg border-2 border-amber-500">
                   A
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-600 md:hidden" />
-                <button 
-                  className="hidden md:block p-2 text-gray-600 hover:text-red-600 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Handle logout
-                  }}
-                >
-                  <LogOut className="w-5 h-5" />
-                </button>
+              </button>
+              <button 
+                className="hidden md:block p-2 text-gray-600 hover:text-red-600 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Handle logout
+                }}
+              >
+                <LogOut className="w-5 h-5" />
               </button>
 
               {/* Mobile User Dropdown */}

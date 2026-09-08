@@ -32,7 +32,7 @@ export default function ContactPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [mapEmbedUrl, setMapEmbedUrl] = useState<string>("");
+  const [mapEmbedUrl, setMapEmbedUrl] = useState<string>(SITE_CONFIG.map.embedUrl as string);
 
   useEffect(() => {
     fetchConfig();

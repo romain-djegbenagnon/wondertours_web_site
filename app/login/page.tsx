@@ -5,30 +5,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Mail, Lock, User, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "register" | "forgot">("login");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 md:p-8">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-primary">
+        <CardHeader className="text-center p-6 md:p-8">
+          <CardTitle className="text-2xl md:text-3xl font-bold text-primary">
             Wonder Tours
           </CardTitle>
-          <p className="text-gray-600 mt-2">
-            {mode === "login" && "Connectez-vous au dashboard"}
+          <p className="text-gray-600 mt-2 text-sm md:text-base">
+            {mode === "login" && "Connectez-vous à votre compte"}
             {mode === "register" && "Créez votre compte"}
             {mode === "forgot" && "Réinitialisez votre mot de passe"}
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6 md:p-8">
           {/* Login Form */}
           {mode === "login" && (
-            <form className="space-y-4">
+            <form className="space-y-4 md:space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Email
@@ -37,7 +39,7 @@ export default function LoginPage() {
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input 
                     type="email" 
-                    placeholder="admin@wondertours.bj" 
+                    placeholder="votre@email.com" 
                     className="pl-10"
                   />
                 </div>
@@ -92,7 +94,7 @@ export default function LoginPage() {
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v40.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                   />
                   <path
                     fill="currentColor"
@@ -124,7 +126,7 @@ export default function LoginPage() {
 
           {/* Register Form */}
           {mode === "register" && (
-            <form className="space-y-4">
+            <form className="space-y-4 md:space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Nom complet
@@ -208,7 +210,7 @@ export default function LoginPage() {
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v40.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                   />
                   <path
                     fill="currentColor"
@@ -240,7 +242,7 @@ export default function LoginPage() {
 
           {/* Forgot Password Form */}
           {mode === "forgot" && (
-            <form className="space-y-4">
+            <form className="space-y-4 md:space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Email
@@ -249,7 +251,7 @@ export default function LoginPage() {
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input 
                     type="email" 
-                    placeholder="admin@wondertours.bj" 
+                    placeholder="votre@email.com" 
                     className="pl-10"
                   />
                 </div>
@@ -280,7 +282,7 @@ export default function LoginPage() {
               className="text-sm text-gray-600 hover:text-primary transition-colors flex items-center justify-center gap-1"
             >
               <ArrowLeft className="w-4 h-4" />
-              Retour au site
+              Retour à l'accueil
             </Link>
           </div>
         </CardContent>
