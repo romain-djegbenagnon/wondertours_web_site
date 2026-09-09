@@ -12,7 +12,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { SITE_CONFIG } from "@/lib/constants";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
-import { useLanguage } from "@/contexts/language-context";
 
 interface SiteConfig {
   map: {
@@ -21,7 +20,6 @@ interface SiteConfig {
 }
 
 export default function ContactPage() {
-  const { t, locale } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -76,13 +74,13 @@ export default function ContactPage() {
                 </svg>
               </div>
               <h2 className="font-heading text-3xl font-bold text-text mb-4">
-                {t.contact.form.sent}
+                Votre demande a bien été envoyée
               </h2>
               <p className="text-text-secondary text-lg mb-8">
-                {locale === "fr" ? "Notre équipe vous contactera prochainement pour répondre à votre demande." : "Our team will contact you shortly to answer your request."}
+                Notre équipe vous contactera prochainement pour répondre à votre demande.
               </p>
               <Button variant="primary" href="/" onClick={() => setIsSubmitted(false)}>
-                {locale === "fr" ? "Retour à l'accueil" : "Back to home"}
+                Retour à l'accueil
               </Button>
             </div>
           </div>
@@ -101,9 +99,9 @@ export default function ContactPage() {
         {/* Hero */}
         <Hero
           subtitle="CONTACT"
-          title={locale === "fr" ? "Parlons de votre prochain voyage" : "Let's talk about your next trip"}
-          description={locale === "fr" ? "Contactez-nous pour planifier votre voyage au Bénin, demander un devis ou simplement en savoir plus sur nos services." : "Contact us to plan your trip to Benin, request a quote, or simply learn more about our services."}
-          primaryCta={{ text: locale === "fr" ? "Remplir le formulaire" : "Fill the form", href: "#form" }}
+          title="Parlons de votre prochain voyage"
+          description="Contactez-nous pour planifier votre voyage au Bénin, demander un devis ou simplement en savoir plus sur nos services."
+          primaryCta={{ text: "Remplir le formulaire", href: "#form" }}
           secondaryCta={{ text: "WhatsApp", href: SITE_CONFIG.links.whatsapp }}
           image="[PHOTO HERO CONTACT À REMPLACER]"
         />
@@ -111,23 +109,19 @@ export default function ContactPage() {
         {/* Contact Info */}
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4 lg:px-8">
-            <SectionHeading
-              title={t.contact.info.title}
-              subtitle=""
-            />
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <MapPin className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="font-heading text-xl font-bold text-text mb-2">{t.contact.info.address}</h3>
+                <h3 className="font-heading text-xl font-bold text-text mb-2">Adresse</h3>
                 <p className="text-text-secondary">{SITE_CONFIG.contact.address}</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Phone className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="font-heading text-xl font-bold text-text mb-2">{t.contact.info.phone}</h3>
+                <h3 className="font-heading text-xl font-bold text-text mb-2">Téléphone</h3>
                 <a
                   href={`tel:${SITE_CONFIG.contact.phone}`}
                   className="text-text-secondary hover:text-primary transition-colors"
@@ -139,7 +133,7 @@ export default function ContactPage() {
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Mail className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="font-heading text-xl font-bold text-text mb-2">{t.contact.info.email}</h3>
+                <h3 className="font-heading text-xl font-bold text-text mb-2">Email</h3>
                 <a
                   href={`mailto:${SITE_CONFIG.contact.email}`}
                   className="text-text-secondary hover:text-primary transition-colors"
@@ -158,19 +152,19 @@ export default function ContactPage() {
               {/* Form */}
               <div>
                 <SectionHeading
-                  title={t.contact.form.title}
+                  title="Envoyez-nous un message"
                   align="left"
                 />
                 <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg space-y-6">
                   <Input
-                    label={t.contact.form.name}
+                    label="Nom complet"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                   />
                   
                   <Input
-                    label={t.contact.form.email}
+                    label="Email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -178,7 +172,7 @@ export default function ContactPage() {
                   />
                   
                   <Input
-                    label={t.contact.form.phone}
+                    label="Téléphone / WhatsApp"
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -186,21 +180,21 @@ export default function ContactPage() {
                   />
                   
                   <Input
-                    label={t.contact.form.subject}
+                    label="Objet"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     required
                   />
                   
                   <Select
-                    label={t.contact.form.requestType}
+                    label="Type de demande"
                     options={[
-                      { value: "", label: locale === "fr" ? "Sélectionnez un type" : "Select a type" },
-                      { value: "circuit", label: locale === "fr" ? "Réservation de circuit" : "Tour booking" },
-                      { value: "sejour", label: locale === "fr" ? "Organisation de séjour" : "Stay organization" },
-                      { value: "hotel", label: locale === "fr" ? "Réservation d'hôtel" : "Hotel booking" },
-                      { value: "info", label: t.contact.requestTypes.information },
-                      { value: "autre", label: t.contact.requestTypes.other }
+                      { value: "", label: "Sélectionnez un type" },
+                      { value: "circuit", label: "Réservation de circuit" },
+                      { value: "sejour", label: "Organisation de séjour" },
+                      { value: "hotel", label: "Réservation d'hôtel" },
+                      { value: "info", label: "Demande d'informations" },
+                      { value: "autre", label: "Autre" }
                     ]}
                     value={formData.requestType}
                     onChange={(e) => setFormData({ ...formData, requestType: e.target.value })}
@@ -208,14 +202,14 @@ export default function ContactPage() {
                   />
                   
                   <Input
-                    label={t.contact.form.travelDate}
+                    label="Date prévue du voyage"
                     type="date"
                     value={formData.travelDate}
                     onChange={(e) => setFormData({ ...formData, travelDate: e.target.value })}
                   />
                   
                   <Input
-                    label={t.contact.form.travelers}
+                    label="Nombre de voyageurs"
                     type="number"
                     min="1"
                     value={formData.travelers}
@@ -223,11 +217,11 @@ export default function ContactPage() {
                   />
                   
                   <Textarea
-                    label={t.contact.form.message}
+                    label="Message"
                     rows={5}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder={locale === "fr" ? "Décrivez votre projet de voyage, vos questions ou vos demandes spécifiques..." : "Describe your travel project, questions or specific requests..."}
+                    placeholder="Décrivez votre projet de voyage, vos questions ou vos demandes spécifiques..."
                     required
                   />
                   
@@ -238,7 +232,7 @@ export default function ContactPage() {
                     className="w-full"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? t.contact.form.sending : t.contact.form.submit}
+                    {isSubmitting ? "Envoi en cours..." : "Envoyer ma demande"}
                   </Button>
                 </form>
               </div>
@@ -248,7 +242,7 @@ export default function ContactPage() {
                 {/* Map */}
                 <div>
                   <SectionHeading
-                    title={t.contact.location.title}
+                    title="Notre localisation"
                     align="left"
                   />
                   <div className="rounded-2xl overflow-hidden h-64">
@@ -260,32 +254,32 @@ export default function ContactPage() {
                       allowFullScreen
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
+                      title="Carte Google Maps - Wonder Tours"
                     />
                   </div>
                 </div>
 
-                {/* WhatsApp */}
-                <div className="bg-green-50 rounded-2xl p-8">
+                {/* WhatsApp CTA */}
+                <div className="bg-green-50 p-8 rounded-2xl border border-green-200">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
                       <MessageCircle className="w-6 h-6 text-white" />
                     </div>
                     <div>
                       <h3 className="font-heading text-xl font-bold text-text mb-2">
-                        {t.contact.whatsapp.title}
+                        Discutez sur WhatsApp
                       </h3>
                       <p className="text-text-secondary mb-4">
-                        {t.contact.whatsapp.description}
+                        Contactez-nous directement sur WhatsApp pour une réponse rapide.
                       </p>
                       <a
                         href={SITE_CONFIG.links.whatsapp}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block"
+                        className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-full font-medium hover:bg-green-700 transition-colors"
                       >
-                        <Button variant="primary">
-                          {t.contact.whatsapp.button}
-                        </Button>
+                        <MessageCircle className="w-5 h-5" />
+                        Ouvrir WhatsApp
                       </a>
                     </div>
                   </div>

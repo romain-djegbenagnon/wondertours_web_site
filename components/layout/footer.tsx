@@ -68,7 +68,7 @@ export function Footer() {
                     {item.name}
                   </Link>
                 </li>
-              ))}
+              ))} 
             </ul>
           </div>
 

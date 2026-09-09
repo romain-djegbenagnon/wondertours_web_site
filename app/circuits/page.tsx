@@ -11,10 +11,8 @@ import { Button } from "@/components/ui/button";
 import { CIRCUITS } from "@/lib/data/circuits";
 import { CATEGORIES, DESTINATIONS } from "@/lib/constants";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useLanguage } from "@/contexts/language-context";
 
 export default function CircuitsPage() {
-  const { t, locale } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedDestination, setSelectedDestination] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -68,9 +66,9 @@ export default function CircuitsPage() {
         {/* Hero */}
         <Hero
           subtitle="NOS CIRCUITS"
-          title={locale === "fr" ? "Explorez nos circuits touristiques" : "Explore our tourist circuits"}
-          description={locale === "fr" ? "Découvrez le Bénin à travers nos circuits soigneusement conçus pour vous offrir des expériences authentiques et inoubliables." : "Discover Benin through our carefully designed circuits to offer you authentic and unforgettable experiences."}
-          primaryCta={{ text: t.common.requestQuote, href: "/contact" }}
+          title="Explorez nos circuits touristiques"
+          description="Découvrez le Bénin à travers nos circuits soigneusement conçus pour vous offrir des expériences authentiques et inoubliables."
+          primaryCta={{ text: "Demander un devis", href: "/contact" }}
           image="[PHOTO HERO CIRCUITS À REMPLACER]"
         />
 
