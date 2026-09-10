@@ -17,6 +17,11 @@ import { toCircuitVM, toTestimonialVM, toBlogPostVM } from "@/lib/view-models";
 import { WHY_CHOOSE_US } from "@/lib/constants";
 import { generateMetadata } from "@/lib/seo";
 
+// Contenu issu de la base (circuits, témoignages, articles, services) :
+// rendu dynamique pour refléter les modifications du dashboard, sinon
+// la page serait figée au build (pré-rendu statique) sur Vercel.
+export const dynamic = "force-dynamic";
+
 export const metadata = generateMetadata({
   title: "Wonder Tours and Services - Tourisme au Bénin",
   description: "Découvrez le Bénin avec Wonder Tours and Services. Plus de 20 ans d'expertise en circuits touristiques, excursions et séjours authentiques.",
