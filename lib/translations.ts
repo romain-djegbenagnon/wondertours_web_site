@@ -1,3 +1,5 @@
+import { translateText, isDeepLConfigured } from './services/deepl';
+
 export type Locale = "fr" | "en";
 
 export const translations = {
@@ -95,4 +97,62 @@ export const translations = {
 
 export function getTranslation(locale: Locale = "fr") {
   return translations[locale];
+}
+
+/**
+ * Traduit un texte dynamiquement en utilisant DeepL
+ * @param text - Texte à traduire
+ * @param targetLocale - Langue cible
+ * @returns Texte traduit ou texte original si DeepL n'est pas configuré
+ */
+export async function translateDynamicText(
+  text: string,
+  targetLocale: Locale
+): Promise<string> {
+  // Si DeepL n'est pas configuré, retourne le texte original
+  if (!isDeepLConfigured()) {
+    console.warn('DeepL API key not configured. Using original text.');
+    return text;
+  }
+
+  try {
+    const targetLang = targetLocale === 'en' ? 'en-US' : 'fr';
+    return await translateText(text, targetLang);
+  } catch (error) {
+    console.error('Translation error:', error);
+    return text; // Fallback to original text on error
+  }
+}
+
+/**
+ * Traduit un objet de traductions dynamiquement
+ * @param obj - Objet avec des textes à traduire
+ * @param targetLocale - Langue cible
+ * @returns Objet avec les textes traduits
+ */
+export async function translateDynamicObject<T extends Record<string, any>>(
+  obj: T,
+  targetLocale: Locale
+): Promise<T> {
+  if (!isDeepLConfigured()) {
+    return obj;
+  }
+
+  const translatedObj: Record<string, any> = { ...obj };
+
+  for (const key in translatedObj) {
+    if (typeof translatedObj[key] === 'string') {
+      translatedObj[key] = await translateDynamicText(
+        translatedObj[key],
+        targetLocale
+      );
+    } else if (typeof translatedObj[key] === 'object' && translatedObj[key] !== null) {
+      translatedObj[key] = await translateDynamicObject(
+        translatedObj[key],
+        targetLocale
+      );
+    }
+  }
+
+  return translatedObj as T;
 }
