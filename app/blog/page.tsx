@@ -1,43 +1,43 @@
-"use client";
-
-import { useState } from "react";
+import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
-import { Hero } from "@/components/hero/hero";
+import { LocalizedHero } from "@/components/common/localized-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { BlogCard } from "@/components/blog/blog-card";
 import { Button } from "@/components/ui/button";
-import { BLOG_POSTS } from "@/lib/data/blog";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { BlogGrid } from "@/components/blog/blog-grid";
+import { listBlogPosts, listBlogCategories } from "@/lib/services/blog";
+import { toBlogPostVM } from "@/lib/view-models";
+import { generateMetadata } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 
-export default function BlogPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 6;
-  const totalPages = Math.ceil(BLOG_POSTS.length / postsPerPage);
+export const metadata = generateMetadata({
+  title: "Blog - Wonder Tours and Services",
+  description: "Carnet de voyage : conseils, culture et actualités pour préparer votre découverte du Bénin. Articles sur le tourisme, la culture et les destinations.",
+  path: "/blog"
+});
 
-  const getCurrentPosts = () => {
-    const startIndex = (currentPage - 1) * postsPerPage;
-    const endIndex = startIndex + postsPerPage;
-    return BLOG_POSTS.slice(startIndex, endIndex);
-  };
+interface BlogPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
 
-  const goToPage = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+  // Filtre via l'URL (?categorie=slug) ; la pagination reste côté client
+  // dans BlogGrid (6 articles par page).
+  const filters = await searchParams;
+  const categorySlug =
+    typeof filters.categorie === "string" ? filters.categorie : "";
 
-  const goToPrevious = () => {
-    if (currentPage > 1) {
-      goToPage(currentPage - 1);
-    }
-  };
-
-  const goToNext = () => {
-    if (currentPage < totalPages) {
-      goToPage(currentPage + 1);
-    }
-  };
+  const [postsPage, categoriesPage] = await Promise.all([
+    listBlogPosts({
+      published: true,
+      pageSize: 100,
+      ...(categorySlug && { categorySlug }),
+    }),
+    listBlogCategories({ active: true }),
+  ]);
+  const posts = postsPage.items.map(toBlogPostVM);
+  const categories = categoriesPage.items;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -45,11 +45,15 @@ export default function BlogPage() {
 
       <main className="flex-1">
         {/* Hero */}
-        <Hero
+        <LocalizedHero
           subtitle="CARNET DE VOYAGE"
-          title="Conseils, culture et actualités"
-          description="Découvrez nos articles pour préparer votre voyage au Bénin : conseils pratiques, découvertes culturelles et inspirations."
-          primaryCta={{ text: "Explorer les articles", href: "#articles" }}
+          titleFr="Conseils, culture et actualités"
+          titleEn="Tips, culture and news"
+          descriptionFr="Découvrez nos articles pour préparer votre voyage au Bénin : conseils pratiques, découvertes culturelles et inspirations."
+          descriptionEn="Discover our articles to prepare your trip to Benin: practical tips, cultural discoveries and inspirations."
+          ctaFr="Explorer les articles"
+          ctaEn="Explore articles"
+          ctaHref="#articles"
           image="[PHOTO HERO BLOG À REMPLACER]"
         />
 
@@ -57,13 +61,30 @@ export default function BlogPage() {
         <section className="py-12 bg-white border-b">
           <div className="container mx-auto px-4 lg:px-8">
             <div className="flex flex-wrap gap-3 justify-center">
-              {["Tous", "Voyage", "Culture", "Patrimoine", "Vodoun", "Conseils", "Destinations"].map((category) => (
-                <button
-                  key={category}
-                  className="px-4 py-2 rounded-full font-medium transition-colors bg-gray-100 text-text hover:bg-gray-200"
+              <Link
+                href="/blog"
+                className={cn(
+                  "px-4 py-2 rounded-full font-medium transition-colors",
+                  categorySlug
+                    ? "bg-gray-100 text-text hover:bg-gray-200"
+                    : "bg-primary text-white"
+                )}
+              >
+                Tous
+              </Link>
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/blog?categorie=${encodeURIComponent(category.slug)}`}
+                  className={cn(
+                    "px-4 py-2 rounded-full font-medium transition-colors",
+                    categorySlug === category.slug
+                      ? "bg-primary text-white"
+                      : "bg-gray-100 text-text hover:bg-gray-200"
+                  )}
                 >
-                  {category}
-                </button>
+                  {category.name}
+                </Link>
               ))}
             </div>
           </div>
@@ -75,54 +96,7 @@ export default function BlogPage() {
             <SectionHeading
               title="Derniers articles"
             />
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {getCurrentPosts().map((post) => (
-                <BlogCard key={post.id} post={post} />
-              ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-4 mt-12">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={goToPrevious}
-                  disabled={currentPage === 1}
-                  className="rounded-full px-4"
-                >
-                  <ChevronLeft className="w-4 h-4 mr-1" />
-                  Précédent
-                </Button>
-
-                <div className="flex gap-2">
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <button
-                      key={index + 1}
-                      onClick={() => goToPage(index + 1)}
-                      className={`w-10 h-10 rounded-full font-medium transition-all ${
-                        currentPage === index + 1
-                          ? "bg-primary text-white"
-                          : "bg-white text-text hover:bg-gray-100"
-                      }`}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={goToNext}
-                  disabled={currentPage === totalPages}
-                  className="rounded-full px-4"
-                >
-                  Suivant
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
-              </div>
-            )}
+            <BlogGrid posts={posts} />
           </div>
         </section>
 
@@ -141,7 +115,7 @@ export default function BlogPage() {
                 placeholder="Votre email"
                 className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:outline-none"
               />
-              <Button variant="primary">S'inscrire</Button>
+              <Button variant="primary">S&apos;inscrire</Button>
             </div>
           </div>
         </section>

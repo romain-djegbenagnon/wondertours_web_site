@@ -1,11 +1,12 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
-import { Hero } from "@/components/hero/hero";
+import { LocalizedHero } from "@/components/common/localized-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { TestimonialsContent } from "@/components/testimonials/testimonials-content";
 import { Button } from "@/components/ui/button";
-import { TESTIMONIALS } from "@/lib/data/testimonials";
+import { listTestimonials } from "@/lib/services/testimonials";
+import { toTestimonialVM } from "@/lib/view-models";
 import { Star } from "lucide-react";
 import { generateMetadata } from "@/lib/seo";
 
@@ -15,20 +16,30 @@ export const metadata = generateMetadata({
   path: "/temoignages"
 });
 
-export default function TestimonialsPage() {
-  const averageRating = TESTIMONIALS.reduce((acc, t) => acc + t.rating, 0) / TESTIMONIALS.length;
+export default async function TestimonialsPage() {
+  const testimonialsPage = await listTestimonials({ active: true });
+  const testimonials = testimonialsPage.items.map(toTestimonialVM);
+
+  const averageRating =
+    testimonials.length > 0
+      ? testimonials.reduce((acc, t) => acc + t.rating, 0) / testimonials.length
+      : 0;
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero */}
-        <Hero
+        <LocalizedHero
           subtitle="TÉMOIGNAGES"
-          title="Des voyages qui laissent des souvenirs"
-          description="Découvrez les expériences de nos voyageurs et laissez-vous inspirer pour votre prochaine aventure au Bénin."
-          primaryCta={{ text: "Partager mon expérience", href: "/contact" }}
+          titleFr="Des voyages qui laissent des souvenirs"
+          titleEn="Trips that leave memories"
+          descriptionFr="Découvrez les expériences de nos voyageurs et laissez-vous inspirer pour votre prochaine aventure au Bénin."
+          descriptionEn="Discover our travelers' experiences and get inspired for your next adventure in Benin."
+          ctaFr="Partager mon expérience"
+          ctaEn="Share my experience"
+          ctaHref="/contact"
           image="[PHOTO HERO TÉMOIGNAGES À REMPLACER]"
         />
 
@@ -38,7 +49,7 @@ export default function TestimonialsPage() {
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
                 <div className="text-5xl font-heading font-bold text-primary mb-2">
-                  {TESTIMONIALS.length}
+                  {testimonials.length}
                 </div>
                 <p className="text-text-secondary">Témoignages</p>
               </div>
@@ -55,7 +66,7 @@ export default function TestimonialsPage() {
                 <div className="text-5xl font-heading font-bold text-primary mb-2">
                   20+
                 </div>
-                <p className="text-text-secondary">Années d'expérience</p>
+                <p className="text-text-secondary">Années d&apos;expérience</p>
               </div>
             </div>
           </div>
@@ -67,7 +78,12 @@ export default function TestimonialsPage() {
             <SectionHeading
               title="Ils ont voyagé avec Wonder Tours"
             />
-            <TestimonialsContent />
+            <TestimonialsContent testimonials={testimonials} />
+            {testimonials.length === 0 && (
+              <p className="text-center text-text-secondary py-12">
+                Aucun témoignage pour le moment.
+              </p>
+            )}
           </div>
         </section>
 
@@ -78,7 +94,7 @@ export default function TestimonialsPage() {
               title="Vous avez voyagé avec nous ?"
             />
             <p className="text-text-secondary text-xl mb-8 max-w-2xl mx-auto">
-              Partagez votre expérience et aidez d'autres voyageurs à découvrir le Bénin avec Wonder Tours.
+              Partagez votre expérience et aidez d&apos;autres voyageurs à découvrir le Bénin avec Wonder Tours.
             </p>
             <Button variant="primary" size="lg" href="/contact">
               Partager mon témoignage

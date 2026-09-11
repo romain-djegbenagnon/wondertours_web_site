@@ -4,28 +4,88 @@ import { WhatsAppButton } from "@/components/common/whatsapp-button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BLOG_POSTS } from "@/lib/data/blog";
+import {
+  getBlogPostBySlug,
+  listBlogPosts,
+  listBlogCategories,
+  incrementBlogPostViews,
+} from "@/lib/services/blog";
+import { toBlogPostVM } from "@/lib/view-models";
 import { Calendar, Clock, Share2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string;
+  }>;
+}
+
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const record = await getBlogPostBySlug(slug);
+  if (!record) return {};
+  return {
+    title: `${record.title} - Wonder Tours and Services`,
+    description: record.excerpt ?? undefined,
   };
 }
 
-export default function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = BLOG_POSTS.find((p) => p.slug === params.slug);
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { slug } = await params;
+  const record = await getBlogPostBySlug(slug);
 
-  if (!post) {
+  if (!record) {
     notFound();
   }
+
+  // Compteur de vues.
+  await incrementBlogPostViews(record.id);
+  const post = toBlogPostVM(record);
+
+  // Articles similaires : même catégorie, en excluant l'article courant.
+  const relatedPage = await listBlogPosts({
+    published: true,
+    pageSize: 4,
+    ...(record.category && { categorySlug: record.category.slug }),
+  });
+  const related = relatedPage.items
+    .filter((p) => p.id !== post.id)
+    .slice(0, 3)
+    .map(toBlogPostVM);
+
+  // Données de la sidebar : articles récents + catégories avec compteurs.
+  const [sidebarPage, categoriesPage] = await Promise.all([
+    listBlogPosts({ published: true, pageSize: 100 }),
+    listBlogCategories({ active: true }),
+  ]);
+  const recentPosts = sidebarPage.items
+    .map(toBlogPostVM)
+    .filter((p) => p.id !== post.id)
+    .slice(0, 5);
+  const categoryCounts = new Map<string, number>();
+  for (const item of sidebarPage.items) {
+    if (item.category) {
+      categoryCounts.set(
+        item.category.slug,
+        (categoryCounts.get(item.category.slug) ?? 0) + 1
+      );
+    }
+  }
+  const sidebarCategories = categoriesPage.items.map((category) => ({
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    count: categoryCounts.get(category.slug) ?? 0,
+  }));
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero */}
         <section className="relative h-[50vh] min-h-[400px]">
@@ -67,7 +127,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                   <p className="text-text-secondary text-xl leading-relaxed mb-6">
                     {post.excerpt}
                   </p>
-                  <div className="text-text-secondary leading-relaxed">
+                  <div className="text-text-secondary leading-relaxed whitespace-pre-line">
                     {post.content}
                   </div>
                 </div>
@@ -113,7 +173,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                     Articles récents
                   </h3>
                   <div className="space-y-4">
-                    {BLOG_POSTS.filter((p) => p.id !== post.id).slice(0, 5).map((recentPost) => (
+                    {recentPosts.map((recentPost) => (
                       <Link
                         key={recentPost.id}
                         href={`/blog/${recentPost.slug}`}
@@ -148,17 +208,17 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                     Catégories
                   </h3>
                   <div className="space-y-2">
-                    {Array.from(new Set(BLOG_POSTS.map((p) => p.category))).map((category) => (
+                    {sidebarCategories.map((category) => (
                       <Link
-                        key={category}
-                        href={`/blog?category=${category}`}
+                        key={category.id}
+                        href={`/blog?categorie=${encodeURIComponent(category.slug)}`}
                         className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors group"
                       >
                         <span className="text-text-secondary group-hover:text-primary transition-colors">
-                          {category}
+                          {category.name}
                         </span>
                         <span className="text-text-secondary text-sm">
-                          {BLOG_POSTS.filter((p) => p.category === category).length}
+                          {category.count}
                         </span>
                       </Link>
                     ))}
@@ -170,33 +230,35 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
         </article>
 
         {/* Related Posts */}
-        <section className="py-20 bg-background">
-          <div className="container mx-auto px-4 lg:px-8">
-            <SectionHeading
-              title="Articles similaires"
-            />
-            <div className="grid md:grid-cols-3 gap-8">
-              {BLOG_POSTS.filter((p) => p.id !== post.id).slice(0, 3).map((relatedPost) => (
-                <div key={relatedPost.id} className="bg-white rounded-xl overflow-hidden shadow-md">
-                  <img
-                    src={relatedPost.image}
-                    alt={relatedPost.title}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-6">
-                    <Badge variant="secondary" className="mb-3">{relatedPost.category}</Badge>
-                    <h3 className="font-heading text-lg font-bold text-text mb-2">
-                      {relatedPost.title}
-                    </h3>
-                    <Button variant="outline" size="sm" href={`/blog/${relatedPost.slug}`} className="w-full">
-                      Lire l'article
-                    </Button>
+        {related.length > 0 && (
+          <section className="py-20 bg-background">
+            <div className="container mx-auto px-4 lg:px-8">
+              <SectionHeading
+                title="Articles similaires"
+              />
+              <div className="grid md:grid-cols-3 gap-8">
+                {related.map((relatedPost) => (
+                  <div key={relatedPost.id} className="bg-white rounded-xl overflow-hidden shadow-md">
+                    <img
+                      src={relatedPost.image}
+                      alt={relatedPost.title}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-6">
+                      <Badge variant="secondary" className="mb-3">{relatedPost.category}</Badge>
+                      <h3 className="font-heading text-lg font-bold text-text mb-2">
+                        {relatedPost.title}
+                      </h3>
+                      <Button variant="outline" size="sm" href={`/blog/${relatedPost.slug}`} className="w-full">
+                        Lire l&apos;article
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* CTA */}
         <section className="py-20 bg-white">

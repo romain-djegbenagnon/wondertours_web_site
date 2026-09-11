@@ -1,44 +1,35 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Star, Edit, Trash2, Check, X } from "lucide-react";
+import { Plus, Star } from "lucide-react";
+import { listTestimonials } from "@/lib/services/testimonials";
+import { RowActions } from "@/components/dashboard/row-actions";
+import { SearchInput } from "@/components/dashboard/search-input";
+import { formatDate } from "@/lib/format";
 
-export default function TestimonialsPage() {
-  const testimonials = [
-    {
-      id: 1,
-      name: "Jean Dupont",
-      country: "France",
-      rating: 5,
-      text: "Excellent circuit ! Guide très professionnel et expériences authentiques.",
-      status: "verified",
-      featured: true,
-    },
-    {
-      id: 2,
-      name: "Marie Martin",
-      country: "Canada",
-      rating: 5,
-      text: "Un voyage inoubliable au Bénin. Je recommande vivement Wonder Tours.",
-      status: "verified",
-      featured: true,
-    },
-    {
-      id: 3,
-      name: "Paul Kouassi",
-      country: "Côte d'Ivoire",
-      rating: 4,
-      text: "Très bonne organisation, quelques petits imprévus mais globalement satisfait.",
-      status: "verified",
-      featured: false,
-    },
-  ];
+export const dynamic = "force-dynamic";
+
+interface TestimonialsPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function TestimonialsPage({
+  searchParams,
+}: TestimonialsPageProps) {
+  const filters = await searchParams;
+  const q = typeof filters.q === "string" ? filters.q : undefined;
+  const { items: testimonials, total } = await listTestimonials({
+    pageSize: 100,
+    q,
+  });
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Témoignages</h1>
-          <p className="text-gray-600 mt-1">Gérez les avis clients</p>
+          <p className="text-gray-600 mt-1">
+            {total} témoignage{total > 1 ? "s" : ""}
+          </p>
         </div>
         <Button href="/dashboard/testimonials/new">
           <Plus className="w-4 h-4 mr-2" />
@@ -46,7 +37,20 @@ export default function TestimonialsPage() {
         </Button>
       </div>
 
+      <Card>
+        <CardContent className="p-4">
+          <SearchInput placeholder="Rechercher un témoignage (nom, texte)…" />
+        </CardContent>
+      </Card>
+
       <div className="space-y-4">
+        {testimonials.length === 0 && (
+          <Card>
+            <CardContent className="p-8 text-center text-gray-500">
+              Aucun témoignage.
+            </CardContent>
+          </Card>
+        )}
         {testimonials.map((testimonial) => (
           <Card key={testimonial.id}>
             <CardContent className="p-6">
@@ -59,27 +63,43 @@ export default function TestimonialsPage() {
                       ))}
                     </div>
                     <div className="flex items-center gap-2">
-                      {testimonial.featured && (
+                      {testimonial.isFeatured && (
                         <span className="inline-block px-2 py-1 text-xs rounded-full bg-amber-100 text-amber-800">
                           À la une
                         </span>
                       )}
-                      <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                        {testimonial.status}
+                      <span
+                        className={`inline-block px-2 py-1 text-xs rounded-full ${
+                          testimonial.isActive
+                            ? "bg-green-100 text-green-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {testimonial.isActive ? "visible" : "masqué"}
                       </span>
+                      {testimonial.isVerified && (
+                        <span className="inline-block px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                          vérifié
+                        </span>
+                      )}
                     </div>
                   </div>
                   <h3 className="font-semibold text-gray-900">{testimonial.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{testimonial.country}</p>
-                  <p className="text-gray-700 italic">"{testimonial.text}"</p>
+                  <p className="text-sm text-gray-600 mb-2">
+                    {testimonial.country ?? ""}
+                    {testimonial.country && testimonial.date ? " • " : ""}
+                    {testimonial.date ? formatDate(testimonial.date) : ""}
+                  </p>
+                  <p className="text-gray-700 italic">&quot;{testimonial.text}&quot;</p>
                 </div>
-                <div className="flex gap-2 ml-4">
-                  <Button variant="outline" size="sm">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                <div className="ml-4">
+                  <RowActions
+                    id={testimonial.id}
+                    resource="testimonials"
+                    enableDelete
+                    deleteLabel="Supprimer le témoignage"
+                    confirmMessage={`Supprimer le témoignage de « ${testimonial.name} » ?`}
+                  />
                 </div>
               </div>
             </CardContent>

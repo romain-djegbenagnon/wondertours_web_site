@@ -4,22 +4,39 @@ import { WhatsAppButton } from "@/components/common/whatsapp-button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CIRCUITS } from "@/lib/data/circuits";
+import { getCircuitBySlug } from "@/lib/services/circuits";
+import { toCircuitVM } from "@/lib/view-models";
 import { Clock, MapPin, Check, X } from "lucide-react";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 interface CircuitPageProps {
-  params: {
+  params: Promise<{
     slug: string;
+  }>;
+}
+
+export async function generateMetadata({
+  params,
+}: CircuitPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const record = await getCircuitBySlug(slug);
+  if (!record) return {};
+  return {
+    title: `${record.title} - Wonder Tours and Services`,
+    description: record.description ?? undefined,
   };
 }
 
-export default function CircuitPage({ params }: CircuitPageProps) {
-  const circuit = CIRCUITS.find((c) => c.slug === params.slug);
+export default async function CircuitPage({ params }: CircuitPageProps) {
+  const { slug } = await params;
+  const record = await getCircuitBySlug(slug);
 
-  if (!circuit) {
+  if (!record) {
     notFound();
   }
+
+  const circuit = toCircuitVM(record);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -86,48 +103,52 @@ export default function CircuitPage({ params }: CircuitPageProps) {
         </section>
 
         {/* Highlights */}
-        <section className="py-20 bg-background">
-          <div className="container mx-auto px-4 lg:px-8">
-            <SectionHeading
-              title="Points forts"
-            />
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {circuit.highlights.map((highlight, index) => (
-                <div key={index} className="bg-white p-6 rounded-xl shadow-md">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-3">
-                    <Check className="w-5 h-5 text-primary" />
+        {circuit.highlights.length > 0 && (
+          <section className="py-20 bg-background">
+            <div className="container mx-auto px-4 lg:px-8">
+              <SectionHeading
+                title="Points forts"
+              />
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {circuit.highlights.map((highlight, index) => (
+                  <div key={index} className="bg-white p-6 rounded-xl shadow-md">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-3">
+                      <Check className="w-5 h-5 text-primary" />
+                    </div>
+                    <p className="text-text font-medium">{highlight}</p>
                   </div>
-                  <p className="text-text font-medium">{highlight}</p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Itinerary */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4 lg:px-8">
-            <SectionHeading
-              title="Programme détaillé"
-            />
-            <div className="max-w-4xl mx-auto space-y-8">
-              {circuit.itinerary.map((day, index) => (
-                <div key={day.day} className="relative pl-8 pb-8 border-l-2 border-primary/30 last:pb-0">
-                  <div className="absolute left-0 top-0 w-4 h-4 bg-primary rounded-full -translate-x-[9px]"></div>
-                  <div className="bg-background p-6 rounded-xl">
-                    <div className="flex items-center gap-3 mb-3">
-                      <Badge variant="accent">Jour {day.day}</Badge>
-                      <h3 className="font-heading text-xl font-bold text-text">
-                        {day.title}
-                      </h3>
+        {circuit.itinerary.length > 0 && (
+          <section className="py-20 bg-white">
+            <div className="container mx-auto px-4 lg:px-8">
+              <SectionHeading
+                title="Programme détaillé"
+              />
+              <div className="max-w-4xl mx-auto space-y-8">
+                {circuit.itinerary.map((day) => (
+                  <div key={day.day} className="relative pl-8 pb-8 border-l-2 border-primary/30 last:pb-0">
+                    <div className="absolute left-0 top-0 w-4 h-4 bg-primary rounded-full -translate-x-[9px]"></div>
+                    <div className="bg-background p-6 rounded-xl">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Badge variant="accent">Jour {day.day}</Badge>
+                        <h3 className="font-heading text-xl font-bold text-text">
+                          {day.title}
+                        </h3>
+                      </div>
+                      <p className="text-text-secondary">{day.description}</p>
                     </div>
-                    <p className="text-text-secondary">{day.description}</p>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Included / Excluded */}
         <section className="py-20 bg-background">
@@ -236,14 +257,14 @@ export default function CircuitPage({ params }: CircuitPageProps) {
               Ce circuit vous intéresse ?
             </h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-200">
-              Contactez-nous pour réserver ce circuit ou pour plus d'informations.
+              Contactez-nous pour réserver ce circuit ou pour plus d&apos;informations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="secondary" size="lg" href="/contact">
                 Demander une réservation
               </Button>
               <Button variant="outline" size="lg" href="/circuits" className="border-white text-white hover:bg-white hover:text-primary">
-                Voir d'autres circuits
+                Voir d&apos;autres circuits
               </Button>
             </div>
           </div>

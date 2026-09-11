@@ -5,53 +5,76 @@ import {
   Calendar,
   MessageSquare,
   TrendingUp,
-  Users,
-  DollarSign,
 } from "lucide-react";
+import {
+  getDashboardStats,
+  getRecentBookings,
+  getRecentContactRequests,
+} from "@/lib/services/stats";
 
-export default function DashboardPage() {
-  const stats = [
+export const dynamic = "force-dynamic";
+
+/** Date ISO → "15 janv. 2024" (affichage compact FR). */
+function formatDate(date: Date | null): string {
+  if (!date) return "—";
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
+/** Montant avec séparateurs de milliers, ex. "1 250 000 FCFA". */
+function formatFcfa(amount: number): string {
+  return `${new Intl.NumberFormat("fr-FR").format(amount)} FCFA`;
+}
+
+const BOOKING_STATUS_LABELS: Record<string, string> = {
+  pending: "En attente",
+  confirmed: "Confirmée",
+  cancelled: "Annulée",
+  completed: "Terminée",
+};
+
+const CONTACT_STATUS_LABELS: Record<string, string> = {
+  new: "Nouvelle",
+  in_progress: "En cours",
+  answered: "Répondue",
+  closed: "Clôturée",
+};
+
+export default async function DashboardPage() {
+  const [stats, recentBookings, recentContactRequests] = await Promise.all([
+    getDashboardStats(),
+    getRecentBookings(5),
+    getRecentContactRequests(5),
+  ]);
+
+  const cards = [
     {
       title: "Circuits actifs",
-      value: "24",
-      change: "+2",
-      changeType: "positive",
+      value: `${stats.circuits.active}`,
+      hint: `${stats.circuits.total} au total, ${stats.circuits.featured} à la une`,
       icon: Map,
     },
     {
       title: "Réservations ce mois",
-      value: "18",
-      change: "+5",
-      changeType: "positive",
+      value: `${stats.bookings.thisMonth}`,
+      hint: `${stats.bookings.pending} en attente, ${stats.bookings.confirmed} confirmées`,
       icon: Calendar,
     },
     {
-      title: "Témoignages",
-      value: "156",
-      change: "+12",
-      changeType: "positive",
+      title: "Demandes de contact",
+      value: `${stats.contactRequests.total}`,
+      hint: `${stats.contactRequests.new} nouvelles, ${stats.contactRequests.inProgress} en cours`,
       icon: MessageSquare,
     },
     {
       title: "Revenus ce mois",
-      value: "2.4M FCFA",
-      change: "+15%",
-      changeType: "positive",
-      icon: DollarSign,
+      value: formatFcfa(stats.bookings.revenueThisMonth),
+      hint: `${stats.bookings.total} réservations au total`,
+      icon: TrendingUp,
     },
-  ];
-
-  const recentBookings = [
-    { id: 1, customer: "Jean Dupont", circuit: "Circuit Ouidah", date: "2024-01-15", status: "confirmed" },
-    { id: 2, customer: "Marie Martin", circuit: "Circuit Abomey", date: "2024-01-14", status: "pending" },
-    { id: 3, customer: "Paul Kouassi", circuit: "Circuit Ganvié", date: "2024-01-13", status: "confirmed" },
-    { id: 4, customer: "Sophie Aho", circuit: "Séjour Cotonou", date: "2024-01-12", status: "completed" },
-  ];
-
-  const recentContactRequests = [
-    { id: 1, name: "Marc Leroy", subject: "Demande circuit", date: "2024-01-15", status: "new" },
-    { id: 2, name: "Céline Durand", subject: "Information hôtel", date: "2024-01-14", status: "in_progress" },
-    { id: 3, name: "Pierre Mbengue", subject: "Réservation groupe", date: "2024-01-13", status: "answered" },
   ];
 
   return (
@@ -59,24 +82,22 @@ export default function DashboardPage() {
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Tableau de bord</h1>
-        <p className="text-gray-600 mt-1">Vue d'ensemble de votre activité</p>
+        <p className="text-gray-600 mt-1">Vue d&apos;ensemble de votre activité</p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
+        {cards.map((card) => (
+          <Card key={card.title}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">
-                {stat.title}
+                {card.title}
               </CardTitle>
-              <stat.icon className="w-5 h-5 text-gray-400" />
+              <card.icon className="w-5 h-5 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-              <p className="text-xs text-green-600 mt-1">
-                {stat.change} ce mois
-              </p>
+              <div className="text-2xl font-bold text-gray-900">{card.value}</div>
+              <p className="text-xs text-gray-500 mt-1">{card.hint}</p>
             </CardContent>
           </Card>
         ))}
@@ -91,27 +112,34 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
+              {recentBookings.length === 0 && (
+                <p className="text-sm text-gray-500">Aucune réservation pour le moment.</p>
+              )}
               {recentBookings.map((booking) => (
                 <div
                   key={booking.id}
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                 >
                   <div>
-                    <p className="font-medium text-gray-900">{booking.customer}</p>
-                    <p className="text-sm text-gray-600">{booking.circuit}</p>
+                    <p className="font-medium text-gray-900">{booking.customerName}</p>
+                    <p className="text-sm text-gray-600">
+                      {booking.circuit?.title ?? "Réservation sans circuit"}
+                    </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-600">{booking.date}</p>
+                    <p className="text-sm text-gray-600">{formatDate(booking.travelDate)}</p>
                     <span
                       className={`inline-block px-2 py-1 text-xs rounded-full ${
                         booking.status === "confirmed"
                           ? "bg-green-100 text-green-800"
                           : booking.status === "pending"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-800"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : booking.status === "cancelled"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-blue-100 text-blue-800"
                       }`}
                     >
-                      {booking.status}
+                      {BOOKING_STATUS_LABELS[booking.status] ?? booking.status}
                     </span>
                   </div>
                 </div>
@@ -130,6 +158,9 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
+              {recentContactRequests.length === 0 && (
+                <p className="text-sm text-gray-500">Aucune demande de contact.</p>
+              )}
               {recentContactRequests.map((request) => (
                 <div
                   key={request.id}
@@ -140,17 +171,19 @@ export default function DashboardPage() {
                     <p className="text-sm text-gray-600">{request.subject}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-600">{request.date}</p>
+                    <p className="text-sm text-gray-600">{formatDate(request.createdAt)}</p>
                     <span
                       className={`inline-block px-2 py-1 text-xs rounded-full ${
                         request.status === "new"
                           ? "bg-blue-100 text-blue-800"
                           : request.status === "in_progress"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-green-100 text-green-800"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : request.status === "answered"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-800"
                       }`}
                     >
-                      {request.status}
+                      {CONTACT_STATUS_LABELS[request.status] ?? request.status}
                     </span>
                   </div>
                 </div>
