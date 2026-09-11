@@ -15,7 +15,7 @@ L'intégration DeepL permet de traduire dynamiquement du contenu dans votre appl
 ### Traduire un texte simple
 
 ```typescript
-import { translateDynamicText } from '@/lib/translations';
+import { translateDynamicText } from '@/lib/services/deepl';
 
 // Traduire un texte en anglais
 const translatedText = await translateDynamicText(
@@ -33,7 +33,7 @@ const translatedText = await translateDynamicText(
 ### Traduire un objet complet
 
 ```typescript
-import { translateDynamicObject } from '@/lib/translations';
+import { translateDynamicObject } from '@/lib/services/deepl';
 
 const content = {
   title: "Découvrez nos circuits",
@@ -50,41 +50,22 @@ const translatedContent = await translateDynamicObject(content, "en");
 // }
 ```
 
-### Utilisation dans un composant React
+### Utilisation côté serveur uniquement
+
+`deepl-node` est un package Node : il ne peut pas être importé dans un
+composant client (`"use client"`), ni via `lib/translations.ts` qui est
+partagé avec le bundle navigateur. Utilisez ces helpers uniquement depuis
+le serveur (Server Component, Route Handler) ou exposez une route API
+que le client appellera :
 
 ```typescript
-"use client";
+// app/api/translate/route.ts (exemple serveur)
+import { translateDynamicText } from "@/lib/services/deepl";
 
-import { useState } from "react";
-import { translateDynamicText } from "@/lib/translations";
-
-export function DynamicTranslationExample() {
-  const [translatedText, setTranslatedText] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleTranslate = async () => {
-    setLoading(true);
-    try {
-      const result = await translateDynamicText(
-        "Bienvenue chez Wonder Tours",
-        "en"
-      );
-      setTranslatedText(result);
-    } catch (error) {
-      console.error("Translation error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div>
-      <button onClick={handleTranslate} disabled={loading}>
-        {loading ? "Traduction..." : "Traduire en anglais"}
-      </button>
-      {translatedText && <p>{translatedText}</p>}
-    </div>
-  );
+export async function POST(request: Request) {
+  const { text, locale } = await request.json();
+  const translated = await translateDynamicText(text, locale ?? "en");
+  return Response.json({ text: translated });
 }
 ```
 
