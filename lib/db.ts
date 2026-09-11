@@ -16,9 +16,21 @@ import {
 } from "@/lib/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-// Prisma 7 exige un driver adapter : on utilise pg (PostgreSQL local).
+// Prisma 7 exige un driver adapter : on utilise pg.
+// ⚠️ node-pg ≠ libpq : quand l'URI contient sslmode=require/prefer,
+// pg-connection-string produit ssl={} (vérification stricte) et pg fait
+// Object.assign(config, parse(connectionString)) — ce ssl={} ÉCRASE celui
+// du config externe (cf. pg/lib/connection-parameters.js). Or libpq chiffre
+// sans vérifier la chaîne pour require (CA managée type Aiven).
+// → on retire sslmode de l'URI et on fixe ssl explicitement ici.
+const dbUrl = process.env.DATABASE_URL ?? "";
+const url = dbUrl ? new URL(dbUrl) : null;
+const sslmode = url?.searchParams.get("sslmode") ?? null;
+const relaxSsl = sslmode === "require" || sslmode === "prefer";
+if (url && relaxSsl) url.searchParams.delete("sslmode");
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: url ? url.toString() : dbUrl,
+  ...(relaxSsl ? { ssl: { rejectUnauthorized: false } } : {}),
 });
 
 const globalForPrisma = globalThis as unknown as {

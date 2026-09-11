@@ -35,21 +35,21 @@ export default function ContactPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [mapEmbedUrl, setMapEmbedUrl] = useState<string>(SITE_CONFIG.map.embedUrl as string);
 
+  // Récupère l'URL de la carte configurée (lib/site-config.json via
+  // /api/settings) ; setState n'est appelé que dans le callback asynchrone,
+  // jamais de façon synchrone dans le corps de l'effet.
   useEffect(() => {
-    fetchConfig();
+    fetch('/api/settings')
+      .then((response) => response.json() as Promise<SiteConfig>)
+      .then((data) => {
+        if (data.map?.embedUrl) {
+          setMapEmbedUrl(data.map.embedUrl);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching config:', error);
+      });
   }, []);
-
-  const fetchConfig = async () => {
-    try {
-      const response = await fetch('/api/settings');
-      const data: SiteConfig = await response.json();
-      if (data.map?.embedUrl) {
-        setMapEmbedUrl(data.map.embedUrl);
-      }
-    } catch (error) {
-      console.error('Error fetching config:', error);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

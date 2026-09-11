@@ -10,6 +10,10 @@ import { toTestimonialVM } from "@/lib/view-models";
 import { Star } from "lucide-react";
 import { generateMetadata } from "@/lib/seo";
 
+// Témoignages issus de la base : rendu dynamique pour refléter les
+// modifications du dashboard (sinon figé au build sur Vercel).
+export const dynamic = "force-dynamic";
+
 export const metadata = generateMetadata({
   title: "Témoignages - Wonder Tours and Services",
   description: "Découvrez les témoignages de nos voyageurs au Bénin. Des expériences authentiques et inoubliables avec Wonder Tours and Services.",
