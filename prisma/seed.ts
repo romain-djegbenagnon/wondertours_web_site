@@ -11,7 +11,18 @@ import { TESTIMONIALS } from "../lib/data/testimonials";
 import { SERVICES, DESTINATIONS, CATEGORIES, SITE_CONFIG } from "../lib/constants";
 import { slugify } from "../lib/slug";
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+// ⚠️ node-pg ≠ libpq : sslmode=require dans l'URI produit ssl={} qui
+// écrase le ssl du config (cf. pg/lib/connection-parameters.js) → on
+// retire le paramètre et on fixe ssl nous-même. Détail complet dans lib/db.ts.
+const dbUrl = process.env.DATABASE_URL ?? "";
+const url = dbUrl ? new URL(dbUrl) : null;
+const sslmode = url?.searchParams.get("sslmode") ?? null;
+const relaxSsl = sslmode === "require" || sslmode === "prefer";
+if (url && relaxSsl) url.searchParams.delete("sslmode");
+const adapter = new PrismaPg({
+  connectionString: url ? url.toString() : dbUrl,
+  ...(relaxSsl ? { ssl: { rejectUnauthorized: false } } : {}),
+});
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
