@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useReservations, ReservationItem } from "@/contexts/reservations-context";
 import { useLanguage } from "@/contexts/language-context";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 interface ReservationsSidebarProps {
   isOpen: boolean;
@@ -17,6 +18,24 @@ export function ReservationsSidebar({ isOpen, onClose }: ReservationsSidebarProp
   const isFr = locale === "fr";
 
   const totalPrice = reservations.reduce((sum, item) => sum + item.price, 0);
+
+  // Empêcher le défilement du body quand la sidebar est ouverte
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+    };
+  }, [isOpen]);
 
   return (
     <>
@@ -34,6 +53,7 @@ export function ReservationsSidebar({ isOpen, onClose }: ReservationsSidebarProp
           "fixed top-0 right-0 h-full w-full sm:w-96 bg-amber-50 z-[51] shadow-2xl transform transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         )}
+        style={{ backdropFilter: 'blur(0px)' }}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -56,7 +76,7 @@ export function ReservationsSidebar({ isOpen, onClose }: ReservationsSidebarProp
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-6" style={{ scrollbarWidth: 'auto', msOverflowStyle: 'auto' }}>
             {reservations.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">

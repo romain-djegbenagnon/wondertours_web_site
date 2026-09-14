@@ -19,6 +19,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isReservationsOpen, setIsReservationsOpen] = useState(false);
+  const [isCartBouncing, setIsCartBouncing] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,6 +40,14 @@ export function Header() {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({ left: 200, behavior: "smooth" });
     }
+  };
+
+  const handleCartClick = () => {
+    setIsCartBouncing(true);
+    setTimeout(() => {
+      setIsCartBouncing(false);
+      setIsReservationsOpen(true);
+    }, 300);
   };
 
   return (
@@ -85,9 +94,10 @@ export function Header() {
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center space-x-4">
             <button
-              onClick={() => setIsReservationsOpen(true)}
+              onClick={handleCartClick}
               className={cn(
-                "relative flex items-center space-x-2 hover:text-white transition-all duration-300 hover:animate-bounce",
+                "relative flex items-center space-x-2 hover:text-white transition-all duration-300",
+                isCartBouncing ? "animate-bounce" : "",
                 isScrolled ? "text-white" : "text-white"
               )}
             >
@@ -109,7 +119,7 @@ export function Header() {
               onClick={() => setLocale("fr")}
               className={cn(
                 "font-medium transition-all duration-300 hover:animate-bounce",
-                isScrolled ? "text-white" : "text-white"
+                locale === "fr" ? "text-white font-bold" : "text-white/70 hover:text-white"
               )}
             >FR</button>
             <span className={cn(
@@ -118,8 +128,8 @@ export function Header() {
             <button
               onClick={() => setLocale("en")}
               className={cn(
-                "hover:text-white transition-all duration-300 hover:animate-bounce",
-                isScrolled ? "text-white/70" : "text-white/70"
+                "font-medium transition-all duration-300 hover:animate-bounce",
+                locale === "en" ? "text-white font-bold" : "text-white/70 hover:text-white"
               )}
             >
               EN
@@ -129,8 +139,11 @@ export function Header() {
           {/* Mobile Actions */}
           <div className="lg:hidden flex items-center space-x-3">
             <button
-              onClick={() => setIsReservationsOpen(true)}
-              className="relative flex items-center space-x-2 text-white hover:text-white/80 transition-all duration-300 hover:animate-bounce"
+              onClick={handleCartClick}
+              className={cn(
+                "relative flex items-center space-x-2 text-white hover:text-white/80 transition-all duration-300",
+                isCartBouncing ? "animate-bounce" : ""
+              )}
             >
               <ShoppingCart className="w-6 h-6" />
               {reservations.length > 0 && (
@@ -144,7 +157,7 @@ export function Header() {
                 onClick={() => setLocale("fr")}
                 className={cn(
                   "font-medium transition-all duration-300 hover:animate-bounce",
-                  locale === "fr" ? "text-white" : "text-white/70"
+                  locale === "fr" ? "text-white font-bold" : "text-white/70 hover:text-white"
                 )}
               >FR</button>
               <span className="text-white/70">|</span>
@@ -152,7 +165,7 @@ export function Header() {
                 onClick={() => setLocale("en")}
                 className={cn(
                   "font-medium transition-all duration-300 hover:animate-bounce",
-                  locale === "en" ? "text-white" : "text-white/70"
+                  locale === "en" ? "text-white font-bold" : "text-white/70 hover:text-white"
                 )}
               >
                 EN
