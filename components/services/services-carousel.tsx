@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ServiceCard } from "./service-card";
+import { useLanguage } from "@/contexts/language-context";
 
 interface ServicesCarouselProps {
   services: ReadonlyArray<{
@@ -17,6 +18,8 @@ interface ServicesCarouselProps {
 }
 
 export function ServicesCarousel({ services }: ServicesCarouselProps) {
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 4;
   const totalPages = Math.ceil(services.length / itemsPerPage);
@@ -82,7 +85,7 @@ export function ServicesCarousel({ services }: ServicesCarouselProps) {
             size="sm"
             onClick={prevSlide}
             className="rounded-full p-2 w-10 h-10 flex items-center justify-center"
-            aria-label="Services précédents"
+            aria-label={isFr ? "Services précédents" : "Previous services"}
           >
             <ChevronLeft className="w-5 h-5" />
           </Button>
@@ -95,7 +98,7 @@ export function ServicesCarousel({ services }: ServicesCarouselProps) {
                 className={`w-2 h-2 rounded-full transition-all ${
                   index === currentIndex ? "bg-primary w-6" : "bg-gray-300"
                 }`}
-                aria-label={`Aller à la page ${index + 1}`}
+                aria-label={isFr ? `Aller à la page ${index + 1}` : `Go to page ${index + 1}`}
               />
             ))}
           </div>
@@ -105,7 +108,7 @@ export function ServicesCarousel({ services }: ServicesCarouselProps) {
             size="sm"
             onClick={nextSlide}
             className="rounded-full p-2 w-10 h-10 flex items-center justify-center"
-            aria-label="Services suivants"
+            aria-label={isFr ? "Services suivants" : "Next services"}
           >
             <ChevronRight className="w-5 h-5" />
           </Button>

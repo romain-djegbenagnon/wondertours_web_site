@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/language-context";
 
 interface DialogProps {
   isOpen: boolean;
@@ -12,6 +13,8 @@ interface DialogProps {
 }
 
 export function Dialog({ isOpen, onClose, children, className }: DialogProps) {
+  const { locale } = useLanguage();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -41,7 +44,7 @@ export function Dialog({ isOpen, onClose, children, className }: DialogProps) {
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/80 hover:bg-white text-gray-600 hover:text-gray-900 transition-colors"
-          aria-label="Fermer"
+          aria-label={locale === "fr" ? "Fermer" : "Close"}
         >
           <X className="w-5 h-5" />
         </button>

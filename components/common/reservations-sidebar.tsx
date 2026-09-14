@@ -3,6 +3,7 @@
 import { X, Trash2, Calendar, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useReservations, ReservationItem } from "@/contexts/reservations-context";
+import { useLanguage } from "@/contexts/language-context";
 import { cn } from "@/lib/utils";
 
 interface ReservationsSidebarProps {
@@ -12,6 +13,8 @@ interface ReservationsSidebarProps {
 
 export function ReservationsSidebar({ isOpen, onClose }: ReservationsSidebarProps) {
   const { reservations, removeReservation, clearReservations } = useReservations();
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
 
   const totalPrice = reservations.reduce((sum, item) => sum + item.price, 0);
 
@@ -28,25 +31,27 @@ export function ReservationsSidebar({ isOpen, onClose }: ReservationsSidebarProp
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed top-0 right-0 h-full w-full sm:w-96 bg-amber-50 z-50 shadow-2xl transform transition-transform duration-300 ease-in-out",
-          isOpen ? "translate-x-0" : "translate-x-full"
+          "fixed top-0 right-0 h-full w-full sm:w-96 bg-amber-50 z-[51] shadow-2xl transform transition-transform duration-300 ease-in-out",
+          isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         )}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="bg-primary p-6 text-white">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-heading text-2xl font-bold text-black">Mes réservations</h2>
+              <h2 className="font-heading text-2xl font-bold text-black">{isFr ? "Mes réservations" : "My bookings"}</h2>
               <button
                 onClick={onClose}
                 className="p-2 hover:bg-white/20 rounded-full transition-colors text-black"
-                aria-label="Fermer"
+                aria-label={isFr ? "Fermer" : "Close"}
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
             <p className="text-white/80 text-sm">
-              {reservations.length} réservation{reservations.length > 1 ? "s" : ""}
+              {isFr
+                ? `${reservations.length} réservation${reservations.length > 1 ? "s" : ""}`
+                : `${reservations.length} booking${reservations.length > 1 ? "s" : ""}`}
             </p>
           </div>
 
@@ -58,10 +63,10 @@ export function ReservationsSidebar({ isOpen, onClose }: ReservationsSidebarProp
                   <Calendar className="w-8 h-8 text-gray-400" />
                 </div>
                 <p className="text-text-secondary mb-4">
-                  Aucune réservation pour le moment
+                  {isFr ? "Aucune réservation pour le moment" : "No bookings yet"}
                 </p>
                 <Button variant="outline" onClick={onClose}>
-                  Explorer nos circuits
+                  {isFr ? "Explorer nos circuits" : "Explore our tours"}
                 </Button>
               </div>
             ) : (
@@ -87,14 +92,14 @@ export function ReservationsSidebar({ isOpen, onClose }: ReservationsSidebarProp
                 </span>
               </div>
               <Button variant="primary" className="w-full mb-3" href="/contact">
-                Finaliser la réservation
+                {isFr ? "Finaliser la réservation" : "Complete booking"}
               </Button>
               <Button
                 variant="outline"
                 className="w-full"
                 onClick={clearReservations}
               >
-                Vider les réservations
+                {isFr ? "Vider les réservations" : "Clear bookings"}
               </Button>
             </div>
           )}
@@ -105,6 +110,9 @@ export function ReservationsSidebar({ isOpen, onClose }: ReservationsSidebarProp
 }
 
 function ReservationCard({ item, onRemove }: { item: ReservationItem; onRemove: () => void }) {
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
+
   return (
     <div className="bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <div className="flex gap-4 p-4">
@@ -128,7 +136,7 @@ function ReservationCard({ item, onRemove }: { item: ReservationItem; onRemove: 
             <button
               onClick={onRemove}
               className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
-              aria-label="Supprimer"
+              aria-label={isFr ? "Supprimer" : "Remove"}
             >
               <Trash2 className="w-4 h-4" />
             </button>

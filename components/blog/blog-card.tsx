@@ -6,6 +6,7 @@ import { Card, CardImage, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock } from "lucide-react";
 import { BlogPost } from "@/lib/data/blog";
+import { useLanguage } from "@/contexts/language-context";
 import { BlogDetailModal } from "./blog-detail-modal";
 
 interface BlogCardProps {
@@ -14,6 +15,7 @@ interface BlogCardProps {
 
 export function BlogCard({ post }: BlogCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { locale } = useLanguage();
 
   return (
     <>
@@ -46,11 +48,14 @@ export function BlogCard({ post }: BlogCardProps) {
 
               <div className="flex items-center text-text-secondary text-sm">
                 <Calendar className="w-4 h-4 mr-1" />
-                {new Date(post.date).toLocaleDateString('fr-FR', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric'
-                })}
+                {new Date(post.date).toLocaleDateString(
+                  locale === "fr" ? "fr-FR" : "en-US",
+                  {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  }
+                )}
               </div>
             </CardContent>
           </Card>

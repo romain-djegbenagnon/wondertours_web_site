@@ -5,6 +5,7 @@ import { TestimonialCard } from "@/components/testimonials/testimonial-card";
 import type { Testimonial } from "@/lib/data/testimonials";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/language-context";
 
 interface TestimonialsContentProps {
   /** Témoignages actifs issus de la base (view-models). */
@@ -12,6 +13,8 @@ interface TestimonialsContentProps {
 }
 
 export function TestimonialsContent({ testimonials }: TestimonialsContentProps) {
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
   const totalPages = Math.ceil(testimonials.length / itemsPerPage);
@@ -39,7 +42,7 @@ export function TestimonialsContent({ testimonials }: TestimonialsContentProps) 
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className="p-2 rounded-full border border-gray-300 hover:border-primary hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            aria-label="Page précédente"
+            aria-label={isFr ? "Page précédente" : "Previous page"}
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -61,7 +64,7 @@ export function TestimonialsContent({ testimonials }: TestimonialsContentProps) 
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="p-2 rounded-full border border-gray-300 hover:border-primary hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            aria-label="Page suivante"
+            aria-label={isFr ? "Page suivante" : "Next page"}
           >
             <ChevronRight className="w-5 h-5" />
           </button>

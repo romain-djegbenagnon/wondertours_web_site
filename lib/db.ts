@@ -38,7 +38,16 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 export const prisma =
-  globalForPrisma.prisma ?? new PrismaClient({ adapter });
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    adapter,
+    // L'établissement d'une connexion Aiven à froid prend 2 à ~5 s (TLS
+    // + round-trip). Le maxWait par défaut de $transaction (2 s) expirait
+    // avant même la première connexion → « Unable to start a transaction
+    // in the given time ». On relève les seuils globalement pour couvrir
+    // tous les services sans options par appel.
+    transactionOptions: { maxWait: 15_000, timeout: 30_000 },
+  });
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;

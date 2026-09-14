@@ -26,12 +26,19 @@ interface CardImageProps {
 }
 
 export function CardImage({ src, alt, className }: CardImageProps) {
+  // Un src vide recharge la page entière dans le navigateur : on rend
+  // l'image de repli du site à la place.
+  const isFallback = !src;
+  const resolvedSrc = src || "/images/placeholder.svg";
   return (
     <div className={cn("relative aspect-[4/3] overflow-hidden", className)}>
       <img
-        src={src}
+        src={resolvedSrc}
         alt={alt}
-        className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+        className={cn(
+          "h-full w-full object-cover transition-transform duration-500 hover:scale-105",
+          isFallback && "img-fallback"
+        )}
       />
     </div>
   );

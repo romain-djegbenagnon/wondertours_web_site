@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CircuitCard } from "@/components/circuits/circuit-card";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/language-context";
 import type { Circuit } from "@/lib/data/circuits";
 
 interface CircuitsExplorerProps {
@@ -18,6 +19,9 @@ export function CircuitsExplorer({
   destinations,
   initialCategory = "all",
 }: CircuitsExplorerProps) {
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
+
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [selectedDestination, setSelectedDestination] = useState<string>("all");
 
@@ -51,7 +55,7 @@ export function CircuitsExplorer({
                     : "bg-gray-100 text-text hover:bg-amber-100 hover:text-amber-700"
                 }`}
               >
-                Toutes les catégories
+                {isFr ? "Toutes les catégories" : "All categories"}
               </button>
               {categories.map((category) => (
                 <button
@@ -77,7 +81,7 @@ export function CircuitsExplorer({
                     : "bg-gray-100 text-text hover:bg-amber-100 hover:text-amber-700"
                 }`}
               >
-                Toutes les destinations
+                {isFr ? "Toutes les destinations" : "All destinations"}
               </button>
               {destinations.map((destination) => (
                 <button
@@ -102,7 +106,9 @@ export function CircuitsExplorer({
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between mb-8">
             <p className="text-text-secondary">
-              {filteredCircuits.length} circuit{filteredCircuits.length > 1 ? "s" : ""} trouvé{filteredCircuits.length > 1 ? "s" : ""}
+              {isFr
+                ? `${filteredCircuits.length} circuit${filteredCircuits.length > 1 ? "s" : ""} trouvé${filteredCircuits.length > 1 ? "s" : ""}`
+                : `${filteredCircuits.length} tour${filteredCircuits.length > 1 ? "s" : ""} found`}
             </p>
           </div>
           
@@ -115,10 +121,12 @@ export function CircuitsExplorer({
           ) : (
             <div className="text-center py-20">
               <p className="text-text-secondary text-xl mb-6">
-                Aucun circuit ne correspond à vos critères.
+                {isFr
+                  ? "Aucun circuit ne correspond à vos critères."
+                  : "No tours match your criteria."}
               </p>
               <Button variant="outline" onClick={resetFilters}>
-                Réinitialiser les filtres
+                {isFr ? "Réinitialiser les filtres" : "Reset filters"}
               </Button>
             </div>
           )}

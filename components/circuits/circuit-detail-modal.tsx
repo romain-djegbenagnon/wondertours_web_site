@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Check, X } from "lucide-react";
 import { Circuit } from "@/lib/data/circuits";
+import { useLanguage } from "@/contexts/language-context";
 
 interface CircuitDetailModalProps {
   isOpen: boolean;
@@ -13,6 +14,9 @@ interface CircuitDetailModalProps {
 }
 
 export function CircuitDetailModal({ isOpen, onClose, circuit }: CircuitDetailModalProps) {
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
+
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <div className="relative h-64 md:h-80">
@@ -49,16 +53,16 @@ export function CircuitDetailModal({ isOpen, onClose, circuit }: CircuitDetailMo
             <span className="text-3xl font-bold text-primary">
               {circuit.price.toLocaleString()} FCFA
             </span>
-            <span className="text-text-secondary text-sm"> /personne</span>
+            <span className="text-text-secondary text-sm"> {isFr ? "/personne" : "/person"}</span>
           </div>
           <Button variant="primary" href="/contact">
-            Demander un devis
+            {isFr ? "Demander un devis" : "Request a quote"}
           </Button>
         </div>
 
         <div className="mb-6">
           <h3 className="font-heading text-xl font-bold text-text mb-3">
-            À propos de ce circuit
+            {isFr ? "À propos de ce circuit" : "About this tour"}
           </h3>
           <p className="text-text-secondary leading-relaxed">
             {circuit.description}
@@ -67,7 +71,7 @@ export function CircuitDetailModal({ isOpen, onClose, circuit }: CircuitDetailMo
 
         <div className="mb-6">
           <h3 className="font-heading text-xl font-bold text-text mb-3">
-            Points forts
+            {isFr ? "Points forts" : "Highlights"}
           </h3>
           <div className="grid md:grid-cols-2 gap-3">
             {circuit.highlights.map((highlight, index) => (
@@ -81,13 +85,13 @@ export function CircuitDetailModal({ isOpen, onClose, circuit }: CircuitDetailMo
 
         <div className="mb-6">
           <h3 className="font-heading text-xl font-bold text-text mb-3">
-            Programme
+            {isFr ? "Programme" : "Itinerary"}
           </h3>
           <div className="space-y-4">
             {circuit.itinerary.map((day) => (
               <div key={day.day} className="bg-background p-4 rounded-xl">
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="accent">Jour {day.day}</Badge>
+                  <Badge variant="accent">{isFr ? `Jour ${day.day}` : `Day ${day.day}`}</Badge>
                   <h4 className="font-heading font-bold text-text">
                     {day.title}
                   </h4>
@@ -101,7 +105,7 @@ export function CircuitDetailModal({ isOpen, onClose, circuit }: CircuitDetailMo
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <h3 className="font-heading text-lg font-bold text-text mb-3">
-              Ce qui est inclus
+              {isFr ? "Ce qui est inclus" : "What's included"}
             </h3>
             <ul className="space-y-2">
               {circuit.included.map((item, index) => (
@@ -114,7 +118,7 @@ export function CircuitDetailModal({ isOpen, onClose, circuit }: CircuitDetailMo
           </div>
           <div>
             <h3 className="font-heading text-lg font-bold text-text mb-3">
-              Ce qui n'est pas inclus
+              {isFr ? "Ce qui n'est pas inclus" : "What's not included"}
             </h3>
             <ul className="space-y-2">
               {circuit.excluded.map((item, index) => (

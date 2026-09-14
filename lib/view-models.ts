@@ -15,6 +15,13 @@ import type { Testimonial } from "@/lib/db";
 
 // ─────────────────────────────── Helpers ───────────────────────────────
 
+/**
+ * Image affichée quand un enregistrement n'a pas d'imageUrl en base
+ * (ex. article créé depuis le dashboard sans photo). Un "" ici se
+ * propagerait jusqu'à <img src=""> → rechargement de la page entière.
+ */
+export const FALLBACK_IMAGE = "/images/placeholder.svg";
+
 /** Json → tableau de chaînes (highlights, included, excluded...). */
 function toStringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
@@ -62,7 +69,7 @@ export function toCircuitVM(circuit: CircuitWithRelations): StaticCircuit {
     category: circuit.category?.name ?? "Circuit",
     duration: formatDuration(circuit.durationDays),
     price: Number(circuit.price),
-    image: circuit.imageUrl ?? "",
+    image: circuit.imageUrl ?? FALLBACK_IMAGE,
     description: circuit.description ?? "",
     highlights: toStringArray(circuit.highlights),
     itinerary: toItinerary(circuit.itinerary),
@@ -81,7 +88,7 @@ export function toBlogPostVM(post: BlogPostWithRelations): StaticBlogPost {
     category: post.category?.name ?? "Voyage",
     excerpt: post.excerpt ?? "",
     content: post.content ?? "",
-    image: post.imageUrl ?? "",
+    image: post.imageUrl ?? FALLBACK_IMAGE,
     date: toDateString(post.publishedAt ?? post.createdAt),
     author: post.author
       ? `${post.author.firstName} ${post.author.lastName}`.trim()

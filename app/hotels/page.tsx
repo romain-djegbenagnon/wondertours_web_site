@@ -4,14 +4,18 @@ import { useState } from "react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
-import { Hero } from "@/components/hero/hero";
+import { LocalizedHero } from "@/components/common/localized-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
+import { useLanguage } from "@/contexts/language-context";
 
 export default function HotelsPage() {
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -40,14 +44,22 @@ export default function HotelsPage() {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
-          subject: "Demande de réservation d'hébergement",
+          subject: isFr
+            ? "Demande de réservation d'hébergement"
+            : "Accommodation booking request",
           requestType: "hotel",
           travelDate: formData.arrivalDate,
           travelers: formData.travelers ? Number(formData.travelers) : undefined,
           message: [
-            `Type d'hébergement souhaité : ${formData.accommodationType}`,
-            `Budget approximatif par nuit : ${formData.budget}`,
-            `Date de départ : ${formData.departureDate || "non précisée"}`,
+            isFr
+              ? `Type d'hébergement souhaité : ${formData.accommodationType}`
+              : `Requested accommodation type: ${formData.accommodationType}`,
+            isFr
+              ? `Budget approximatif par nuit : ${formData.budget}`
+              : `Approximate nightly budget: ${formData.budget}`,
+            isFr
+              ? `Date de départ : ${formData.departureDate || "non précisée"}`
+              : `Departure date: ${formData.departureDate || "not specified"}`,
             "",
             formData.message,
           ]
@@ -65,14 +77,20 @@ export default function HotelsPage() {
         setErrorMessage(
           (data as { error?: string })?.error
             ? `${(data as { error: string }).error}${details}`
-            : "Une erreur est survenue lors de l'envoi. Veuillez réessayer."
+            : isFr
+              ? "Une erreur est survenue lors de l'envoi. Veuillez réessayer."
+              : "An error occurred while sending. Please try again."
         );
         return;
       }
 
       setIsSubmitted(true);
     } catch {
-      setErrorMessage("Impossible de contacter le serveur. Vérifiez votre connexion et réessayez.");
+      setErrorMessage(
+        isFr
+          ? "Impossible de contacter le serveur. Vérifiez votre connexion et réessayez."
+          : "Unable to reach the server. Check your connection and try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -91,13 +109,15 @@ export default function HotelsPage() {
                 </svg>
               </div>
               <h2 className="font-heading text-3xl font-bold text-text mb-4">
-                Votre demande a bien été envoyée
+                {isFr ? "Votre demande a bien été envoyée" : "Your request has been sent"}
               </h2>
               <p className="text-text-secondary text-lg mb-8">
-                Un conseiller Wonder Tours vous contactera prochainement pour vous accompagner dans votre recherche d'hébergement.
+                {isFr
+                  ? "Un conseiller Wonder Tours vous contactera prochainement pour vous accompagner dans votre recherche d'hébergement."
+                  : "A Wonder Tours advisor will contact you shortly to assist with your accommodation search."}
               </p>
               <Button variant="primary" href="/" onClick={() => setIsSubmitted(false)}>
-                Retour à l'accueil
+                {isFr ? "Retour à l'accueil" : "Back to home"}
               </Button>
             </div>
           </div>
@@ -114,11 +134,15 @@ export default function HotelsPage() {
       
       <main className="flex-1">
         {/* Hero */}
-        <Hero
+        <LocalizedHero
           subtitle="RÉSERVATION D'HÔTELS"
-          title="Trouvez votre hébergement au Bénin"
-          description="Nous vous aidons à trouver et réserver l'hébergement parfait pour votre séjour au Bénin, selon vos préférences et votre budget."
-          primaryCta={{ text: "Faire une demande", href: "#form" }}
+          titleFr="Trouvez votre hébergement au Bénin"
+          titleEn="Find your accommodation in Benin"
+          descriptionFr="Nous vous aidons à trouver et réserver l'hébergement parfait pour votre séjour au Bénin, selon vos préférences et votre budget."
+          descriptionEn="We help you find and book the perfect accommodation for your stay in Benin, according to your preferences and budget."
+          ctaFr="Faire une demande"
+          ctaEn="Make a request"
+          ctaHref="#form"
           image="[PHOTO HERO HÔTELS À REMPLACER]"
         />
 
@@ -127,17 +151,26 @@ export default function HotelsPage() {
           <div className="container mx-auto px-4 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
               <SectionHeading
-                title="Notre service d'assistance hôtelière"
+                title={isFr ? "Notre service d'assistance hôtelière" : "Our hotel assistance service"}
               />
               <p className="text-text-secondary text-xl leading-relaxed mb-8">
-                Un conseiller Wonder Tours vous accompagnera dans votre recherche d'hébergement pour trouver l'hôtel idéal adapté à vos besoins, votre budget et vos préférences.
+                {isFr
+                  ? "Un conseiller Wonder Tours vous accompagnera dans votre recherche d'hébergement pour trouver l'hôtel idéal adapté à vos besoins, votre budget et vos préférences."
+                  : "A Wonder Tours advisor will assist you in your accommodation search to find the ideal hotel suited to your needs, budget and preferences."}
               </p>
               <div className="grid md:grid-cols-3 gap-8">
-                {[
-                  "Sélection d'hôtels de qualité",
-                  "Meilleurs tarifs négociés",
-                  "Assistance personnalisée"
-                ].map((benefit, index) => (
+                {(isFr
+                  ? [
+                      "Sélection d'hôtels de qualité",
+                      "Meilleurs tarifs négociés",
+                      "Assistance personnalisée",
+                    ]
+                  : [
+                      "Quality hotel selection",
+                      "Best negotiated rates",
+                      "Personalized assistance",
+                    ]
+                ).map((benefit, index) => (
                   <div key={index} className="bg-background p-6 rounded-xl">
                     <p className="text-text font-medium">{benefit}</p>
                   </div>
@@ -152,7 +185,7 @@ export default function HotelsPage() {
           <div className="container mx-auto px-4 lg:px-8">
             <div className="max-w-2xl mx-auto">
               <SectionHeading
-                title="Faites une demande de réservation"
+                title={isFr ? "Faites une demande de réservation" : "Submit a booking request"}
               />
               <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg space-y-6">
                 {errorMessage && (
@@ -161,7 +194,7 @@ export default function HotelsPage() {
                   </div>
                 )}
                 <Input
-                  label="Nom complet"
+                  label={isFr ? "Nom complet" : "Full name"}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
@@ -176,7 +209,7 @@ export default function HotelsPage() {
                 />
                 
                 <Input
-                  label="Téléphone / WhatsApp"
+                  label={isFr ? "Téléphone / WhatsApp" : "Phone / WhatsApp"}
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -185,7 +218,7 @@ export default function HotelsPage() {
                 
                 <div className="grid md:grid-cols-2 gap-6">
                   <Input
-                    label="Date d'arrivée"
+                    label={isFr ? "Date d'arrivée" : "Arrival date"}
                     type="date"
                     value={formData.arrivalDate}
                     onChange={(e) => setFormData({ ...formData, arrivalDate: e.target.value })}
@@ -193,7 +226,7 @@ export default function HotelsPage() {
                   />
                   
                   <Input
-                    label="Date de départ"
+                    label={isFr ? "Date de départ" : "Departure date"}
                     type="date"
                     value={formData.departureDate}
                     onChange={(e) => setFormData({ ...formData, departureDate: e.target.value })}
@@ -202,7 +235,7 @@ export default function HotelsPage() {
                 </div>
                 
                 <Input
-                  label="Nombre de voyageurs"
+                  label={isFr ? "Nombre de voyageurs" : "Number of travelers"}
                   type="number"
                   min="1"
                   value={formData.travelers}
@@ -211,14 +244,14 @@ export default function HotelsPage() {
                 />
                 
                 <Select
-                  label="Type d'hébergement"
+                  label={isFr ? "Type d'hébergement" : "Accommodation type"}
                   options={[
-                    { value: "", label: "Sélectionnez un type" },
-                    { value: "hotel", label: "Hôtel" },
-                    { value: "guesthouse", label: "Guesthouse / Auberge" },
+                    { value: "", label: isFr ? "Sélectionnez un type" : "Select a type" },
+                    { value: "hotel", label: isFr ? "Hôtel" : "Hotel" },
+                    { value: "guesthouse", label: isFr ? "Guesthouse / Auberge" : "Guesthouse" },
                     { value: "resort", label: "Resort" },
                     { value: "villa", label: "Villa" },
-                    { value: "autre", label: "Autre" }
+                    { value: "autre", label: isFr ? "Autre" : "Other" }
                   ]}
                   value={formData.accommodationType}
                   onChange={(e) => setFormData({ ...formData, accommodationType: e.target.value })}
@@ -226,13 +259,13 @@ export default function HotelsPage() {
                 />
                 
                 <Select
-                  label="Budget approximatif (par nuit)"
+                  label={isFr ? "Budget approximatif (par nuit)" : "Approximate budget (per night)"}
                   options={[
-                    { value: "", label: "Sélectionnez une fourchette" },
-                    { value: "low", label: "Moins de 50 000 FCFA" },
+                    { value: "", label: isFr ? "Sélectionnez une fourchette" : "Select a range" },
+                    { value: "low", label: isFr ? "Moins de 50 000 FCFA" : "Under 50,000 FCFA" },
                     { value: "medium", label: "50 000 - 100 000 FCFA" },
                     { value: "high", label: "100 000 - 200 000 FCFA" },
-                    { value: "luxury", label: "Plus de 200 000 FCFA" }
+                    { value: "luxury", label: isFr ? "Plus de 200 000 FCFA" : "Over 200,000 FCFA" }
                   ]}
                   value={formData.budget}
                   onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
@@ -240,11 +273,15 @@ export default function HotelsPage() {
                 />
                 
                 <Textarea
-                  label="Message (préférences, besoins spécifiques...)"
+                  label={isFr ? "Message (préférences, besoins spécifiques...)" : "Message (preferences, specific needs...)"}
                   rows={4}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="Indiquez vos préférences, vos besoins spécifiques ou toute autre information utile..."
+                  placeholder={
+                    isFr
+                      ? "Indiquez vos préférences, vos besoins spécifiques ou toute autre information utile..."
+                      : "Tell us your preferences, specific needs or any other useful information..."
+                  }
                 />
                 
                 <Button
@@ -254,11 +291,15 @@ export default function HotelsPage() {
                   className="w-full"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Envoi en cours..." : "Envoyer ma demande"}
+                  {isSubmitting
+                    ? isFr ? "Envoi en cours..." : "Sending..."
+                    : isFr ? "Envoyer ma demande" : "Send my request"}
                 </Button>
                 
                 <p className="text-text-secondary text-sm text-center">
-                  Un conseiller Wonder Tours vous contactera dans les 24h.
+                  {isFr
+                    ? "Un conseiller Wonder Tours vous contactera dans les 24h."
+                    : "A Wonder Tours advisor will contact you within 24 hours."}
                 </p>
               </form>
             </div>

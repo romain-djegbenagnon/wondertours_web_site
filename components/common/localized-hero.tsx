@@ -12,6 +12,9 @@ interface LocalizedHeroProps {
   ctaFr: string;
   ctaEn: string;
   ctaHref: string;
+  secondaryCtaFr?: string;
+  secondaryCtaEn?: string;
+  secondaryCtaHref?: string;
   image: string;
 }
 
@@ -28,6 +31,9 @@ export function LocalizedHero({
   ctaFr,
   ctaEn,
   ctaHref,
+  secondaryCtaFr,
+  secondaryCtaEn,
+  secondaryCtaHref,
   image,
 }: LocalizedHeroProps) {
   const { locale } = useLanguage();
@@ -39,6 +45,7 @@ export function LocalizedHero({
       title={isFr ? titleFr : titleEn}
       description={isFr ? descriptionFr : descriptionEn}
       primaryCta={{ text: isFr ? ctaFr : ctaEn, href: ctaHref }}
+      secondaryCta={secondaryCtaFr && secondaryCtaEn && secondaryCtaHref ? { text: isFr ? secondaryCtaFr : secondaryCtaEn, href: secondaryCtaHref } : undefined}
       image={image}
     />
   );

@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/language-context";
 
 interface ServiceCardProps {
   title: string;
@@ -39,6 +40,9 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 export function ServiceCard({ title, description, icon, href, className }: ServiceCardProps) {
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -61,7 +65,7 @@ export function ServiceCard({ title, description, icon, href, className }: Servi
               {description}
             </p>
             <div className="flex items-center text-primary font-medium group">
-              En savoir plus
+              {isFr ? "En savoir plus" : "Learn more"}
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
             </div>
           </CardContent>

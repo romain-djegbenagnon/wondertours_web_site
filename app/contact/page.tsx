@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
-import { Hero } from "@/components/hero/hero";
+import { LocalizedHero } from "@/components/common/localized-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { SITE_CONFIG } from "@/lib/constants";
+import { useLanguage } from "@/contexts/language-context";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 
 interface SiteConfig {
@@ -20,6 +21,9 @@ interface SiteConfig {
 }
 
 export default function ContactPage() {
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -81,14 +85,20 @@ export default function ContactPage() {
         setErrorMessage(
           (data as { error?: string })?.error
             ? `${(data as { error: string }).error}${details}`
-            : "Une erreur est survenue lors de l'envoi. Veuillez réessayer."
+            : isFr
+              ? "Une erreur est survenue lors de l'envoi. Veuillez réessayer."
+              : "An error occurred while sending. Please try again."
         );
         return;
       }
 
       setIsSubmitted(true);
     } catch {
-      setErrorMessage("Impossible de contacter le serveur. Vérifiez votre connexion et réessayez.");
+      setErrorMessage(
+        isFr
+          ? "Impossible de contacter le serveur. Vérifiez votre connexion et réessayez."
+          : "Unable to reach the server. Check your connection and try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -107,13 +117,15 @@ export default function ContactPage() {
                 </svg>
               </div>
               <h2 className="font-heading text-3xl font-bold text-text mb-4">
-                Votre demande a bien été envoyée
+                {isFr ? "Votre demande a bien été envoyée" : "Your request has been sent"}
               </h2>
               <p className="text-text-secondary text-lg mb-8">
-                Notre équipe vous contactera prochainement pour répondre à votre demande.
+                {isFr
+                  ? "Notre équipe vous contactera prochainement pour répondre à votre demande."
+                  : "Our team will contact you shortly to answer your request."}
               </p>
               <Button variant="primary" href="/" onClick={() => setIsSubmitted(false)}>
-                Retour à l'accueil
+                {isFr ? "Retour à l'accueil" : "Back to home"}
               </Button>
             </div>
           </div>
@@ -130,12 +142,18 @@ export default function ContactPage() {
       
       <main className="flex-1">
         {/* Hero */}
-        <Hero
+        <LocalizedHero
           subtitle="CONTACT"
-          title="Parlons de votre prochain voyage"
-          description="Contactez-nous pour planifier votre voyage au Bénin, demander un devis ou simplement en savoir plus sur nos services."
-          primaryCta={{ text: "Remplir le formulaire", href: "#form" }}
-          secondaryCta={{ text: "WhatsApp", href: SITE_CONFIG.links.whatsapp }}
+          titleFr="Parlons de votre prochain voyage"
+          titleEn="Let's talk about your next trip"
+          descriptionFr="Contactez-nous pour planifier votre voyage au Bénin, demander un devis ou simplement en savoir plus sur nos services."
+          descriptionEn="Contact us to plan your trip to Benin, request a quote or simply learn more about our services."
+          ctaFr="Remplir le formulaire"
+          ctaEn="Fill in the form"
+          ctaHref="#form"
+          secondaryCtaFr="WhatsApp"
+          secondaryCtaEn="WhatsApp"
+          secondaryCtaHref={SITE_CONFIG.links.whatsapp}
           image="[PHOTO HERO CONTACT À REMPLACER]"
         />
 
@@ -147,14 +165,14 @@ export default function ContactPage() {
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <MapPin className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="font-heading text-xl font-bold text-text mb-2">Adresse</h3>
+                <h3 className="font-heading text-xl font-bold text-text mb-2">{isFr ? "Adresse" : "Address"}</h3>
                 <p className="text-text-secondary">{SITE_CONFIG.contact.address}</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Phone className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="font-heading text-xl font-bold text-text mb-2">Téléphone</h3>
+                <h3 className="font-heading text-xl font-bold text-text mb-2">{isFr ? "Téléphone" : "Phone"}</h3>
                 <a
                   href={`tel:${SITE_CONFIG.contact.phone}`}
                   className="text-text-secondary hover:text-primary transition-colors"
@@ -185,7 +203,7 @@ export default function ContactPage() {
               {/* Form */}
               <div>
                 <SectionHeading
-                  title="Envoyez-nous un message"
+                  title={isFr ? "Envoyez-nous un message" : "Send us a message"}
                   align="left"
                 />
                 <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg space-y-6">
@@ -195,7 +213,7 @@ export default function ContactPage() {
                     </div>
                   )}
                   <Input
-                    label="Nom complet"
+                    label={isFr ? "Nom complet" : "Full name"}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
@@ -210,7 +228,7 @@ export default function ContactPage() {
                   />
                   
                   <Input
-                    label="Téléphone / WhatsApp"
+                    label={isFr ? "Téléphone / WhatsApp" : "Phone / WhatsApp"}
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -218,21 +236,21 @@ export default function ContactPage() {
                   />
                   
                   <Input
-                    label="Objet"
+                    label={isFr ? "Objet" : "Subject"}
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     required
                   />
                   
                   <Select
-                    label="Type de demande"
+                    label={isFr ? "Type de demande" : "Request type"}
                     options={[
-                      { value: "", label: "Sélectionnez un type" },
-                      { value: "circuit", label: "Réservation de circuit" },
-                      { value: "sejour", label: "Organisation de séjour" },
-                      { value: "hotel", label: "Réservation d'hôtel" },
-                      { value: "info", label: "Demande d'informations" },
-                      { value: "autre", label: "Autre" }
+                      { value: "", label: isFr ? "Sélectionnez un type" : "Select a type" },
+                      { value: "circuit", label: isFr ? "Réservation de circuit" : "Tour booking" },
+                      { value: "sejour", label: isFr ? "Organisation de séjour" : "Stay planning" },
+                      { value: "hotel", label: isFr ? "Réservation d'hôtel" : "Hotel booking" },
+                      { value: "info", label: isFr ? "Demande d'informations" : "Information request" },
+                      { value: "autre", label: isFr ? "Autre" : "Other" }
                     ]}
                     value={formData.requestType}
                     onChange={(e) => setFormData({ ...formData, requestType: e.target.value })}
@@ -240,14 +258,14 @@ export default function ContactPage() {
                   />
                   
                   <Input
-                    label="Date prévue du voyage"
+                    label={isFr ? "Date prévue du voyage" : "Planned travel date"}
                     type="date"
                     value={formData.travelDate}
                     onChange={(e) => setFormData({ ...formData, travelDate: e.target.value })}
                   />
                   
                   <Input
-                    label="Nombre de voyageurs"
+                    label={isFr ? "Nombre de voyageurs" : "Number of travelers"}
                     type="number"
                     min="1"
                     value={formData.travelers}
@@ -255,11 +273,15 @@ export default function ContactPage() {
                   />
                   
                   <Textarea
-                    label="Message"
+                    label={isFr ? "Message" : "Message"}
                     rows={5}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Décrivez votre projet de voyage, vos questions ou vos demandes spécifiques..."
+                    placeholder={
+                      isFr
+                        ? "Décrivez votre projet de voyage, vos questions ou vos demandes spécifiques..."
+                        : "Describe your travel project, your questions or your specific requests..."
+                    }
                     required
                   />
                   
@@ -270,7 +292,9 @@ export default function ContactPage() {
                     className="w-full"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Envoi en cours..." : "Envoyer ma demande"}
+                    {isSubmitting
+                      ? isFr ? "Envoi en cours..." : "Sending..."
+                      : isFr ? "Envoyer ma demande" : "Send my request"}
                   </Button>
                 </form>
               </div>
@@ -280,7 +304,7 @@ export default function ContactPage() {
                 {/* Map */}
                 <div>
                   <SectionHeading
-                    title="Notre localisation"
+                    title={isFr ? "Notre localisation" : "Our location"}
                     align="left"
                   />
                   <div className="rounded-2xl overflow-hidden h-64">
@@ -292,7 +316,7 @@ export default function ContactPage() {
                       allowFullScreen
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
-                      title="Carte Google Maps - Wonder Tours"
+                      title={isFr ? "Carte Google Maps - Wonder Tours" : "Google Maps - Wonder Tours"}
                     />
                   </div>
                 </div>
@@ -305,10 +329,12 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-heading text-xl font-bold text-text mb-2">
-                        Discutez sur WhatsApp
+                        {isFr ? "Discutez sur WhatsApp" : "Chat on WhatsApp"}
                       </h3>
                       <p className="text-text-secondary mb-4">
-                        Contactez-nous directement sur WhatsApp pour une réponse rapide.
+                        {isFr
+                          ? "Contactez-nous directement sur WhatsApp pour une réponse rapide."
+                          : "Contact us directly on WhatsApp for a quick response."}
                       </p>
                       <a
                         href={SITE_CONFIG.links.whatsapp}
@@ -317,7 +343,7 @@ export default function ContactPage() {
                         className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-full font-medium hover:bg-green-700 transition-colors"
                       >
                         <MessageCircle className="w-5 h-5" />
-                        Ouvrir WhatsApp
+                        {isFr ? "Ouvrir WhatsApp" : "Open WhatsApp"}
                       </a>
                     </div>
                   </div>

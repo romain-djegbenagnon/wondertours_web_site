@@ -2,12 +2,9 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
 import { LocalizedHero } from "@/components/common/localized-hero";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { TestimonialsContent } from "@/components/testimonials/testimonials-content";
-import { Button } from "@/components/ui/button";
+import { TestimonialsPageContent } from "@/components/testimonials/testimonials-page-content";
 import { listTestimonials } from "@/lib/services/testimonials";
 import { toTestimonialVM } from "@/lib/view-models";
-import { Star } from "lucide-react";
 import { generateMetadata } from "@/lib/seo";
 
 // Témoignages issus de la base : rendu dynamique pour refléter les
@@ -47,64 +44,11 @@ export default async function TestimonialsPage() {
           image="[PHOTO HERO TÉMOIGNAGES À REMPLACER]"
         />
 
-        {/* Stats Section */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="grid md:grid-cols-3 gap-8 text-center">
-              <div>
-                <div className="text-5xl font-heading font-bold text-primary mb-2">
-                  {testimonials.length}
-                </div>
-                <p className="text-text-secondary">Témoignages</p>
-              </div>
-              <div>
-                <div className="flex items-center justify-center gap-1 mb-2">
-                  <span className="text-5xl font-heading font-bold text-primary">
-                    {averageRating.toFixed(1)}
-                  </span>
-                  <Star className="w-8 h-8 fill-secondary text-secondary" />
-                </div>
-                <p className="text-text-secondary">Note moyenne</p>
-              </div>
-              <div>
-                <div className="text-5xl font-heading font-bold text-primary mb-2">
-                  20+
-                </div>
-                <p className="text-text-secondary">Années d&apos;expérience</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonials Grid */}
-        <section className="py-20 bg-background">
-          <div className="container mx-auto px-4 lg:px-8">
-            <SectionHeading
-              title="Ils ont voyagé avec Wonder Tours"
-            />
-            <TestimonialsContent testimonials={testimonials} />
-            {testimonials.length === 0 && (
-              <p className="text-center text-text-secondary py-12">
-                Aucun témoignage pour le moment.
-              </p>
-            )}
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4 lg:px-8 text-center">
-            <SectionHeading
-              title="Vous avez voyagé avec nous ?"
-            />
-            <p className="text-text-secondary text-xl mb-8 max-w-2xl mx-auto">
-              Partagez votre expérience et aidez d&apos;autres voyageurs à découvrir le Bénin avec Wonder Tours.
-            </p>
-            <Button variant="primary" size="lg" href="/contact">
-              Partager mon témoignage
-            </Button>
-          </div>
-        </section>
+        {/* Corps bilingue (stats, grille, CTA) */}
+        <TestimonialsPageContent
+          testimonials={testimonials}
+          averageRating={averageRating}
+        />
       </main>
 
       <Footer />

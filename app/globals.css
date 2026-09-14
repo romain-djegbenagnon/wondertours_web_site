@@ -26,6 +26,17 @@ body {
   }
 }
 
+/* Fallback visuel pour les <img> sans photo (SVG placeholder)
+   tant que le client n'a pas fourni les vraies images. */
+.img-fallback {
+  background-color: #f3ede1;
+  opacity: 0.85;
+}
+
+.img-fallback:hover {
+  opacity: 1;
+}
+
 /* Custom scrollbar for select dropdowns */
 select::-webkit-scrollbar {
   width: 8px;

@@ -1,6 +1,7 @@
 export const SITE_CONFIG = {
   name: "Wonder Tours and Services",
   description: "Découvrez le Bénin à travers des expériences authentiques avec plus de 20 ans d'expertise touristique.",
+  descriptionEn: "Discover Benin through authentic experiences with over 20 years of tourism expertise.",
   url: "https://wondertours.bj",
   ogImage: "/og-image.jpg",
   links: {
@@ -38,28 +39,36 @@ export const SERVICES = [
   {
     id: 1,
     title: "Circuits touristiques",
+    titleEn: "Guided tours",
     description: "Découvrez le Bénin à travers des circuits soigneusement conçus.",
+    descriptionEn: "Discover Benin through carefully designed tours.",
     icon: "Map",
     href: "/circuits",
   },
   {
     id: 2,
     title: "Organisation de séjours",
+    titleEn: "Stay planning",
     description: "Une prise en charge adaptée à votre voyage.",
+    descriptionEn: "Support tailored to your trip.",
     icon: "Calendar",
     href: "/sejours",
   },
   {
     id: 3,
     title: "Réservation d'hôtels",
+    titleEn: "Hotel bookings",
     description: "Trouvez et réservez votre hébergement avec assistance.",
+    descriptionEn: "Find and book your accommodation with assistance.",
     icon: "Building2",
     href: "/hotels",
   },
   {
     id: 4,
     title: "Accompagnement touristique",
+    titleEn: "Travel assistance",
     description: "Bénéficiez de conseils et d'un accompagnement personnalisé.",
+    descriptionEn: "Benefit from advice and personalized support.",
     icon: "User",
     href: "/contact",
   },
@@ -69,22 +78,30 @@ export const WHY_CHOOSE_US = [
   {
     id: 1,
     title: "20+ ans d'expérience",
+    titleEn: "20+ years of experience",
     description: "Une expertise construite au fil de nombreuses années.",
+    descriptionEn: "Expertise built over many years.",
   },
   {
     id: 2,
     title: "Expériences authentiques",
+    titleEn: "Authentic experiences",
     description: "Découvrir le pays au-delà des parcours touristiques classiques.",
+    descriptionEn: "Discover the country beyond classic tourist routes.",
   },
   {
     id: 3,
     title: "Accompagnement personnalisé",
+    titleEn: "Personalized support",
     description: "Des solutions adaptées aux besoins de chaque voyageur.",
+    descriptionEn: "Solutions tailored to every traveler's needs.",
   },
   {
     id: 4,
     title: "Expertise locale",
+    titleEn: "Local expertise",
     description: "Une connaissance approfondie des destinations et du patrimoine béninois.",
+    descriptionEn: "In-depth knowledge of Benin's destinations and heritage.",
   },
 ] as const;
 

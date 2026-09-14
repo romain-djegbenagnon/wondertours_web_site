@@ -1,15 +1,11 @@
-import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
 import { LocalizedHero } from "@/components/common/localized-hero";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { Button } from "@/components/ui/button";
-import { BlogGrid } from "@/components/blog/blog-grid";
+import { BlogPageContent } from "@/components/blog/blog-page-content";
 import { listBlogPosts, listBlogCategories } from "@/lib/services/blog";
 import { toBlogPostVM } from "@/lib/view-models";
 import { generateMetadata } from "@/lib/seo";
-import { cn } from "@/lib/utils";
 
 export const metadata = generateMetadata({
   title: "Blog - Wonder Tours and Services",
@@ -57,68 +53,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           image="[PHOTO HERO BLOG À REMPLACER]"
         />
 
-        {/* Categories */}
-        <section className="py-12 bg-white border-b">
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="flex flex-wrap gap-3 justify-center">
-              <Link
-                href="/blog"
-                className={cn(
-                  "px-4 py-2 rounded-full font-medium transition-colors",
-                  categorySlug
-                    ? "bg-gray-100 text-text hover:bg-gray-200"
-                    : "bg-primary text-white"
-                )}
-              >
-                Tous
-              </Link>
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/blog?categorie=${encodeURIComponent(category.slug)}`}
-                  className={cn(
-                    "px-4 py-2 rounded-full font-medium transition-colors",
-                    categorySlug === category.slug
-                      ? "bg-primary text-white"
-                      : "bg-gray-100 text-text hover:bg-gray-200"
-                  )}
-                >
-                  {category.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Blog Posts */}
-        <section id="articles" className="py-20 bg-background">
-          <div className="container mx-auto px-4 lg:px-8">
-            <SectionHeading
-              title="Derniers articles"
-            />
-            <BlogGrid posts={posts} />
-          </div>
-        </section>
-
-        {/* Newsletter */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4 lg:px-8 text-center">
-            <SectionHeading
-              title="Restez informé"
-            />
-            <p className="text-text-secondary text-xl mb-8 max-w-2xl mx-auto">
-              Recevez nos derniers articles et conseils pour préparer votre voyage au Bénin.
-            </p>
-            <div className="max-w-md mx-auto flex gap-4">
-              <input
-                type="email"
-                placeholder="Votre email"
-                className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:outline-none"
-              />
-              <Button variant="primary">S&apos;inscrire</Button>
-            </div>
-          </div>
-        </section>
+        {/* Corps bilingue (catégories, articles, newsletter) */}
+        <BlogPageContent
+          categorySlug={categorySlug}
+          categories={categories}
+          posts={posts}
+        />
       </main>
 
       <Footer />

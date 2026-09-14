@@ -1,9 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { NAVIGATION, SERVICES, SITE_CONFIG } from "@/lib/constants";
-import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/language-context";
 
 export function Footer() {
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
+
   return (
     <footer className="bg-white text-text">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
@@ -16,7 +21,7 @@ export function Footer() {
               </span>
             </div>
             <p className="text-text-secondary text-sm leading-relaxed">
-              {SITE_CONFIG.description}
+              {isFr ? SITE_CONFIG.description : SITE_CONFIG.descriptionEn}
             </p>
             <div className="flex space-x-4">
               <a
@@ -57,7 +62,7 @@ export function Footer() {
 
           {/* Navigation */}
           <div>
-            <h3 className="font-heading font-semibold text-lg mb-4 text-primary text-[#FFA500]">Navigation</h3>
+            <h3 className="font-heading font-semibold text-lg mb-4 text-primary text-[#FFA500]">{isFr ? "Navigation" : "Navigation"}</h3>
             <ul className="space-y-2">
               {NAVIGATION.map((item) => (
                 <li key={item.href}>
@@ -65,7 +70,7 @@ export function Footer() {
                     href={item.href}
                     className="text-text-secondary hover:text-text transition-colors text-sm"
                   >
-                    {item.name}
+                    {isFr ? item.name : item.nameEn}
                   </Link>
                 </li>
               ))} 
@@ -74,7 +79,7 @@ export function Footer() {
 
           {/* Services */}
           <div>
-            <h3 className="font-heading font-semibold text-lg mb-4 text-primary text-[#FFA500]">Services</h3>
+            <h3 className="font-heading font-semibold text-lg mb-4 text-primary text-[#FFA500]">{isFr ? "Services" : "Services"}</h3>
             <ul className="space-y-2">
               {SERVICES.map((service) => (
                 <li key={service.id}>
@@ -82,7 +87,7 @@ export function Footer() {
                     href={service.href}
                     className="text-text-secondary hover:text-text transition-colors text-sm"
                   >
-                    {service.title}
+                    {isFr ? service.title : service.titleEn}
                   </Link>
                 </li>
               ))}
@@ -91,7 +96,7 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="font-heading font-semibold text-lg mb-4 text-primary text-[#FFA500]">Contact</h3>
+            <h3 className="font-heading font-semibold text-lg mb-4 text-primary text-[#FFA500]">{isFr ? "Contact" : "Contact"}</h3>
             <ul className="space-y-3">
               <li className="flex items-start space-x-3 text-text-secondary text-sm">
                 <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
@@ -122,20 +127,21 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-300 mt-8 md:mt-12 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-text-secondary text-sm text-center md:text-left">
-            © {new Date().getFullYear()} {SITE_CONFIG.name}. Tous droits réservés.
+            © {new Date().getFullYear()} {SITE_CONFIG.name}.{" "}
+            {isFr ? "Tous droits réservés." : "All rights reserved."}
           </p>
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-center">
             <Link
               href="/mentions-legales"
               className="text-text-secondary hover:text-text transition-colors"
             >
-              Mentions légales
+              {isFr ? "Mentions légales" : "Legal notice"}
             </Link>
             <Link
               href="/politique-confidentialite"
               className="text-text-secondary hover:text-text transition-colors"
             >
-              Politique de confidentialité
+              {isFr ? "Politique de confidentialité" : "Privacy policy"}
             </Link>
           </div>
         </div>

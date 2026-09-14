@@ -3,7 +3,7 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
-import { Hero } from "@/components/hero/hero";
+import { LocalizedHero } from "@/components/common/localized-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Button } from "@/components/ui/button";
 import { SITE_CONFIG } from "@/lib/constants";
@@ -16,6 +16,25 @@ import { useLanguage } from "@/contexts/language-context";
  */
 export function AboutContent() {
   const { t, locale } = useLanguage();
+  const isFr = locale === "fr";
+
+  const values = isFr
+    ? [
+        { title: "Authenticité", description: "Des expériences vraies et immersives au cœur de la culture béninoise." },
+        { title: "Excellence", description: "Un service de qualité irréprochable pour chaque voyageur." },
+        { title: "Respect", description: "Respect des cultures, des traditions et de l'environnement." },
+        { title: "Hospitalité", description: "Un accueil chaleureux et personnalisé à chaque étape." },
+        { title: "Culture", description: "Valorisation et transmission du patrimoine culturel béninois." },
+        { title: "Professionnalisme", description: "Une équipe expérimentée et dédiée à votre satisfaction." },
+      ]
+    : [
+        { title: "Authenticity", description: "Real, immersive experiences at the heart of Beninese culture." },
+        { title: "Excellence", description: "Impeccable quality of service for every traveler." },
+        { title: "Respect", description: "Respect for cultures, traditions and the environment." },
+        { title: "Hospitality", description: "A warm, personalized welcome at every step." },
+        { title: "Culture", description: "Promoting and passing on Benin's cultural heritage." },
+        { title: "Professionalism", description: "An experienced team dedicated to your satisfaction." },
+      ];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -23,38 +42,44 @@ export function AboutContent() {
 
       <main className="flex-1">
         {/* Hero */}
-        <Hero
+        <LocalizedHero
           subtitle="NOTRE HISTOIRE"
-          title={locale === "fr" ? "Une passion pour le voyage. Une expertise du Bénin." : "A passion for travel. Expertise in Benin."}
-          description={locale === "fr" ? "Depuis plus de 20 ans, Wonder Tours and Services accompagne les voyageurs dans la découverte des trésors du Bénin." : "For over 20 years, Wonder Tours and Services has accompanied travelers in discovering Benin's treasures."}
-          primaryCta={{ text: t.common.viewAll, href: "/circuits" }}
-          secondaryCta={{ text: t.common.contact, href: "/contact" }}
+          titleFr="Une passion pour le voyage. Une expertise du Bénin."
+          titleEn="A passion for travel. Expertise in Benin."
+          descriptionFr="Depuis plus de 20 ans, Wonder Tours and Services accompagne les voyageurs dans la découverte des trésors du Bénin."
+          descriptionEn="For over 20 years, Wonder Tours and Services has accompanied travelers in discovering Benin's treasures."
+          ctaFr="Voir tous les circuits"
+          ctaEn="View all circuits"
+          ctaHref="/circuits"
+          secondaryCtaFr="Contact"
+          secondaryCtaEn="Contact"
+          secondaryCtaHref="/contact"
           image="[PHOTO HERO À PROPOS À REMPLACER]"
         />
 
         {/* History Section */}
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4 lg:px-8">
-            <SectionHeading
-              title={locale === "fr" ? "Notre histoire" : "Our history"}
+              <SectionHeading
+              title={isFr ? "Notre histoire" : "Our history"}
               align="left"
             />
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <p className="text-text-secondary leading-relaxed mb-6">
-                  {locale === "fr" ? "Wonder Tours and Services est né d'une passion profonde pour le Bénin et de la volonté de partager la richesse culturelle et naturelle de ce pays avec le monde entier." : "Wonder Tours and Services was born from a deep passion for Benin and the desire to share the country's cultural and natural richness with the world."}
+                  {isFr ? "Wonder Tours and Services est né d'une passion profonde pour le Bénin et de la volonté de partager la richesse culturelle et naturelle de ce pays avec le monde entier." : "Wonder Tours and Services was born from a deep passion for Benin and the desire to share the country's cultural and natural richness with the world."}
                 </p>
                 <p className="text-text-secondary leading-relaxed mb-6">
-                  {locale === "fr" ? "Fondée par Eric Sylvestre BOKOSSA, notre entreprise s'est construite sur plus de deux décennies d'expérience dans l'organisation d'excursions, de circuits et de séjours touristiques au Bénin et à l'international." : "Founded by Eric Sylvestre BOKOSSA, our company has been built on over two decades of experience in organizing excursions, tours and tourist stays in Benin and internationally."}
+                  {isFr ? "Fondée par Eric Sylvestre BOKOSSA, notre entreprise s'est construite sur plus de deux décennies d'expérience dans l'organisation d'excursions, de circuits et de séjours touristiques au Bénin et à l'international." : "Founded by Eric Sylvestre BOKOSSA, our company has been built on over two decades of experience in organizing excursions, tours and tourist stays in Benin and internationally."}
                 </p>
                 <p className="text-text-secondary leading-relaxed">
-                  {locale === "fr" ? "Notre mission : offrir des expériences authentiques, respectueuses des cultures locales et inoubliables à chaque voyageur qui nous fait confiance." : "Our mission: to offer authentic experiences, respectful of local cultures and unforgettable to every traveler who trusts us."}
+                  {isFr ? "Notre mission : offrir des expériences authentiques, respectueuses des cultures locales et inoubliables à chaque voyageur qui nous fait confiance." : "Our mission: to offer authentic experiences, respectful of local cultures and unforgettable to every traveler who trusts us."}
                 </p>
               </div>
               <div className="relative">
                 <img
                   src="[PHOTO HISTOIRE À REMPLACER]"
-                  alt={locale === "fr" ? "Notre histoire" : "Our history"}
+                  alt={isFr ? "Notre histoire" : "Our history"}
                   className="rounded-2xl shadow-2xl"
                 />
               </div>
@@ -67,7 +92,7 @@ export function AboutContent() {
           <div className="absolute inset-0">
             <img
               src="[PHOTO EXPÉRIENCE À REMPLACER]"
-              alt={locale === "fr" ? "Notre expérience" : "Our experience"}
+              alt={isFr ? "Notre expérience" : "Our experience"}
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-primary/90" />
@@ -75,10 +100,10 @@ export function AboutContent() {
           <div className="relative z-10 container mx-auto px-4 lg:px-8 text-center text-white">
             <div className="text-7xl font-heading font-bold mb-4">20+</div>
             <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">
-              {locale === "fr" ? "années d'expérience" : "years of experience"}
+              {isFr ? "années d'expérience" : "years of experience"}
             </h2>
             <p className="text-xl max-w-2xl mx-auto text-gray-200">
-              {locale === "fr" ? "Deux décennies d'expertise pour vous faire découvrir le meilleur du Bénin" : "Two decades of expertise to help you discover the best of Benin"}
+              {isFr ? "Deux décennies d'expertise pour vous faire découvrir le meilleur du Bénin" : "Two decades of expertise to help you discover the best of Benin"}
             </p>
           </div>
         </section>
@@ -87,7 +112,7 @@ export function AboutContent() {
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4 lg:px-8">
             <SectionHeading
-              title="Notre fondateur"
+              title={isFr ? "Notre fondateur" : "Our founder"}
             />
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="relative">
@@ -101,12 +126,14 @@ export function AboutContent() {
                 <h3 className="font-heading text-3xl font-bold text-text mb-2">
                   {SITE_CONFIG.founder.name}
                 </h3>
-                <p className="text-accent font-medium mb-6">{SITE_CONFIG.founder.title}</p>
+                <p className="text-accent font-medium mb-6">{isFr ? SITE_CONFIG.founder.title : "Founder"}</p>
                 <p className="text-text-secondary leading-relaxed mb-6">
                   [BIOGRAPHIE DU FONDATEUR À FOURNIR PAR LE CLIENT]
                 </p>
                 <p className="text-text-secondary leading-relaxed">
-                  Passionné par son pays et sa culture, Eric Sylvestre BOKOSSA a consacré sa vie à faire connaître les trésors du Bénin aux voyageurs du monde entier. Sa vision : un tourisme respectueux, authentique et mémorable.
+                  {isFr
+                    ? "Passionné par son pays et sa culture, Eric Sylvestre BOKOSSA a consacré sa vie à faire connaître les trésors du Bénin aux voyageurs du monde entier. Sa vision : un tourisme respectueux, authentique et mémorable."
+                    : "Passionate about his country and its culture, Eric Sylvestre BOKOSSA has devoted his life to introducing Benin's treasures to travelers from around the world. His vision: respectful, authentic and memorable tourism."}
                 </p>
               </div>
             </div>
@@ -117,17 +144,10 @@ export function AboutContent() {
         <section className="py-20 bg-background">
           <div className="container mx-auto px-4 lg:px-8">
             <SectionHeading
-              title="Nos valeurs"
+              title={isFr ? "Nos valeurs" : "Our values"}
             />
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                { title: "Authenticité", description: "Des expériences vraies et immersives au cœur de la culture béninoise." },
-                { title: "Excellence", description: "Un service de qualité irréprochable pour chaque voyageur." },
-                { title: "Respect", description: "Respect des cultures, des traditions et de l'environnement." },
-                { title: "Hospitalité", description: "Un accueil chaleureux et personnalisé à chaque étape." },
-                { title: "Culture", description: "Valorisation et transmission du patrimoine culturel béninois." },
-                { title: "Professionnalisme", description: "Une équipe expérimentée et dédiée à votre satisfaction." },
-              ].map((value, index) => (
+              {values.map((value, index) => (
                 <div key={index} className="bg-white p-8 rounded-2xl shadow-lg">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                     <span className="text-2xl font-bold text-primary">{index + 1}</span>
@@ -149,14 +169,16 @@ export function AboutContent() {
           <div className="container mx-auto px-4 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
               <SectionHeading
-                subtitle="NOTRE VISION"
-                title="Développer le tourisme béninois"
+                subtitle={isFr ? "NOTRE VISION" : "OUR VISION"}
+                title={isFr ? "Développer le tourisme béninois" : "Developing Benin's tourism"}
               />
               <p className="text-text-secondary text-xl leading-relaxed mb-8">
-                Notre ambition est de contribuer au développement du tourisme au Bénin en faisant découvrir la richesse de notre patrimoine, de notre culture et de nos paysages aux voyageurs du monde entier. Nous croyons en un tourisme durable, respectueux et bénéfique pour les communautés locales.
+                {isFr
+                  ? "Notre ambition est de contribuer au développement du tourisme au Bénin en faisant découvrir la richesse de notre patrimoine, de notre culture et de nos paysages aux voyageurs du monde entier. Nous croyons en un tourisme durable, respectueux et bénéfique pour les communautés locales."
+                  : "Our ambition is to contribute to the development of tourism in Benin by revealing the richness of our heritage, our culture and our landscapes to travelers from around the world. We believe in sustainable, respectful tourism that benefits local communities."}
               </p>
               <Button variant="primary" size="lg" href="/circuits">
-                Rejoignez-nous pour une aventure inoubliable
+                {isFr ? "Rejoignez-nous pour une aventure inoubliable" : "Join us for an unforgettable adventure"}
               </Button>
             </div>
           </div>

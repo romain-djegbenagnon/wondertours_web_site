@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin } from "lucide-react";
 import { Circuit } from "@/lib/data/circuits";
+import { useLanguage } from "@/contexts/language-context";
 import { CircuitDetailModal } from "./circuit-detail-modal";
 
 interface CircuitCardProps {
@@ -15,6 +16,8 @@ interface CircuitCardProps {
 
 export function CircuitCard({ circuit }: CircuitCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
 
   return (
     <>
@@ -49,7 +52,9 @@ export function CircuitCard({ circuit }: CircuitCardProps) {
               <div className="text-2xl font-bold text-primary">
                 {circuit.price.toLocaleString()} FCFA
               </div>
-              <span className="text-text-secondary text-sm">/personne</span>
+              <span className="text-text-secondary text-sm">
+                {isFr ? "/personne" : "/person"}
+              </span>
             </div>
 
             <Button
@@ -57,7 +62,7 @@ export function CircuitCard({ circuit }: CircuitCardProps) {
               className="w-full"
               onClick={() => setIsModalOpen(true)}
             >
-              Découvrir
+              {isFr ? "Découvrir" : "Discover"}
             </Button>
           </CardContent>
         </Card>

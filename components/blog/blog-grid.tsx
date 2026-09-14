@@ -4,6 +4,7 @@ import { useState } from "react";
 import { BlogCard } from "@/components/blog/blog-card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
 import type { BlogPost } from "@/lib/data/blog";
 
 interface BlogGridProps {
@@ -13,6 +14,9 @@ interface BlogGridProps {
 const POSTS_PER_PAGE = 6;
 
 export function BlogGrid({ posts }: BlogGridProps) {
+  const { locale } = useLanguage();
+  const isFr = locale === "fr";
+
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
 
@@ -29,7 +33,9 @@ export function BlogGrid({ posts }: BlogGridProps) {
   if (posts.length === 0) {
     return (
       <p className="text-center text-text-secondary py-12">
-        Aucun article publié pour le moment.
+        {isFr
+          ? "Aucun article publié pour le moment."
+          : "No articles published yet."}
       </p>
     );
   }
@@ -53,7 +59,7 @@ export function BlogGrid({ posts }: BlogGridProps) {
             className="rounded-full px-4"
           >
             <ChevronLeft className="w-4 h-4 mr-1" />
-            Précédent
+            {isFr ? "Précédent" : "Previous"}
           </Button>
 
           <div className="flex gap-2">
@@ -79,7 +85,7 @@ export function BlogGrid({ posts }: BlogGridProps) {
             disabled={currentPage === totalPages}
             className="rounded-full px-4"
           >
-            Suivant
+            {isFr ? "Suivant" : "Next"}
             <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         </div>

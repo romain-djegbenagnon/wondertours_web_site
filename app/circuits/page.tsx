@@ -2,8 +2,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
 import { LocalizedHero } from "@/components/common/localized-hero";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { Button } from "@/components/ui/button";
+import { CircuitsCtaSection } from "@/components/circuits/circuits-cta-section";
 import { CircuitsExplorer } from "@/components/circuits/circuits-explorer";
 import { listCircuits } from "@/lib/services/circuits";
 import { listDestinations } from "@/lib/services/destinations";
@@ -78,19 +77,7 @@ export default async function CircuitsPage({ searchParams }: CircuitsPageProps) 
         />
 
         {/* CTA Section */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4 lg:px-8 text-center">
-            <SectionHeading
-              title="Vous ne trouvez pas ce que vous cherchez ?"
-            />
-            <p className="text-text-secondary text-xl mb-8 max-w-2xl mx-auto">
-              Nous pouvons créer un circuit personnalisé adapté à vos envies et à votre budget.
-            </p>
-            <Button variant="primary" size="lg" href="/contact">
-              Demander un circuit sur mesure
-            </Button>
-          </div>
-        </section>
+        <CircuitsCtaSection />
       </main>
 
       <Footer />
