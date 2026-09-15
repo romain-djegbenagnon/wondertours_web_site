@@ -17,19 +17,27 @@ export function BlogDetailModal({ isOpen, onClose, post }: BlogDetailModalProps)
   const { locale } = useLanguage();
   const isFr = locale === "fr";
 
+  // Champs FR avec repli automatique sur la traduction EN quand la
+  // colonne En n'est pas renseignée en base.
+  const title = isFr ? post.title : post.titleEn || post.title;
+  const category = isFr ? post.category : post.categoryEn || post.category;
+  const excerpt = isFr ? post.excerpt : post.excerptEn || post.excerpt;
+  const content = isFr ? post.content : post.contentEn || post.content;
+  const readTime = isFr ? post.readTime : post.readTimeEn || post.readTime;
+
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <div className="relative h-64 md:h-80">
         <img
           src={post.image}
-          alt={post.title}
+          alt={title}
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6">
-          <Badge variant="secondary" className="mb-3">{post.category}</Badge>
+          <Badge variant="secondary" className="mb-3">{category}</Badge>
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-white mb-2">
-            {post.title}
+            {title}
           </h2>
           <div className="flex flex-wrap gap-4 text-white text-sm">
             <div className="flex items-center">
@@ -45,7 +53,7 @@ export function BlogDetailModal({ isOpen, onClose, post }: BlogDetailModalProps)
             </div>
             <div className="flex items-center">
               <Clock className="w-4 h-4 mr-1" />
-              {post.readTime}
+              {readTime}
             </div>
           </div>
         </div>
@@ -54,10 +62,10 @@ export function BlogDetailModal({ isOpen, onClose, post }: BlogDetailModalProps)
       <div className="p-6">
         <div className="prose prose-lg max-w-none">
           <p className="text-text-secondary text-xl leading-relaxed mb-6">
-            {post.excerpt}
+            {excerpt}
           </p>
           <div className="text-text-secondary leading-relaxed">
-            {post.content}
+            {content}
           </div>
         </div>
 

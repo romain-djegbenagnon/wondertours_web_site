@@ -16,6 +16,14 @@ interface BlogCardProps {
 export function BlogCard({ post }: BlogCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { locale } = useLanguage();
+  const isFr = locale === "fr";
+
+  // Champs FR avec repli automatique sur la traduction EN quand la
+  // colonne En n'est pas renseignée en base.
+  const title = isFr ? post.title : post.titleEn || post.title;
+  const category = isFr ? post.category : post.categoryEn || post.category;
+  const excerpt = isFr ? post.excerpt : post.excerptEn || post.excerpt;
+  const readTime = isFr ? post.readTime : post.readTimeEn || post.readTime;
 
   return (
     <>
@@ -28,22 +36,22 @@ export function BlogCard({ post }: BlogCardProps) {
       >
         <div onClick={() => setIsModalOpen(true)} className="cursor-pointer">
           <Card className="h-full group">
-            <CardImage src={post.image} alt={post.title} />
+            <CardImage src={post.image} alt={title} />
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-3">
-                <Badge variant="secondary">{post.category}</Badge>
+                <Badge variant="secondary">{category}</Badge>
                 <div className="flex items-center text-text-secondary text-sm">
                   <Clock className="w-4 h-4 mr-1" />
-                  {post.readTime}
+                  {readTime}
                 </div>
               </div>
 
               <h3 className="font-heading text-xl font-bold text-text mb-3 group-hover:text-primary transition-colors">
-                {post.title}
+                {title}
               </h3>
 
               <p className="text-text-secondary mb-4 line-clamp-2">
-                {post.excerpt}
+                {excerpt}
               </p>
 
               <div className="flex items-center text-text-secondary text-sm">

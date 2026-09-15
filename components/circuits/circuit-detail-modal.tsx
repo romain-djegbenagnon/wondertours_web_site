@@ -17,31 +17,47 @@ export function CircuitDetailModal({ isOpen, onClose, circuit }: CircuitDetailMo
   const { locale } = useLanguage();
   const isFr = locale === "fr";
 
+  // Champs FR avec repli automatique sur la traduction EN (ou
+  // inversement) quand la colonne En n'est pas renseignée en base.
+  const title = isFr ? circuit.title : circuit.titleEn || circuit.title;
+  const category = isFr
+    ? circuit.category
+    : circuit.categoryEn || circuit.category;
+  const destination = isFr
+    ? circuit.destination
+    : circuit.destinationEn || circuit.destination;
+  const duration = isFr
+    ? circuit.duration
+    : circuit.durationEn || circuit.duration;
+  const description = isFr
+    ? circuit.description
+    : circuit.descriptionEn || circuit.description;
+
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <div className="relative h-64 md:h-80">
         <img
           src={circuit.image}
-          alt={circuit.title}
+          alt={title}
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6">
           <div className="flex flex-wrap gap-2 mb-3">
-            <Badge variant="default">{circuit.category}</Badge>
-            <Badge variant="secondary">{circuit.destination}</Badge>
+            <Badge variant="default">{category}</Badge>
+            <Badge variant="secondary">{destination}</Badge>
           </div>
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-white mb-2">
-            {circuit.title}
+            {title}
           </h2>
           <div className="flex flex-wrap gap-4 text-white text-sm">
             <div className="flex items-center">
               <Clock className="w-4 h-4 mr-1" />
-              {circuit.duration}
+              {duration}
             </div>
             <div className="flex items-center">
               <MapPin className="w-4 h-4 mr-1" />
-              {circuit.destination}
+              {destination}
             </div>
           </div>
         </div>
@@ -65,7 +81,7 @@ export function CircuitDetailModal({ isOpen, onClose, circuit }: CircuitDetailMo
             {isFr ? "À propos de ce circuit" : "About this tour"}
           </h3>
           <p className="text-text-secondary leading-relaxed">
-            {circuit.description}
+            {description}
           </p>
         </div>
 

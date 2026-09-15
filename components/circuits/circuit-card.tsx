@@ -19,6 +19,19 @@ export function CircuitCard({ circuit }: CircuitCardProps) {
   const { locale } = useLanguage();
   const isFr = locale === "fr";
 
+  // Champs FR avec repli automatique sur la traduction EN (ou
+  // inversement) quand la colonne En n'est pas renseignée en base.
+  const title = isFr ? circuit.title : circuit.titleEn || circuit.title;
+  const category = isFr
+    ? circuit.category
+    : circuit.categoryEn || circuit.category;
+  const destination = isFr
+    ? circuit.destination
+    : circuit.destinationEn || circuit.destination;
+  const duration = isFr
+    ? circuit.duration
+    : circuit.durationEn || circuit.duration;
+
   return (
     <>
       <motion.div
@@ -29,23 +42,23 @@ export function CircuitCard({ circuit }: CircuitCardProps) {
         whileHover={{ y: -8 }}
       >
         <Card className="group h-full">
-          <CardImage src={circuit.image} alt={circuit.title} />
+          <CardImage src={circuit.image} alt={title} />
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-3">
-              <Badge variant="default">{circuit.category}</Badge>
+              <Badge variant="default">{category}</Badge>
               <div className="flex items-center text-text-secondary text-sm">
                 <Clock className="w-4 h-4 mr-1" />
-                {circuit.duration}
+                {duration}
               </div>
             </div>
 
             <h3 className="font-heading text-xl font-bold text-text mb-2 group-hover:text-primary transition-colors">
-              {circuit.title}
+              {title}
             </h3>
 
             <div className="flex items-center text-text-secondary text-sm mb-4">
               <MapPin className="w-4 h-4 mr-1" />
-              {circuit.destination}
+              {destination}
             </div>
 
             <div className="flex items-center justify-between mb-4">
