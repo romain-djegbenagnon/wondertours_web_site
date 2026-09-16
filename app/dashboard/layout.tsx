@@ -4,8 +4,8 @@ import { Header } from "@/components/dashboard/header";
 import { DashboardLayoutClient } from "./dashboard-layout-client";
 
 export const metadata: Metadata = {
-  title: "Dashboard - Wonder Tours",
-  description: "Panel d'administration Wonder Tours",
+  title: "Dashboard - Wonder Tours and Services",
+  description: "Panel d'administration Wonder Tours and Services",
 };
 
 export default function DashboardLayout({

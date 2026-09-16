@@ -67,8 +67,8 @@ export function TestimonialsPageContent({
           <SectionHeading
             title={
               isFr
-                ? "Ils ont voyagé avec Wonder Tours"
-                : "They traveled with Wonder Tours"
+                ? "Ils ont voyagé avec Wonder Tours and Services"
+                : "They traveled with Wonder Tours and Services"
             }
           />
           <TestimonialsContent testimonials={testimonials} />
@@ -92,8 +92,8 @@ export function TestimonialsPageContent({
           />
           <p className="text-text-secondary text-xl mb-8 max-w-2xl mx-auto">
             {isFr
-              ? "Partagez votre expérience et aidez d'autres voyageurs à découvrir le Bénin avec Wonder Tours."
-              : "Share your experience and help other travelers discover Benin with Wonder Tours."}
+              ? "Partagez votre expérience et aidez d'autres voyageurs à découvrir le Bénin avec Wonder Tours and Services."
+              : "Share your experience and help other travelers discover Benin with Wonder Tours and Services."}
           </p>
           <Button variant="primary" size="lg" href="/contact">
             {isFr ? "Partager mon témoignage" : "Share my testimonial"}

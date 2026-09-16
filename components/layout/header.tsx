@@ -67,7 +67,7 @@ export function Header() {
               "font-heading font-bold text-xl",
               isScrolled ? "text-white" : "text-white"
             )}>
-              Wonder Tours
+              Wonder Tours and Services
             </span>
           </Link>
 

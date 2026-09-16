@@ -61,18 +61,18 @@ export function HomeContent({
         <Hero
           subtitle={
             isFr
-              ? "EXPLOREZ LE BÉNIN AUTREMENT"
-              : "EXPLORE BENIN DIFFERENTLY"
+              ? "EXPLOREZ LE BÉNIN, LE TOGO ET LE GHANA AUTREMENT"
+              : "EXPLORE BENIN, TOGO AND GHANA DIFFERENTLY"
           }
           title={
             isFr
-              ? "Découvrez le Bénin à travers<br />des expériences authentiques."
-              : "Discover Benin through<br />authentic experiences."
+              ? "Découvrez le Bénin, le Togo et le Ghana à travers<br />des expériences authentiques."
+              : "Discover Benin, Togo and Ghana through<br />authentic experiences."
           }
           description={
             isFr
-              ? "Avec plus de 20 ans d'expertise, Wonder Tours and Services vous accompagne dans la découverte du patrimoine culturel et naturel du Bénin."
-              : "With over 20 years of expertise, Wonder Tours and Services accompanies you in discovering Benin's cultural and natural heritage."
+              ? "Avec plus de 20 ans d'expertise, Wonder Tours and Services vous accompagne dans la découverte du patrimoine culturel et naturel du Bénin, du Togo et du Ghana."
+              : "With over 20 years of expertise, Wonder Tours and Services accompanies you in discovering Benin's, Togo's and Ghana's cultural and natural heritage."
           }
           primaryCta={{
             text: isFr ? "Découvrir nos circuits" : "Discover our tours",
@@ -98,8 +98,8 @@ export function HomeContent({
                 </h2>
                 <p className="text-text-secondary leading-relaxed">
                   {isFr
-                    ? "Une expertise construite au fil de nombreuses années d'accompagnement de voyageurs du monde entier dans la découverte du Bénin."
-                    : "Expertise built over many years of guiding travelers from around the world in discovering Benin."}
+                    ? "Une expertise construite au fil de nombreuses années d'accompagnement de voyageurs du monde entier dans la découverte du Bénin, du Togo et du Ghana."
+                    : "Expertise built over many years of guiding travelers from around the world in discovering Benin, Togo and Ghana."}
                 </p>
               </div>
               <div className="relative">
@@ -122,8 +122,8 @@ export function HomeContent({
               }
               title={
                 isFr
-                  ? "Découvrez les destinations qui font la richesse du Bénin"
-                  : "Discover the destinations that make Benin so rich"
+                  ? "Découvrez les destinations qui font la richesse<br />du Bénin, du Togo et du Ghana"
+                  : "Discover the destinations that make Benin,<br />Togo and Ghana so rich"
               }
             />
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -145,8 +145,8 @@ export function HomeContent({
             <SectionHeading
               title={
                 isFr
-                  ? "Voyagez avec une équipe qui connaît le Bénin"
-                  : "Travel with a team that knows Benin"
+                  ? "Voyagez avec une équipe qui connaît<br />le Bénin, le Togo et le Ghana"
+                  : "Travel with a team that knows<br />Benin, Togo and Ghana"
               }
             />
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -184,13 +184,13 @@ export function HomeContent({
           </div>
           <div className="relative z-10 container mx-auto px-4 lg:px-8 text-center text-white">
             <SectionHeading
-              title={isFr ? "Le Bénin vous attend" : "Benin awaits you"}
+              title={isFr ? "Le Bénin, le Togo et le Ghana vous attendent" : "Benin, Togo and Ghana await you"}
               className="text-white"
             />
             <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-200">
               {isFr
-                ? "D'Ouidah à Abomey, de Porto-Novo à Ganvié, découvrez un pays riche en histoire, en culture et en paysages exceptionnels."
-                : "From Ouidah to Abomey, from Porto-Novo to Ganvié, discover a country rich in history, culture and exceptional landscapes."}
+                ? "D'Ouidah à Abomey, de Lomé à Kumasi, découvrez des pays riches en histoire, en culture et en paysages exceptionnels."
+                : "From Ouidah to Abomey, from Lomé to Kumasi, discover countries rich in history, culture and exceptional landscapes."}
             </p>
             <div className="flex flex-wrap justify-center gap-3 mb-8">
               {destinations.map((destination) => (
@@ -203,7 +203,7 @@ export function HomeContent({
               ))}
             </div>
             <Button variant="primary" size="lg" href="/circuits">
-              {isFr ? "Explorer le Bénin" : "Explore Benin"}
+              {isFr ? "Explorer nos destinations" : "Explore our destinations"}
             </Button>
           </div>
         </section>
@@ -229,15 +229,15 @@ export function HomeContent({
                   }
                   title={
                     isFr
-                      ? "À la rencontre du patrimoine et de la culture béninoise"
-                      : "Discover Benin's heritage and culture"
+                      ? "À la rencontre du patrimoine et de la culture de l'Afrique de l'Ouest"
+                      : "Discover West African heritage and culture"
                   }
                   align="left"
                 />
                 <p className="text-text-secondary mb-6 leading-relaxed">
                   {isFr
-                    ? "Le Bénin est le berceau du Vodoun, une religion ancestrale reconnue patrimoine culturel immatériel de l'UNESCO. Découvrez temples, cérémonies et traditions avec respect et authenticité."
-                    : "Benin is the cradle of Vodoun, an ancestral religion recognized as UNESCO intangible cultural heritage. Discover temples, ceremonies and traditions with respect and authenticity."}
+                    ? "Le Bénin, le Togo et le Ghana sont riches en traditions spirituelles et culturelles. Découvrez temples, cérémonies et traditions avec respect et authenticité."
+                    : "Benin, Togo and Ghana are rich in spiritual and cultural traditions. Discover temples, ceremonies and traditions with respect and authenticity."}
                 </p>
                 <Button variant="primary" href="/circuits?category=Vodoun">
                   {isFr
@@ -262,8 +262,8 @@ export function HomeContent({
             <SectionHeading
               title={
                 isFr
-                  ? "Ils ont voyagé avec Wonder Tours"
-                  : "They traveled with Wonder Tours"
+                  ? "Ils ont voyagé avec Wonder Tours and Services"
+                  : "They traveled with Wonder Tours and Services"
               }
             />
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -315,7 +315,7 @@ export function HomeContent({
           </div>
           <div className="relative z-10 container mx-auto px-4 lg:px-8 text-center text-white">
             <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6">
-              {isFr ? "Prêt à découvrir le Bénin ?" : "Ready to discover Benin?"}
+              {isFr ? "Prêt à découvrir le Bénin, le Togo et le Ghana ?" : "Ready to discover Benin, Togo and Ghana?"}
             </h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-200">
               {isFr

@@ -19,7 +19,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center p-6 md:p-8">
           <CardTitle className="text-2xl md:text-3xl font-bold text-primary">
-            Wonder Tours
+            Wonder Tours and Services
           </CardTitle>
           <p className="text-gray-600 mt-2 text-sm md:text-base">
             {mode === "login" && "Connectez-vous à votre compte"}

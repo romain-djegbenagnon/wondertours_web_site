@@ -1,7 +1,7 @@
 export const SITE_CONFIG = {
   name: "Wonder Tours and Services",
-  description: "Découvrez le Bénin à travers des expériences authentiques avec plus de 20 ans d'expertise touristique.",
-  descriptionEn: "Discover Benin through authentic experiences with over 20 years of tourism expertise.",
+  description: "Découvrez le Bénin, le Togo et le Ghana à travers des expériences authentiques avec plus de 20 ans d'expertise touristique.",
+  descriptionEn: "Discover Benin, Togo and Ghana through authentic experiences with over 20 years of tourism expertise.",
   url: "https://wondertours.bj",
   ogImage: "/og-image.jpg",
   links: {
@@ -40,8 +40,8 @@ export const SERVICES = [
     id: 1,
     title: "Circuits touristiques",
     titleEn: "Guided tours",
-    description: "Découvrez le Bénin à travers des circuits soigneusement conçus.",
-    descriptionEn: "Discover Benin through carefully designed tours.",
+    description: "Découvrez le Bénin, le Togo et le Ghana à travers des circuits soigneusement conçus.",
+    descriptionEn: "Discover Benin, Togo and Ghana through carefully designed tours.",
     icon: "Map",
     href: "/circuits",
   },
@@ -100,8 +100,8 @@ export const WHY_CHOOSE_US = [
     id: 4,
     title: "Expertise locale",
     titleEn: "Local expertise",
-    description: "Une connaissance approfondie des destinations et du patrimoine béninois.",
-    descriptionEn: "In-depth knowledge of Benin's destinations and heritage.",
+    description: "Une connaissance approfondie des destinations et du patrimoine du Bénin, du Togo et du Ghana.",
+    descriptionEn: "In-depth knowledge of Benin's, Togo's and Ghana's destinations and heritage.",
   },
 ] as const;
 

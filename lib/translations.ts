@@ -15,16 +15,16 @@ export const translations = {
     },
     // Hero
     hero: {
-      subtitle: "EXPLOREZ LE BÉNIN AUTREMENT",
-      title: "Découvrez le Bénin à travers des expériences authentiques.",
-      description: "Avec plus de 20 ans d'expertise, Wonder Tours and Services vous accompagne dans la découverte du patrimoine culturel et naturel du Bénin.",
+      subtitle: "EXPLOREZ LE BÉNIN, LE TOGO ET LE GHANA AUTREMENT",
+      title: "Découvrez le Bénin, le Togo et le Ghana à travers des expériences authentiques.",
+      description: "Avec plus de 20 ans d'expertise, Wonder Tours and Services vous accompagne dans la découverte du patrimoine culturel et naturel du Bénin, du Togo et du Ghana.",
       ctaPrimary: "Découvrir nos circuits",
       ctaSecondary: "Planifier mon voyage",
       video: "Voir la destination",
     },
     // CTA
     cta: {
-      ready: "Prêt à découvrir le Bénin ?",
+      ready: "Prêt à découvrir le Bénin, le Togo et le Ghana ?",
       description: "Laissez-nous imaginer avec vous une expérience adaptée à vos envies.",
       planTrip: "Planifier mon voyage",
       contactUs: "Nous contacter",
@@ -60,16 +60,16 @@ export const translations = {
     },
     // Hero
     hero: {
-      subtitle: "EXPLORE BENIN DIFFERENTLY",
-      title: "Discover Benin through authentic experiences.",
-      description: "With over 20 years of expertise, Wonder Tours and Services accompanies you in discovering Benin's cultural and natural heritage.",
+      subtitle: "EXPLORE BENIN, TOGO AND GHANA DIFFERENTLY",
+      title: "Discover Benin, Togo and Ghana through authentic experiences.",
+      description: "With over 20 years of expertise, Wonder Tours and Services accompanies you in discovering Benin's, Togo's and Ghana's cultural and natural heritage.",
       ctaPrimary: "Discover our tours",
       ctaSecondary: "Plan my trip",
       video: "See the destination",
     },
     // CTA
     cta: {
-      ready: "Ready to discover Benin?",
+      ready: "Ready to discover Benin, Togo and Ghana?",
       description: "Let us imagine an experience tailored to your desires.",
       planTrip: "Plan my trip",
       contactUs: "Contact us",

@@ -146,8 +146,8 @@ export default function ContactPage() {
           subtitle="CONTACT"
           titleFr="Parlons de votre prochain voyage"
           titleEn="Let's talk about your next trip"
-          descriptionFr="Contactez-nous pour planifier votre voyage au Bénin, demander un devis ou simplement en savoir plus sur nos services."
-          descriptionEn="Contact us to plan your trip to Benin, request a quote or simply learn more about our services."
+          descriptionFr="Contactez-nous pour planifier votre voyage au Bénin, au Togo ou au Ghana, demander un devis ou simplement en savoir plus sur nos services."
+          descriptionEn="Contact us to plan your trip to Benin, Togo or Ghana, request a quote or simply learn more about our services."
           ctaFr="Remplir le formulaire"
           ctaEn="Fill in the form"
           ctaHref="#form"
@@ -316,7 +316,7 @@ export default function ContactPage() {
                       allowFullScreen
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
-                      title={isFr ? "Carte Google Maps - Wonder Tours" : "Google Maps - Wonder Tours"}
+                      title={isFr ? "Carte Google Maps - Wonder Tours and Services" : "Google Maps - Wonder Tours and Services"}
                     />
                   </div>
                 </div>

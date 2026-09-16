@@ -11,8 +11,8 @@ import { toCircuitVM } from "@/lib/view-models";
 import { generateMetadata } from "@/lib/seo";
 
 export const metadata = generateMetadata({
-  title: "Circuits touristiques au Bénin - Wonder Tours and Services",
-  description: "Explorez nos circuits touristiques au Bénin : Ouidah, Abomey, Ganvié, Grand-Popo, Porto-Novo. Circuits culturels, historiques et nature.",
+  title: "Circuits touristiques au Bénin, Togo et Ghana - Wonder Tours and Services",
+  description: "Explorez nos circuits touristiques au Bénin, au Togo et au Ghana : Ouidah, Abomey, Lomé, Kumasi, Ganvié, Grand-Popo. Circuits culturels, historiques et nature.",
   path: "/circuits"
 });
 
@@ -60,8 +60,8 @@ export default async function CircuitsPage({ searchParams }: CircuitsPageProps) 
           subtitle="NOS CIRCUITS"
           titleFr="Explorez nos circuits touristiques"
           titleEn="Explore our tourist circuits"
-          descriptionFr="Découvrez le Bénin à travers nos circuits soigneusement conçus pour vous offrir des expériences authentiques et inoubliables."
-          descriptionEn="Discover Benin through our carefully designed circuits to offer you authentic and unforgettable experiences."
+          descriptionFr="Découvrez le Bénin, le Togo et le Ghana à travers nos circuits soigneusement conçus pour vous offrir des expériences authentiques et inoubliables."
+          descriptionEn="Discover Benin, Togo and Ghana through our carefully designed circuits to offer you authentic and unforgettable experiences."
           ctaFr="Demander un devis"
           ctaEn="Request a quote"
           ctaHref="/contact"

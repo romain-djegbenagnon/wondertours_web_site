@@ -17,7 +17,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-primary">
-            Wonder Tours
+            Wonder Tours and Services
           </CardTitle>
           <p className="text-gray-600 mt-2">
             {mode === "login" && "Connectez-vous au dashboard"}

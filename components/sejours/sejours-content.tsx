@@ -103,8 +103,8 @@ export function SejoursContent() {
         {/* Hero */}
         <LocalizedHero
           subtitle="ORGANISATION DE SÉJOURS"
-          titleFr="Votre séjour au Bénin, pensé selon vos envies"
-          titleEn="Your stay in Benin, designed around your wishes"
+          titleFr="Votre séjour au Bénin, au Togo ou au Ghana, pensé selon vos envies"
+          titleEn="Your stay in Benin, Togo or Ghana, designed around your wishes"
           descriptionFr="Nous concevons des séjours sur mesure adaptés à vos préférences, votre budget et votre temps. Laissez-nous créer l'expérience parfaite pour vous."
           descriptionEn="We design tailor-made stays adapted to your preferences, budget and time. Let us create the perfect experience for you."
           ctaFr="Créer mon séjour"
@@ -209,8 +209,8 @@ export function SejoursContent() {
             </h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-200">
               {isFr
-                ? "Contactez-nous pour discuter de votre projet de voyage au Bénin."
-                : "Contact us to discuss your travel project in Benin."}
+                ? "Contactez-nous pour discuter de votre projet de voyage au Bénin, au Togo ou au Ghana."
+                : "Contact us to discuss your travel project in Benin, Togo or Ghana."}
             </p>
             <Button variant="primary" size="lg" href="/contact">
               {isFr ? "Créer mon séjour" : "Create my stay"}

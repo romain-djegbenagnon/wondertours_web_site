@@ -47,7 +47,7 @@ export function Sidebar({ onClose }: SidebarProps) {
       <div className="p-4 md:p-6 border-b border-gray-200 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center" onClick={onClose}>
           <span className="font-heading font-bold text-lg md:text-xl text-primary">
-            Wonder Tours
+            Wonder Tours and Services
           </span>
         </Link>
         <button

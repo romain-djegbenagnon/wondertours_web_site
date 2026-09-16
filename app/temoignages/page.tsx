@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = generateMetadata({
   title: "Témoignages - Wonder Tours and Services",
-  description: "Découvrez les témoignages de nos voyageurs au Bénin. Des expériences authentiques et inoubliables avec Wonder Tours and Services.",
+  description: "Découvrez les témoignages de nos voyageurs au Bénin, au Togo et au Ghana. Des expériences authentiques et inoubliables avec Wonder Tours and Services.",
   path: "/temoignages"
 });
 
@@ -36,8 +36,8 @@ export default async function TestimonialsPage() {
           subtitle="TÉMOIGNAGES"
           titleFr="Des voyages qui laissent des souvenirs"
           titleEn="Trips that leave memories"
-          descriptionFr="Découvrez les expériences de nos voyageurs et laissez-vous inspirer pour votre prochaine aventure au Bénin."
-          descriptionEn="Discover our travelers' experiences and get inspired for your next adventure in Benin."
+          descriptionFr="Découvrez les expériences de nos voyageurs et laissez-vous inspirer pour votre prochaine aventure au Bénin, au Togo ou au Ghana."
+          descriptionEn="Discover our travelers' experiences and get inspired for your next adventure in Benin, Togo or Ghana."
           ctaFr="Partager mon expérience"
           ctaEn="Share my experience"
           ctaHref="/contact"

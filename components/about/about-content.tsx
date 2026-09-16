@@ -20,19 +20,19 @@ export function AboutContent() {
 
   const values = isFr
     ? [
-        { title: "Authenticité", description: "Des expériences vraies et immersives au cœur de la culture béninoise." },
+        { title: "Authenticité", description: "Des expériences vraies et immersives au cœur des cultures de l'Afrique de l'Ouest." },
         { title: "Excellence", description: "Un service de qualité irréprochable pour chaque voyageur." },
         { title: "Respect", description: "Respect des cultures, des traditions et de l'environnement." },
         { title: "Hospitalité", description: "Un accueil chaleureux et personnalisé à chaque étape." },
-        { title: "Culture", description: "Valorisation et transmission du patrimoine culturel béninois." },
+        { title: "Culture", description: "Valorisation et transmission du patrimoine culturel de l'Afrique de l'Ouest." },
         { title: "Professionnalisme", description: "Une équipe expérimentée et dédiée à votre satisfaction." },
       ]
     : [
-        { title: "Authenticity", description: "Real, immersive experiences at the heart of Beninese culture." },
+        { title: "Authenticity", description: "Real, immersive experiences at the heart of West African cultures." },
         { title: "Excellence", description: "Impeccable quality of service for every traveler." },
         { title: "Respect", description: "Respect for cultures, traditions and the environment." },
         { title: "Hospitality", description: "A warm, personalized welcome at every step." },
-        { title: "Culture", description: "Promoting and passing on Benin's cultural heritage." },
+        { title: "Culture", description: "Promoting and passing on West African cultural heritage." },
         { title: "Professionalism", description: "An experienced team dedicated to your satisfaction." },
       ];
 
@@ -44,10 +44,10 @@ export function AboutContent() {
         {/* Hero */}
         <LocalizedHero
           subtitle="NOTRE HISTOIRE"
-          titleFr="Une passion pour le voyage. Une expertise du Bénin."
-          titleEn="A passion for travel. Expertise in Benin."
-          descriptionFr="Depuis plus de 20 ans, Wonder Tours and Services accompagne les voyageurs dans la découverte des trésors du Bénin."
-          descriptionEn="For over 20 years, Wonder Tours and Services has accompanied travelers in discovering Benin's treasures."
+          titleFr="Une passion pour le voyage. Une expertise du Bénin, du Togo et du Ghana."
+          titleEn="A passion for travel. Expertise in Benin, Togo and Ghana."
+          descriptionFr="Depuis plus de 20 ans, Wonder Tours and Services accompagne les voyageurs dans la découverte des trésors du Bénin, du Togo et du Ghana."
+          descriptionEn="For over 20 years, Wonder Tours and Services has accompanied travelers in discovering Benin's, Togo's and Ghana's treasures."
           ctaFr="Voir tous les circuits"
           ctaEn="View all circuits"
           ctaHref="/circuits"
@@ -67,10 +67,10 @@ export function AboutContent() {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <p className="text-text-secondary leading-relaxed mb-6">
-                  {isFr ? "Wonder Tours and Services est né d'une passion profonde pour le Bénin et de la volonté de partager la richesse culturelle et naturelle de ce pays avec le monde entier." : "Wonder Tours and Services was born from a deep passion for Benin and the desire to share the country's cultural and natural richness with the world."}
+                  {isFr ? "Wonder Tours and Services est né d'une passion profonde pour l'Afrique de l'Ouest et de la volonté de partager la richesse culturelle et naturelle du Bénin, du Togo et du Ghana avec le monde entier." : "Wonder Tours and Services was born from a deep passion for West Africa and the desire to share the cultural and natural richness of Benin, Togo and Ghana with the world."}
                 </p>
                 <p className="text-text-secondary leading-relaxed mb-6">
-                  {isFr ? "Fondée par Eric Sylvestre BOKOSSA, notre entreprise s'est construite sur plus de deux décennies d'expérience dans l'organisation d'excursions, de circuits et de séjours touristiques au Bénin et à l'international." : "Founded by Eric Sylvestre BOKOSSA, our company has been built on over two decades of experience in organizing excursions, tours and tourist stays in Benin and internationally."}
+                  {isFr ? "Fondée par Eric Sylvestre BOKOSSA, notre entreprise s'est construite sur plus de deux décennies d'expérience dans l'organisation d'excursions, de circuits et de séjours touristiques au Bénin, au Togo, au Ghana et à l'international." : "Founded by Eric Sylvestre BOKOSSA, our company has been built on over two decades of experience in organizing excursions, tours and tourist stays in Benin, Togo, Ghana and internationally."}
                 </p>
                 <p className="text-text-secondary leading-relaxed">
                   {isFr ? "Notre mission : offrir des expériences authentiques, respectueuses des cultures locales et inoubliables à chaque voyageur qui nous fait confiance." : "Our mission: to offer authentic experiences, respectful of local cultures and unforgettable to every traveler who trusts us."}
@@ -103,7 +103,7 @@ export function AboutContent() {
               {isFr ? "années d'expérience" : "years of experience"}
             </h2>
             <p className="text-xl max-w-2xl mx-auto text-gray-200">
-              {isFr ? "Deux décennies d'expertise pour vous faire découvrir le meilleur du Bénin" : "Two decades of expertise to help you discover the best of Benin"}
+              {isFr ? "Deux décennies d'expertise pour vous faire découvrir le meilleur du Bénin, du Togo et du Ghana" : "Two decades of expertise to help you discover the best of Benin, Togo and Ghana"}
             </p>
           </div>
         </section>
@@ -132,8 +132,8 @@ export function AboutContent() {
                 </p>
                 <p className="text-text-secondary leading-relaxed">
                   {isFr
-                    ? "Passionné par son pays et sa culture, Eric Sylvestre BOKOSSA a consacré sa vie à faire connaître les trésors du Bénin aux voyageurs du monde entier. Sa vision : un tourisme respectueux, authentique et mémorable."
-                    : "Passionate about his country and its culture, Eric Sylvestre BOKOSSA has devoted his life to introducing Benin's treasures to travelers from around the world. His vision: respectful, authentic and memorable tourism."}
+                    ? "Passionné par sa région et sa culture, Eric Sylvestre BOKOSSA a consacré sa vie à faire connaître les trésors du Bénin, du Togo et du Ghana aux voyageurs du monde entier. Sa vision : un tourisme respectueux, authentique et mémorable."
+                    : "Passionate about his region and its culture, Eric Sylvestre BOKOSSA has devoted his life to introducing Benin's, Togo's and Ghana's treasures to travelers from around the world. His vision: respectful, authentic and memorable tourism."}
                 </p>
               </div>
             </div>
@@ -170,12 +170,12 @@ export function AboutContent() {
             <div className="max-w-4xl mx-auto text-center">
               <SectionHeading
                 subtitle={isFr ? "NOTRE VISION" : "OUR VISION"}
-                title={isFr ? "Développer le tourisme béninois" : "Developing Benin's tourism"}
+                title={isFr ? "Développer le tourisme en Afrique de l'Ouest" : "Developing West African tourism"}
               />
               <p className="text-text-secondary text-xl leading-relaxed mb-8">
                 {isFr
-                  ? "Notre ambition est de contribuer au développement du tourisme au Bénin en faisant découvrir la richesse de notre patrimoine, de notre culture et de nos paysages aux voyageurs du monde entier. Nous croyons en un tourisme durable, respectueux et bénéfique pour les communautés locales."
-                  : "Our ambition is to contribute to the development of tourism in Benin by revealing the richness of our heritage, our culture and our landscapes to travelers from around the world. We believe in sustainable, respectful tourism that benefits local communities."}
+                  ? "Notre ambition est de contribuer au développement du tourisme au Bénin, au Togo et au Ghana en faisant découvrir la richesse de notre patrimoine, de notre culture et de nos paysages aux voyageurs du monde entier. Nous croyons en un tourisme durable, respectueux et bénéfique pour les communautés locales."
+                  : "Our ambition is to contribute to the development of tourism in Benin, Togo and Ghana by revealing the richness of our heritage, our culture and our landscapes to travelers from around the world. We believe in sustainable, respectful tourism that benefits local communities."}
               </p>
               <Button variant="primary" size="lg" href="/circuits">
                 {isFr ? "Rejoignez-nous pour une aventure inoubliable" : "Join us for an unforgettable adventure"}

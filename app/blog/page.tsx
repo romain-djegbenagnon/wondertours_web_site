@@ -9,7 +9,7 @@ import { generateMetadata } from "@/lib/seo";
 
 export const metadata = generateMetadata({
   title: "Blog - Wonder Tours and Services",
-  description: "Carnet de voyage : conseils, culture et actualités pour préparer votre découverte du Bénin. Articles sur le tourisme, la culture et les destinations.",
+  description: "Carnet de voyage : conseils, culture et actualités pour préparer votre découverte du Bénin, du Togo et du Ghana. Articles sur le tourisme, la culture et les destinations.",
   path: "/blog"
 });
 
@@ -45,8 +45,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           subtitle="CARNET DE VOYAGE"
           titleFr="Conseils, culture et actualités"
           titleEn="Tips, culture and news"
-          descriptionFr="Découvrez nos articles pour préparer votre voyage au Bénin : conseils pratiques, découvertes culturelles et inspirations."
-          descriptionEn="Discover our articles to prepare your trip to Benin: practical tips, cultural discoveries and inspirations."
+          descriptionFr="Découvrez nos articles pour préparer votre voyage au Bénin, au Togo ou au Ghana : conseils pratiques, découvertes culturelles et inspirations."
+          descriptionEn="Discover our articles to prepare your trip to Benin, Togo or Ghana: practical tips, cultural discoveries and inspirations."
           ctaFr="Explorer les articles"
           ctaEn="Explore articles"
           ctaHref="#articles"

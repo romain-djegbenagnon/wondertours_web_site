@@ -113,8 +113,8 @@ export default function HotelsPage() {
               </h2>
               <p className="text-text-secondary text-lg mb-8">
                 {isFr
-                  ? "Un conseiller Wonder Tours vous contactera prochainement pour vous accompagner dans votre recherche d'hébergement."
-                  : "A Wonder Tours advisor will contact you shortly to assist with your accommodation search."}
+                  ? "Un conseiller Wonder Tours and Services vous contactera prochainement pour vous accompagner dans votre recherche d'hébergement."
+                  : "A Wonder Tours and Services advisor will contact you shortly to assist with your accommodation search."}
               </p>
               <Button variant="primary" href="/" onClick={() => setIsSubmitted(false)}>
                 {isFr ? "Retour à l'accueil" : "Back to home"}
@@ -136,10 +136,10 @@ export default function HotelsPage() {
         {/* Hero */}
         <LocalizedHero
           subtitle="RÉSERVATION D'HÔTELS"
-          titleFr="Trouvez votre hébergement au Bénin"
-          titleEn="Find your accommodation in Benin"
-          descriptionFr="Nous vous aidons à trouver et réserver l'hébergement parfait pour votre séjour au Bénin, selon vos préférences et votre budget."
-          descriptionEn="We help you find and book the perfect accommodation for your stay in Benin, according to your preferences and budget."
+          titleFr="Trouvez votre hébergement au Bénin, au Togo ou au Ghana"
+          titleEn="Find your accommodation in Benin, Togo or Ghana"
+          descriptionFr="Nous vous aidons à trouver et réserver l'hébergement parfait pour votre séjour au Bénin, au Togo ou au Ghana, selon vos préférences et votre budget."
+          descriptionEn="We help you find and book the perfect accommodation for your stay in Benin, Togo or Ghana, according to your preferences and budget."
           ctaFr="Faire une demande"
           ctaEn="Make a request"
           ctaHref="#form"
@@ -155,8 +155,8 @@ export default function HotelsPage() {
               />
               <p className="text-text-secondary text-xl leading-relaxed mb-8">
                 {isFr
-                  ? "Un conseiller Wonder Tours vous accompagnera dans votre recherche d'hébergement pour trouver l'hôtel idéal adapté à vos besoins, votre budget et vos préférences."
-                  : "A Wonder Tours advisor will assist you in your accommodation search to find the ideal hotel suited to your needs, budget and preferences."}
+                  ? "Un conseiller Wonder Tours and Services vous accompagnera dans votre recherche d'hébergement pour trouver l'hôtel idéal adapté à vos besoins, votre budget et vos préférences."
+                  : "A Wonder Tours and Services advisor will assist you in your accommodation search to find the ideal hotel suited to your needs, budget and preferences."}
               </p>
               <div className="grid md:grid-cols-3 gap-8">
                 {(isFr
@@ -298,8 +298,8 @@ export default function HotelsPage() {
                 
                 <p className="text-text-secondary text-sm text-center">
                   {isFr
-                    ? "Un conseiller Wonder Tours vous contactera dans les 24h."
-                    : "A Wonder Tours advisor will contact you within 24 hours."}
+                    ? "Un conseiller Wonder Tours and Services vous contactera dans les 24h."
+                    : "A Wonder Tours and Services advisor will contact you within 24 hours."}
                 </p>
               </form>
             </div>

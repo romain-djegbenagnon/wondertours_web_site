@@ -17,7 +17,7 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center">
               <span className="font-heading font-bold text-xl">
-                Wonder Tours
+                Wonder Tours and Services
               </span>
             </div>
             <p className="text-text-secondary text-sm leading-relaxed">

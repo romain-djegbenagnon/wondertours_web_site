@@ -13,8 +13,8 @@ import { generateMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata = generateMetadata({
-  title: "Wonder Tours and Services - Tourisme au Bénin",
-  description: "Découvrez le Bénin avec Wonder Tours and Services. Plus de 20 ans d'expertise en circuits touristiques, excursions et séjours authentiques.",
+  title: "Wonder Tours and Services - Tourisme au Bénin, Togo et Ghana",
+  description: "Découvrez le Bénin, le Togo et le Ghana avec Wonder Tours and Services. Plus de 20 ans d'expertise en circuits touristiques, excursions et séjours authentiques.",
   path: "/"
 });
 

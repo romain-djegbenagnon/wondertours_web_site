@@ -86,8 +86,8 @@ export function BlogPageContent({
           />
           <p className="text-text-secondary text-xl mb-8 max-w-2xl mx-auto">
             {isFr
-              ? "Recevez nos derniers articles et conseils pour préparer votre voyage au Bénin."
-              : "Get our latest articles and tips to prepare your trip to Benin."}
+              ? "Recevez nos derniers articles et conseils pour préparer votre voyage au Bénin, au Togo ou au Ghana."
+              : "Get our latest articles and tips to prepare your trip to Benin, Togo or Ghana."}
           </p>
           <div className="max-w-md mx-auto flex gap-4">
             <input
