@@ -1,12 +1,12 @@
-import { ok, handleRoute } from "@/lib/api/utils";
+import { ok, handleProtectedRoute } from "@/lib/api/utils";
 import {
   getDashboardStats,
   getRecentBookings,
   getRecentContactRequests,
 } from "@/lib/services/stats";
 
-export async function GET() {
-  return handleRoute(async () => {
+export async function GET(request: Request) {
+  return handleProtectedRoute(request, async (_session) => {
     const [stats, recentBookings, recentContactRequests] = await Promise.all([
       getDashboardStats(),
       getRecentBookings(5),

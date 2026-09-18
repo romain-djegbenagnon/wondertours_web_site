@@ -9,6 +9,12 @@ export interface BlogPost {
   date: string;
   author: string;
   readTime: string;
+  // Traductions anglaises optionnelles (repli FR si absentes).
+  titleEn?: string;
+  categoryEn?: string;
+  excerptEn?: string;
+  contentEn?: string;
+  readTimeEn?: string;
 }
 
 export const BLOG_POSTS: BlogPost[] = [

@@ -3,13 +3,24 @@
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Header } from "@/components/dashboard/header";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import type { Session } from "@/lib/auth";
 
 export function DashboardLayoutClient({
   children,
+  session,
 }: {
   children: React.ReactNode;
+  /** Session lue côté serveur (layout.tsx) — toujours absente sur /dashboard/login. */
+  session: Session | null;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
+
+  // La page de connexion s'affiche sans chrome (sidebar/header).
+  if (pathname === "/dashboard/login") {
+    return <>{children}</>;
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -27,12 +38,12 @@ export function DashboardLayoutClient({
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <Sidebar onClose={() => setSidebarOpen(false)} />
+        <Sidebar onClose={() => setSidebarOpen(false)} role={session?.role} />
       </div>
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden w-full">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
+        <Header onMenuClick={() => setSidebarOpen(true)} user={session} />
         <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
           {children}
         </main>

@@ -1,20 +1,27 @@
 import { z } from "zod";
-import { ok, created, parseBody, parseQuery, handleRoute } from "@/lib/api/utils";
-import { listQuerySchema } from "@/lib/api/schemas";
+import { ok, created, parseBody, parseQuery, handleProtectedRoute } from "@/lib/api/utils";
+import { listQuerySchema, boolQuery } from "@/lib/api/schemas";
 import { listUsers, createUser } from "@/lib/services/users";
 
+const listSchema = listQuerySchema.extend({
+  role: z.enum(["admin", "editor", "viewer"]).optional(),
+  active: boolQuery,
+});
+
 export async function GET(request: Request) {
-  return handleRoute(async () => {
-    const [query, errorResponse] = parseQuery(request, listQuerySchema);
+  return handleProtectedRoute(request, async (_session) => {
+    const [query, errorResponse] = parseQuery(request, listSchema);
     if (errorResponse) return errorResponse;
 
     const result = await listUsers({
       page: query.page,
       pageSize: query.pageSize,
       q: query.q,
+      role: query.role,
+      active: query.active,
     });
     return ok(result);
-  });
+  }, { roles: ["admin"] });
 }
 
 const createSchema = z.object({
@@ -27,11 +34,11 @@ const createSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [body, errorResponse] = await parseBody(request, createSchema);
     if (errorResponse) return errorResponse;
 
     const user = await createUser(body);
     return created(user);
-  });
+  }, { roles: ["admin"] });
 }

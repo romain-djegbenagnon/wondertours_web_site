@@ -3,7 +3,7 @@ import {
   ok,
   notFound,
   parseBody,
-  handleRoute,
+  handleProtectedRoute,
   uuidSchema,
   prismaErrorResponse,
 } from "@/lib/api/utils";
@@ -20,7 +20,7 @@ export async function PATCH(
   request: Request,
   ctx: RouteContext<'/api/dashboard/contact-requests/[id]/status'>
 ) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const { id } = await ctx.params;
     if (!uuidSchema.safeParse(id).success) return notFound("Demande introuvable");
 
@@ -38,5 +38,5 @@ export async function PATCH(
       if (prismaResponse) return prismaResponse;
       throw error;
     }
-  });
+  }, { roles: ["admin", "editor"] });
 }

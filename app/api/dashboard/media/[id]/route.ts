@@ -1,17 +1,17 @@
 import {
   ok,
   notFound,
-  handleRoute,
+  handleProtectedRoute,
   uuidSchema,
   prismaErrorResponse,
 } from "@/lib/api/utils";
 import { deleteMediaFile, MediaValidationError } from "@/lib/services/media";
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   ctx: RouteContext<'/api/dashboard/media/[id]'>
 ) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const { id } = await ctx.params;
     if (!uuidSchema.safeParse(id).success) return notFound("Fichier introuvable");
 
@@ -30,5 +30,5 @@ export async function DELETE(
       if (prismaResponse) return prismaResponse;
       throw error;
     }
-  });
+  }, { roles: ["admin", "editor"] });
 }

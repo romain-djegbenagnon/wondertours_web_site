@@ -1,4 +1,11 @@
 import { z } from "zod";
+import {
+  getSessionTokenFromRequest,
+  toSession,
+  verifySessionToken,
+  type Session,
+  type UserRole,
+} from "@/lib/auth";
 
 // ─────────────────────────────── Schémas partagés ───────────────────────────────
 
@@ -46,6 +53,14 @@ export function notFound(message = "Ressource introuvable"): Response {
 
 export function conflict(message: string): Response {
   return jsonResponse({ error: message }, { status: 409 });
+}
+
+export function unauthorized(message = "Authentification requise"): Response {
+  return jsonResponse({ error: message }, { status: 401 });
+}
+
+export function forbidden(message = "Accès refusé"): Response {
+  return jsonResponse({ error: message }, { status: 403 });
 }
 
 export function serverError(message = "Erreur interne du serveur"): Response {
@@ -112,6 +127,54 @@ export function prismaErrorResponse(error: unknown): Response | null {
 export async function handleRoute(fn: () => Promise<Response>): Promise<Response> {
   try {
     return await fn();
+  } catch (error) {
+    const prismaResponse = prismaErrorResponse(error);
+    if (prismaResponse) return prismaResponse;
+    console.error("[api]", error);
+    return serverError();
+  }
+}
+
+// ─────────────────────── Garde de session ───────────────────────
+
+// Types partagés — source de vérité dans lib/auth.ts (utilisée aussi par
+// proxy.ts et lib/session.ts).
+export type { UserRole, Session } from "@/lib/auth";
+
+/**
+ * Extrait et vérifie la session depuis le cookie de la requête.
+ * Retourne null si absente/invalide — la validation du payload est
+ * déléguée à `toSession` (lib/auth.ts).
+ */
+export async function getSessionFromRequest(
+  request: Request
+): Promise<Session | null> {
+  const token = getSessionTokenFromRequest(request);
+  if (!token) return null;
+
+  return toSession(await verifySessionToken(token));
+}
+
+/**
+ * Variante protégée de `handleRoute` : vérifie la session (cookie JWT) avant
+ * d'exécuter le handler — 401 si absente/invalide, 403 si le rôle ne fait
+ * pas partie de `roles`. Même mapping d'erreurs Prisma que `handleRoute`.
+ */
+export async function handleProtectedRoute(
+  request: Request,
+  fn: (session: Session) => Promise<Response>,
+  options?: { roles?: UserRole[] }
+): Promise<Response> {
+  const session = await getSessionFromRequest(request);
+  if (!session) {
+    return unauthorized();
+  }
+  if (options?.roles && !options.roles.includes(session.role)) {
+    return forbidden();
+  }
+
+  try {
+    return await fn(session);
   } catch (error) {
     const prismaResponse = prismaErrorResponse(error);
     if (prismaResponse) return prismaResponse;

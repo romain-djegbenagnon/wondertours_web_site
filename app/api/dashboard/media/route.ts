@@ -1,4 +1,4 @@
-import { ok, created, badRequest, parseQuery, handleRoute } from "@/lib/api/utils";
+import { ok, created, badRequest, parseQuery, handleProtectedRoute } from "@/lib/api/utils";
 import { listQuerySchema } from "@/lib/api/schemas";
 import {
   listMediaFiles,
@@ -7,7 +7,7 @@ import {
 } from "@/lib/services/media";
 
 export async function GET(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [query, errorResponse] = parseQuery(request, listQuerySchema);
     if (errorResponse) return errorResponse;
 
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     let formData: FormData;
     try {
       formData = await request.formData();
@@ -54,5 +54,5 @@ export async function POST(request: Request) {
       }
       throw error;
     }
-  });
+  }, { roles: ["admin", "editor"] });
 }

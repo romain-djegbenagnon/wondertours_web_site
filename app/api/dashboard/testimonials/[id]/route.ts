@@ -2,7 +2,7 @@ import {
   ok,
   notFound,
   parseBody,
-  handleRoute,
+  handleProtectedRoute,
   uuidSchema,
   prismaErrorResponse,
 } from "@/lib/api/utils";
@@ -14,10 +14,10 @@ import {
 import { prisma } from "@/lib/db";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   ctx: RouteContext<'/api/dashboard/testimonials/[id]'>
 ) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const { id } = await ctx.params;
     if (!uuidSchema.safeParse(id).success) return notFound("Témoignage introuvable");
     const testimonial = await prisma.testimonial.findUnique({ where: { id } });
@@ -30,7 +30,7 @@ export async function PATCH(
   request: Request,
   ctx: RouteContext<'/api/dashboard/testimonials/[id]'>
 ) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const { id } = await ctx.params;
     if (!uuidSchema.safeParse(id).success) return notFound("Témoignage introuvable");
 
@@ -53,14 +53,14 @@ export async function PATCH(
       if (prismaResponse) return prismaResponse;
       throw error;
     }
-  });
+  }, { roles: ["admin", "editor"] });
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   ctx: RouteContext<'/api/dashboard/testimonials/[id]'>
 ) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const { id } = await ctx.params;
     if (!uuidSchema.safeParse(id).success) return notFound("Témoignage introuvable");
 
@@ -72,5 +72,5 @@ export async function DELETE(
       throw error;
     }
     return ok({ message: "Témoignage supprimé", id });
-  });
+  }, { roles: ["admin", "editor"] });
 }

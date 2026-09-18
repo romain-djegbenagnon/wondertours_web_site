@@ -3,7 +3,7 @@ import {
   created,
   parseBody,
   parseQuery,
-  handleRoute,
+  handleProtectedRoute,
 } from "@/lib/api/utils";
 import { listQuerySchema, blogPostCreateSchema } from "@/lib/api/schemas";
 import { listBlogPosts, createBlogPost } from "@/lib/services/blog";
@@ -16,7 +16,7 @@ function json<T>(value: T | null | undefined): T | typeof DbNull {
 }
 
 export async function GET(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [query, errorResponse] = parseQuery(request, listQuerySchema);
     if (errorResponse) return errorResponse;
 
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [body, errorResponse] = await parseBody(
       request,
       blogPostCreateSchema
@@ -56,5 +56,5 @@ export async function POST(request: Request) {
     });
 
     return created(post);
-  });
+  }, { roles: ["admin", "editor"] });
 }

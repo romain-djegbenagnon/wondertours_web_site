@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ok, parseQuery, handleRoute } from "@/lib/api/utils";
+import { ok, parseQuery, handleProtectedRoute } from "@/lib/api/utils";
 import { listBookings } from "@/lib/services/bookings";
 
 const querySchema = z.object({
@@ -10,7 +10,7 @@ const querySchema = z.object({
 });
 
 export async function GET(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [query, errorResponse] = parseQuery(request, querySchema);
     if (errorResponse) return errorResponse;
 

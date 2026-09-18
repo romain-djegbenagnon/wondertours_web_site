@@ -52,6 +52,12 @@ function formatDuration(days: number | null | undefined): string {
   return `${days} jour${days > 1 ? "s" : ""}`;
 }
 
+/** Variante EN : "1 day" / "2 days" ; null → "Custom". */
+function formatDurationEn(days: number | null | undefined): string {
+  if (!days || days < 1) return "Custom";
+  return `${days} day${days > 1 ? "s" : ""}`;
+}
+
 /** Date ISO → "2024-01-15" (format des view-models statiques). */
 function toDateString(date: Date | null | undefined): string {
   if (!date) return "";
@@ -65,12 +71,17 @@ export function toCircuitVM(circuit: CircuitWithRelations): StaticCircuit {
     id: circuit.id,
     slug: circuit.slug,
     title: circuit.title,
+    titleEn: circuit.titleEn ?? undefined,
     destination: circuit.destination?.name ?? "Bénin",
+    destinationEn: circuit.destination?.nameEn ?? undefined,
     category: circuit.category?.name ?? "Circuit",
+    categoryEn: circuit.category?.nameEn ?? undefined,
     duration: formatDuration(circuit.durationDays),
+    durationEn: formatDurationEn(circuit.durationDays),
     price: Number(circuit.price),
     image: circuit.imageUrl ?? FALLBACK_IMAGE,
     description: circuit.description ?? "",
+    descriptionEn: circuit.descriptionEn ?? undefined,
     highlights: toStringArray(circuit.highlights),
     itinerary: toItinerary(circuit.itinerary),
     included: toStringArray(circuit.included),
@@ -85,9 +96,15 @@ export function toBlogPostVM(post: BlogPostWithRelations): StaticBlogPost {
     id: post.id,
     slug: post.slug,
     title: post.title,
+    titleEn: post.titleEn ?? undefined,
     category: post.category?.name ?? "Voyage",
+    categoryEn: post.category?.nameEn ?? undefined,
     excerpt: post.excerpt ?? "",
+    excerptEn: post.excerptEn ?? undefined,
     content: post.content ?? "",
+    contentEn: post.contentEn ?? undefined,
+    // readTime "N min" est identique en EN : pas de readTimeEn, le
+    // repli du composant l'affiche tel quel.
     image: post.imageUrl ?? FALLBACK_IMAGE,
     date: toDateString(post.publishedAt ?? post.createdAt),
     author: post.author

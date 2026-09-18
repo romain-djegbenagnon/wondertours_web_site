@@ -2,7 +2,7 @@ import {
   ok,
   notFound,
   parseBody,
-  handleRoute,
+  handleProtectedRoute,
 } from "@/lib/api/utils";
 import { uuidSchema, prismaErrorResponse } from "@/lib/api/utils";
 import { circuitUpdateSchema } from "@/lib/api/schemas";
@@ -14,10 +14,10 @@ import {
 import { uniqueSlug } from "@/lib/slug";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   ctx: RouteContext<'/api/dashboard/circuits/[id]'>
 ) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const { id } = await ctx.params;
     if (!uuidSchema.safeParse(id).success) return notFound("Circuit introuvable");
     const circuit = await getCircuitById(id);
@@ -30,7 +30,7 @@ export async function PATCH(
   request: Request,
   ctx: RouteContext<'/api/dashboard/circuits/[id]'>
 ) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const { id } = await ctx.params;
     if (!uuidSchema.safeParse(id).success) return notFound("Circuit introuvable");
 
@@ -51,14 +51,14 @@ export async function PATCH(
       if (prismaResponse) return prismaResponse;
       throw error;
     }
-  });
+  }, { roles: ["admin", "editor"] });
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   ctx: RouteContext<'/api/dashboard/circuits/[id]'>
 ) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const { id } = await ctx.params;
     if (!uuidSchema.safeParse(id).success) return notFound("Circuit introuvable");
 
@@ -73,5 +73,5 @@ export async function DELETE(
       throw error;
     }
     return ok({ message: "Circuit supprimé", id });
-  });
+  }, { roles: ["admin", "editor"] });
 }

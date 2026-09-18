@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { ok, parseBody, handleRoute } from "@/lib/api/utils";
+import { ok, parseBody, handleProtectedRoute } from "@/lib/api/utils";
 import { listSettings, upsertSettings } from "@/lib/services/settings";
 
-export async function GET() {
-  return handleRoute(async () => {
+export async function GET(request: Request) {
+  return handleProtectedRoute(request, async (_session) => {
     const settings = await listSettings();
     return ok({ items: settings });
   });
@@ -23,11 +23,11 @@ const putSchema = z.object({
 });
 
 export async function PUT(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [body, errorResponse] = await parseBody(request, putSchema);
     if (errorResponse) return errorResponse;
 
     const settings = await upsertSettings(body.settings);
     return ok({ items: settings, message: "Paramètres enregistrés" });
-  });
+  }, { roles: ["admin", "editor"] });
 }
