@@ -67,6 +67,11 @@ export function serverError(message = "Erreur interne du serveur"): Response {
   return jsonResponse({ error: message }, { status: 500 });
 }
 
+/** Dépendance externe absente / non configurée (ex. DEEPL_API_KEY manquante). */
+export function serviceUnavailable(message = "Service indisponible"): Response {
+  return jsonResponse({ error: message }, { status: 503 });
+}
+
 // ─────────────────────────────── Parsing ───────────────────────────────
 
 /** Résultat de parsing : succès [data, null] ou échec [null, Response]. */

@@ -35,9 +35,18 @@ Ce deuxième compte permet de vérifier les accès par rôle : l'éditeur lit et
 
 URL publique utilisée pour les métadonnées (`metadataBase`, canonicals). À défaut, `SITE_CONFIG.url` (`https://wondertours.bj`).
 
-### `DEEPL_API_KEY` — optionnel (actuellement inutilisé)
+### `IMGBB_API_KEY` — optionnel en local, recommandé en production
 
-Clé du service de traduction DeepL (`lib/services/deepl.ts`). Le service n'est pour l'instant branché nulle part : sans la clé, l'application utilise les traductions statiques de `lib/translations.ts`.
+Clé du service d'hébergement d'images imgBB (https://api.imgbb.com, compte gratuit). Elle pilote la médiathèque (`lib/services/media.ts` + client `lib/services/imgbb.ts`) :
+
+- **clé définie** : les uploads `POST /api/dashboard/media` partent vers imgBB — `url` est l'URL distante (`https://i.ibb.co/…`), `storagePath` conserve le `delete_url` imgBB (page de suppression manuelle — imgBB n'a pas d'API de suppression) ;
+- **clé absente** : fallback sur le stockage local `public/uploads/` — parfait en dev/tests, mais **non persistant sur Vercel** (FS en lecture seule).
+
+La clé est relue à chaque upload, pas au chargement du module.
+
+### `DEEPL_API_KEY` — optionnel
+
+Clé du service de traduction DeepL (`lib/services/deepl.ts`). Elle active la route `POST /api/dashboard/translate` (admin + éditeur), utilisée par le bouton « Traduire en anglais (DeepL) » des formulaires du dashboard (circuit, article blog, témoignage) pour pré-remplir les champs `*En` depuis les champs français. Sans la clé, la route répond `503` ; l'interface publique continue d'utiliser les traductions statiques de `lib/translations.ts`.
 
 ## Production (Vercel)
 
@@ -45,4 +54,11 @@ Ajouter au minimum : `DATABASE_URL`, `AUTH_SECRET`, et au premier déploiement `
 
 ```bash
 bunx vercel env add AUTH_SECRET production
+```
+
+Recommandées en production :
+
+```bash
+bunx vercel env add IMGBB_API_KEY production   # uploads média persistants (sinon fallback local non persistant)
+bunx vercel env add DEEPL_API_KEY production   # optionnel : bouton « Traduire en anglais » du dashboard
 ```

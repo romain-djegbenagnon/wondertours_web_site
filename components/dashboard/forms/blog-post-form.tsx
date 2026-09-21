@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { ArrowLeft, Save, FileText } from "lucide-react";
 import { readApiError } from "@/components/dashboard/api-error";
+import { TranslateButton } from "@/components/dashboard/translate-button";
 import { splitTags } from "@/lib/format";
 
 interface Option {
@@ -174,6 +175,21 @@ export function BlogPostForm({ categories }: { categories: Option[] }) {
                 rows={12}
                 value={form.contentEn}
                 onChange={(e) => update("contentEn", e.target.value)}
+              />
+              <TranslateButton
+                fields={{
+                  title: form.title,
+                  excerpt: form.excerpt,
+                  content: form.content,
+                }}
+                onTranslated={(texts) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    titleEn: texts.title ?? prev.titleEn,
+                    excerptEn: texts.excerpt ?? prev.excerptEn,
+                    contentEn: texts.content ?? prev.contentEn,
+                  }))
+                }
               />
             </CardContent>
           </Card>

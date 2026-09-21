@@ -1,20 +1,31 @@
-import { Translator } from 'deepl-node';
+import {
+  Translator,
+  type SourceLanguageCode,
+  type TargetLanguageCode,
+} from 'deepl-node';
 import type { Locale } from '../translations';
 
-const DEEPL_API_KEY = process.env.DEEPL_API_KEY;
-
 let translator: Translator | null = null;
+
+/**
+ * Clé API DeepL — résolue paresseusement à chaque usage (et non au chargement
+ * du module), comme AUTH_SECRET dans lib/auth.ts.
+ */
+function getApiKey(): string | undefined {
+  return process.env.DEEPL_API_KEY;
+}
 
 /**
  * Initialise le traducteur DeepL
  */
 export function getTranslator(): Translator {
-  if (!DEEPL_API_KEY) {
+  const apiKey = getApiKey();
+  if (!apiKey) {
     throw new Error('DEEPL_API_KEY environment variable is not set');
   }
 
   if (!translator) {
-    translator = new Translator(DEEPL_API_KEY);
+    translator = new Translator(apiKey);
   }
 
   return translator;
@@ -28,15 +39,15 @@ export function getTranslator(): Translator {
  */
 export async function translateText(
   text: string,
-  targetLang: 'en-US' | 'fr',
-  sourceLang?: 'en-US' | 'fr'
+  targetLang: TargetLanguageCode,
+  sourceLang?: SourceLanguageCode
 ): Promise<string> {
   const translator = getTranslator();
 
   const result = await translator.translateText(
     text,
-    (sourceLang as any) || null,
-    targetLang as any
+    sourceLang ?? null,
+    targetLang
   );
 
   return result.text;
@@ -50,15 +61,15 @@ export async function translateText(
  */
 export async function translateTexts(
   texts: string[],
-  targetLang: 'en-US' | 'fr',
-  sourceLang?: 'en-US' | 'fr'
+  targetLang: TargetLanguageCode,
+  sourceLang?: SourceLanguageCode
 ): Promise<string[]> {
   const translator = getTranslator();
 
   const results = await translator.translateText(
     texts,
-    (sourceLang as any) || null,
-    targetLang as any
+    sourceLang ?? null,
+    targetLang
   );
 
   return results.map((result) => result.text);
@@ -68,7 +79,7 @@ export async function translateTexts(
  * Vérifie si la clé API DeepL est configurée
  */
 export function isDeepLConfigured(): boolean {
-  return !!DEEPL_API_KEY;
+  return Boolean(getApiKey());
 }
 
 // ─── Helpers de traduction dynamique (serveur uniquement) ───
@@ -106,7 +117,9 @@ export async function translateDynamicText(
  * @param targetLocale - Langue cible
  * @returns Objet avec les textes traduits
  */
-export async function translateDynamicObject<T extends Record<string, any>>(
+export async function translateDynamicObject<
+  T extends Record<string, unknown>
+>(
   obj: T,
   targetLocale: Locale
 ): Promise<T> {
@@ -114,17 +127,15 @@ export async function translateDynamicObject<T extends Record<string, any>>(
     return obj;
   }
 
-  const translatedObj: Record<string, any> = { ...obj };
+  const translatedObj: Record<string, unknown> = { ...obj };
 
   for (const key in translatedObj) {
-    if (typeof translatedObj[key] === 'string') {
-      translatedObj[key] = await translateDynamicText(
-        translatedObj[key],
-        targetLocale
-      );
-    } else if (typeof translatedObj[key] === 'object' && translatedObj[key] !== null) {
+    const value = translatedObj[key];
+    if (typeof value === 'string') {
+      translatedObj[key] = await translateDynamicText(value, targetLocale);
+    } else if (value && typeof value === 'object') {
       translatedObj[key] = await translateDynamicObject(
-        translatedObj[key],
+        value as Record<string, unknown>,
         targetLocale
       );
     }

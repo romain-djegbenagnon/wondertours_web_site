@@ -1,6 +1,10 @@
 import { prisma, Prisma, type MediaFile } from "@/lib/db";
 import { mkdir, writeFile, unlink } from "node:fs/promises";
 import path from "node:path";
+import {
+  isImgbbConfigured,
+  uploadToImgbb,
+} from "@/lib/services/imgbb";
 
 // ─────────────────────────────── Constantes ───────────────────────────────
 
@@ -75,9 +79,11 @@ export interface UploadMediaInput {
 }
 
 /**
- * Sauvegarde le fichier sous public/uploads/<timestamp>-<nom-sanitisé>
- * et enregistre les métadonnées en base.
- * Abstraction : seul ce module connaît le stockage (local pour l'instant).
+ * Enregistre le fichier en base avec ses métadonnées.
+ * Abstraction stockage : imgBB distant si `IMGBB_API_KEY` est définie
+ * (persistant en production), sinon public/uploads/ en local (dev/tests).
+ * `storagePath` vaut le chemin FS local, ou le `delete_url` imgBB (référence
+ * — imgBB n'a pas d'API de suppression).
  */
 export async function uploadMedia(input: UploadMediaInput): Promise<MediaFile> {
   const { file } = input;
@@ -105,16 +111,27 @@ export async function uploadMedia(input: UploadMediaInput): Promise<MediaFile> {
     .slice(-120);
   const uniqueName = `${Date.now()}-${safeName}`;
 
-  await mkdir(UPLOAD_DIR, { recursive: true });
-  const destPath = path.join(UPLOAD_DIR, uniqueName);
-  await writeFile(destPath, Buffer.from(await file.arrayBuffer()));
+  let url: string;
+  let storagePath: string;
 
-  const url = `/uploads/${uniqueName}`;
+  if (isImgbbConfigured()) {
+    // Stockage distant imgBB : persistant sur Vercel (FS en lecture seule).
+    const uploaded = await uploadToImgbb(file);
+    url = uploaded.url;
+    storagePath = uploaded.deleteUrl;
+  } else {
+    // Stockage local (dev / tests sans IMGBB_API_KEY).
+    await mkdir(UPLOAD_DIR, { recursive: true });
+    const destPath = path.join(UPLOAD_DIR, uniqueName);
+    await writeFile(destPath, Buffer.from(await file.arrayBuffer()));
+    url = `/uploads/${uniqueName}`;
+    storagePath = destPath;
+  }
 
   return prisma.mediaFile.create({
     data: {
       filename: file.name,
-      storagePath: destPath,
+      storagePath,
       url,
       mimeType,
       size: BigInt(file.size),
@@ -135,6 +152,12 @@ export async function deleteMediaFile(id: string): Promise<MediaFile> {
   }
 
   await prisma.mediaFile.delete({ where: { id } });
+
+  // Fichier distant imgBB (delete_url, pas un chemin FS) : imgBB n'expose
+  // pas d'API de suppression — seule la ligne est retirée de la médiathèque.
+  if (!path.isAbsolute(media.storagePath)) {
+    return media;
+  }
 
   try {
     await unlink(media.storagePath);

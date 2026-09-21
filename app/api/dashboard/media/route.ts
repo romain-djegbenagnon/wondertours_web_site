@@ -1,10 +1,11 @@
-import { ok, created, badRequest, parseQuery, handleProtectedRoute } from "@/lib/api/utils";
+import { ok, created, badRequest, serverError, parseQuery, handleProtectedRoute } from "@/lib/api/utils";
 import { listQuerySchema } from "@/lib/api/schemas";
 import {
   listMediaFiles,
   uploadMedia,
   MediaValidationError,
 } from "@/lib/services/media";
+import { ImgbbUploadError } from "@/lib/services/imgbb";
 
 export async function GET(request: Request) {
   return handleProtectedRoute(request, async (_session) => {
@@ -51,6 +52,9 @@ export async function POST(request: Request) {
     } catch (error) {
       if (error instanceof MediaValidationError) {
         return badRequest(error.message);
+      }
+      if (error instanceof ImgbbUploadError) {
+        return serverError(error.message);
       }
       throw error;
     }

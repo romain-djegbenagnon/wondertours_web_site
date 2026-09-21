@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { ArrowLeft, Save, Star } from "lucide-react";
 import { readApiError } from "@/components/dashboard/api-error";
+import { TranslateButton } from "@/components/dashboard/translate-button";
 
 interface Option {
   value: string;
@@ -176,6 +177,12 @@ export function TestimonialForm({ circuits }: { circuits: Option[] }) {
                 rows={6}
                 value={form.textEn}
                 onChange={(e) => update("textEn", e.target.value)}
+              />
+              <TranslateButton
+                fields={{ text: form.text }}
+                onTranslated={(texts) =>
+                  setForm((prev) => ({ ...prev, textEn: texts.text ?? prev.textEn }))
+                }
               />
               <Input
                 label="Date du voyage"
