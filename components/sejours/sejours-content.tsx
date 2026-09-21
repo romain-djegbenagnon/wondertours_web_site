@@ -113,7 +113,7 @@ export function SejoursContent() {
           secondaryCtaFr="En savoir plus"
           secondaryCtaEn="Learn more"
           secondaryCtaHref="#process"
-          image="[PHOTO HERO SÉJOURS À REMPLACER]"
+          image="/photos_site wonder_tours/IMG_20260313_104311_648.jpg"
         />
 
         {/* Process Section */}
@@ -197,11 +197,11 @@ export function SejoursContent() {
         <section className="py-20 bg-primary relative">
           <div className="absolute inset-0">
             <img
-              src="[PHOTO CTA SÉJOURS À REMPLACER]"
+              src="/photos_site wonder_tours/IMG-20260625-WA0039.jpg"
               alt={isFr ? "Créer votre séjour" : "Create your stay"}
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-primary/90" />
+            <div className="absolute inset-0 bg-black/70" />
           </div>
           <div className="relative z-10 container mx-auto px-4 lg:px-8 text-center text-white">
             <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6">

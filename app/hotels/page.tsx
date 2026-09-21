@@ -143,7 +143,7 @@ export default function HotelsPage() {
           ctaFr="Faire une demande"
           ctaEn="Make a request"
           ctaHref="#form"
-          image="[PHOTO HERO HÔTELS À REMPLACER]"
+          image="/photos_site wonder_tours/IMG_20260221_103124_311.jpg"
         />
 
         {/* Info Section */}
