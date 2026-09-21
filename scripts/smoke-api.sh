@@ -15,6 +15,10 @@ PASS=0
 FAIL=0
 BOOKING_ID=""
 CONTACT_ID=""
+SMOKE_USER_EMAIL=""
+ADMIN_JAR="$(mktemp)"
+EDITOR_JAR="$(mktemp)"
+LOGOUT_JAR="$(mktemp)"
 
 # ───────────────────────── Helpers ─────────────────────────
 
@@ -40,15 +44,17 @@ check_json() {
 }
 
 cleanup() {
-  if [ -n "$BOOKING_ID" ] || [ -n "$CONTACT_ID" ]; then
-    set +e
+  set +e
+  if [ -n "$BOOKING_ID" ] || [ -n "$CONTACT_ID" ] || [ -n "$SMOKE_USER_EMAIL" ]; then
     DB_URL=$(grep -E '^DATABASE_URL=' "$ROOT_DIR/.env" | head -1 | cut -d= -f2-)
     if [ -n "$DB_URL" ]; then
       [ -n "$BOOKING_ID" ] && psql "${DB_URL%%\?*}" -q -c "DELETE FROM bookings WHERE id='$BOOKING_ID';" >/dev/null 2>&1
       [ -n "$CONTACT_ID" ] && psql "${DB_URL%%\?*}" -q -c "DELETE FROM contact_requests WHERE id='$CONTACT_ID';" >/dev/null 2>&1
+      [ -n "$SMOKE_USER_EMAIL" ] && psql "${DB_URL%%\?*}" -q -c "DELETE FROM users WHERE email='$SMOKE_USER_EMAIL';" >/dev/null 2>&1
     fi
-    set -e
   fi
+  rm -f "$ADMIN_JAR" "$EDITOR_JAR" "$LOGOUT_JAR"
+  set -e
 }
 trap cleanup EXIT
 
@@ -95,18 +101,63 @@ else
 fi
 check "POST /api/bookings circuit inconnu" 400 "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE_URL/api/bookings" -H "Content-Type: application/json" -d '{"circuitId":"00000000-0000-0000-0000-000000000000","name":"X Test","email":"x@example.com"}')"
 
-# ───────────────────── Endpoints dashboard ─────────────────────
+# ───────────────────── Authentification ─────────────────────
+# Comptes créés par le seed (bun run db:seed) depuis le .env.
+ADMIN_EMAIL=$(grep -E '^ADMIN_EMAIL=' "$ROOT_DIR/.env" | head -1 | cut -d= -f2-)
+ADMIN_PASSWORD=$(grep -E '^ADMIN_PASSWORD=' "$ROOT_DIR/.env" | head -1 | cut -d= -f2-)
+EDITOR_EMAIL=$(grep -E '^EDITOR_EMAIL=' "$ROOT_DIR/.env" | head -1 | cut -d= -f2-)
+EDITOR_PASSWORD=$(grep -E '^EDITOR_PASSWORD=' "$ROOT_DIR/.env" | head -1 | cut -d= -f2-)
+
+check "GET /dashboard sans session → redirection login" 307 "$(curl -s -o /dev/null -w '%{http_code}' "$BASE_URL/dashboard")"
+check "GET /api/dashboard/users sans session" 401 "$(curl -s -o /dev/null -w '%{http_code}' "$BASE_URL/api/dashboard/users")"
+check "POST /api/auth/login mauvais mot de passe" 401 "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE_URL/api/auth/login" -H "Content-Type: application/json" -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"mauvais\"}")"
+
+LOGIN_JSON=$(curl -s -c "$ADMIN_JAR" -X POST "$BASE_URL/api/auth/login" -H "Content-Type: application/json" -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASSWORD\"}")
+check_json "POST /api/auth/login (admin)" "admin" "$LOGIN_JSON" "d['user']['role']"
+
+# ───────────────────── Endpoints dashboard (session admin) ─────────────────────
 
 for path in circuits destinations categories testimonials services blog blog-categories bookings contact-requests settings stats media users; do
-  check "GET /api/dashboard/$path" 200 "$(curl -s -o /dev/null -w '%{http_code}' "$BASE_URL/api/dashboard/$path")"
+  check "GET /api/dashboard/$path (admin)" 200 "$(curl -s -b "$ADMIN_JAR" -o /dev/null -w '%{http_code}' "$BASE_URL/api/dashboard/$path")"
 done
 
 if [ -n "$BOOKING_ID" ]; then
-  check "PATCH /api/dashboard/bookings/[id]/status" 200 "$(curl -s -o /dev/null -w '%{http_code}' -X PATCH "$BASE_URL/api/dashboard/bookings/$BOOKING_ID/status" -H "Content-Type: application/json" -d '{"status":"confirmed"}')"
+  check "PATCH /api/dashboard/bookings/[id]/status" 200 "$(curl -s -b "$ADMIN_JAR" -o /dev/null -w '%{http_code}' -X PATCH "$BASE_URL/api/dashboard/bookings/$BOOKING_ID/status" -H "Content-Type: application/json" -d '{"status":"confirmed"}')"
 fi
 if [ -n "$CONTACT_ID" ]; then
-  check "PATCH /api/dashboard/contact-requests/[id]/status" 200 "$(curl -s -o /dev/null -w '%{http_code}' -X PATCH "$BASE_URL/api/dashboard/contact-requests/$CONTACT_ID/status" -H "Content-Type: application/json" -d '{"status":"answered"}')"
+  check "PATCH /api/dashboard/contact-requests/[id]/status" 200 "$(curl -s -b "$ADMIN_JAR" -o /dev/null -w '%{http_code}' -X PATCH "$BASE_URL/api/dashboard/contact-requests/$CONTACT_ID/status" -H "Content-Type: application/json" -d '{"status":"answered"}')"
 fi
+
+# ───────────────────── Rôles : éditeur vs admin ─────────────────────
+
+if [ -n "$EDITOR_EMAIL" ] && [ -n "$EDITOR_PASSWORD" ]; then
+  EDITOR_LOGIN_JSON=$(curl -s -c "$EDITOR_JAR" -X POST "$BASE_URL/api/auth/login" -H "Content-Type: application/json" -d "{\"email\":\"$EDITOR_EMAIL\",\"password\":\"$EDITOR_PASSWORD\"}")
+  check_json "POST /api/auth/login (éditeur)" "editor" "$EDITOR_LOGIN_JSON" "d['user']['role']"
+
+  check "GET /api/dashboard/circuits (éditeur)" 200 "$(curl -s -b "$EDITOR_JAR" -o /dev/null -w '%{http_code}' "$BASE_URL/api/dashboard/circuits")"
+  check "GET /api/dashboard/users (éditeur) → 403" 403 "$(curl -s -b "$EDITOR_JAR" -o /dev/null -w '%{http_code}' "$BASE_URL/api/dashboard/users")"
+  check "GET /dashboard/users (éditeur) → redirection" 307 "$(curl -s -b "$EDITOR_JAR" -o /dev/null -w '%{http_code}' "$BASE_URL/dashboard/users")"
+else
+  echo "⚠ EDITOR_EMAIL/EDITOR_PASSWORD absents du .env : checks éditeur ignorés" >&2
+fi
+
+# L'admin crée un compte d'un autre rôle, le modifie puis le supprime.
+SMOKE_USER_EMAIL="smoke-$(date +%s)@wondertours.bj"
+USER_JSON=$(curl -s -b "$ADMIN_JAR" -X POST "$BASE_URL/api/dashboard/users" -H "Content-Type: application/json" \
+  -d "{\"email\":\"$SMOKE_USER_EMAIL\",\"password\":\"motdepasse123\",\"firstName\":\"Smoke\",\"lastName\":\"Test\",\"role\":\"viewer\"}")
+check_json "POST /api/dashboard/users (admin crée un lecteur)" "viewer" "$USER_JSON" "d['role']"
+USER_ID=$(echo "$USER_JSON" | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])" 2>/dev/null || echo "")
+if [ -n "$USER_ID" ]; then
+  check "PATCH /api/dashboard/users/[id] (changement de rôle)" 200 "$(curl -s -b "$ADMIN_JAR" -o /dev/null -w '%{http_code}' -X PATCH "$BASE_URL/api/dashboard/users/$USER_ID" -H "Content-Type: application/json" -d '{"role":"editor"}')"
+  check "DELETE /api/dashboard/users/[id]" 200 "$(curl -s -b "$ADMIN_JAR" -o /dev/null -w '%{http_code}' -X DELETE "$BASE_URL/api/dashboard/users/$USER_ID")"
+else
+  check "POST /api/dashboard/users → id récupéré" 1 0
+fi
+
+# Déconnexion : le cookie est invalidé côté serveur.
+curl -s -c "$LOGOUT_JAR" -o /dev/null -X POST "$BASE_URL/api/auth/login" -H "Content-Type: application/json" -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASSWORD\"}"
+check "POST /api/auth/logout" 200 "$(curl -s -b "$LOGOUT_JAR" -c "$LOGOUT_JAR" -o /dev/null -w '%{http_code}' -X POST "$BASE_URL/api/auth/logout")"
+check "GET /api/dashboard/users après logout" 401 "$(curl -s -b "$LOGOUT_JAR" -o /dev/null -w '%{http_code}' "$BASE_URL/api/dashboard/users")"
 
 # ───────────────────── Bilan ─────────────────────
 

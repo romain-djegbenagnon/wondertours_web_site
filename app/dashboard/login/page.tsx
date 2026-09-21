@@ -1,278 +1,127 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import Link from "next/link";
-import { Mail, Lock, User, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
-  const [mode, setMode] = useState<"login" | "register" | "forgot">("login");
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (response.ok) {
+        // Cookie posé par l'API : rafraîchir pour que le proxy et les
+        // composants serveur prennent la session en compte.
+        router.replace("/dashboard");
+        router.refresh();
+        return;
+      }
+      const data = (await response.json().catch(() => null)) as {
+        error?: string;
+      } | null;
+      setError(data?.error ?? "Connexion impossible. Réessayez.");
+    } catch {
+      setError("Erreur réseau — vérifiez votre connexion.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-primary">
-            Wonder Tours and Services
+            Wonder Tours
           </CardTitle>
-          <p className="text-gray-600 mt-2">
-            {mode === "login" && "Connectez-vous au dashboard"}
-            {mode === "register" && "Créez votre compte"}
-            {mode === "forgot" && "Réinitialisez votre mot de passe"}
-          </p>
+          <p className="text-gray-600 mt-2">Connectez-vous au dashboard</p>
         </CardHeader>
         <CardContent>
-          {/* Login Form */}
-          {mode === "login" && (
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input 
-                    type="email" 
-                    placeholder="admin@wondertours.bj" 
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mot de passe
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input 
-                    type={showPassword ? "text" : "password"} 
-                    placeholder="••••••••" 
-                    className="pl-10 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300" />
-                  <span className="ml-2 text-sm text-gray-600">Se souvenir</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setMode("forgot")}
-                  className="text-sm text-primary hover:underline"
-                >
-                  Mot de passe oublié ?
-                </button>
-              </div>
-              <Button type="submit" className="w-full">
-                Se connecter
-              </Button>
-
-              {/* Google Login */}
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Email
+              </label>
               <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Ou continuer avec</span>
-                </div>
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder="admin@wondertours.bj"
+                  className="pl-10"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
-              <Button type="button" variant="outline" className="w-full">
-                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                  <path
-                    fill="currentColor"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  />
-                </svg>
-                Google
-              </Button>
-
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={() => setMode("register")}
-                  className="text-sm text-gray-600 hover:text-primary transition-colors"
-                >
-                  Pas encore de compte ? <span className="text-primary font-medium">S'inscrire</span>
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* Register Form */}
-          {mode === "register" && (
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nom complet
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input 
-                    type="text" 
-                    placeholder="Jean Dupont" 
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input 
-                    type="email" 
-                    placeholder="jean@exemple.com" 
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mot de passe
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input 
-                    type={showPassword ? "text" : "password"} 
-                    placeholder="••••••••" 
-                    className="pl-10 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirmer le mot de passe
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input 
-                    type={showConfirmPassword ? "text" : "password"} 
-                    placeholder="••••••••" 
-                    className="pl-10 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-              <Button type="submit" className="w-full">
-                S'inscrire
-              </Button>
-
-              {/* Google Register */}
+            </div>
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Mot de passe
+              </label>
               <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Ou continuer avec</span>
-                </div>
-              </div>
-              <Button type="button" variant="outline" className="w-full">
-                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                  <path
-                    fill="currentColor"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  />
-                </svg>
-                Google
-              </Button>
-
-              <div className="text-center">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  className="pl-10 pr-10"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
                 <button
                   type="button"
-                  onClick={() => setMode("login")}
-                  className="text-sm text-gray-600 hover:text-primary transition-colors"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label={
+                    showPassword
+                      ? "Masquer le mot de passe"
+                      : "Afficher le mot de passe"
+                  }
                 >
-                  Déjà un compte ? <span className="text-primary font-medium">Se connecter</span>
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
-            </form>
-          )}
-
-          {/* Forgot Password Form */}
-          {mode === "forgot" && (
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input 
-                    type="email" 
-                    placeholder="admin@wondertours.bj" 
-                    className="pl-10"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Nous vous enverrons un lien pour réinitialiser votre mot de passe
-                </p>
-              </div>
-              <Button type="submit" className="w-full">
-                Envoyer le lien
-              </Button>
-
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={() => setMode("login")}
-                  className="text-sm text-gray-600 hover:text-primary transition-colors flex items-center justify-center gap-1"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Retour à la connexion
-                </button>
-              </div>
-            </form>
-          )}
+            </div>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Connexion…" : "Se connecter"}
+            </Button>
+            {error && (
+              <p role="alert" className="text-sm text-red-600 text-center">
+                {error}
+              </p>
+            )}
+          </form>
 
           <div className="mt-6 text-center pt-6 border-t border-gray-200">
             <Link

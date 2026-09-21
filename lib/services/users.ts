@@ -120,7 +120,12 @@ export async function deleteUser(id: string): Promise<void> {
   await prisma.user.delete({ where: { id } });
 }
 
-/** Vérifie un mot de passe pour un email donné (utile phase auth). */
+/** Marque la dernière connexion (appelé par /api/auth/login). */
+export async function markUserLoggedIn(id: string): Promise<void> {
+  await prisma.user.update({ where: { id }, data: { lastLoginAt: new Date() } });
+}
+
+/** Vérifie un mot de passe pour un email donné (utilisé par /api/auth/login). */
 export async function verifyUserPassword(
   email: string,
   password: string

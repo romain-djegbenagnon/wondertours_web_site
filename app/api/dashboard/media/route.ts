@@ -1,13 +1,14 @@
-import { ok, created, badRequest, parseQuery, handleRoute } from "@/lib/api/utils";
+import { ok, created, badRequest, serverError, parseQuery, handleProtectedRoute } from "@/lib/api/utils";
 import { listQuerySchema } from "@/lib/api/schemas";
 import {
   listMediaFiles,
   uploadMedia,
   MediaValidationError,
 } from "@/lib/services/media";
+import { ImgbbUploadError } from "@/lib/services/imgbb";
 
 export async function GET(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [query, errorResponse] = parseQuery(request, listQuerySchema);
     if (errorResponse) return errorResponse;
 
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     let formData: FormData;
     try {
       formData = await request.formData();
@@ -52,7 +53,10 @@ export async function POST(request: Request) {
       if (error instanceof MediaValidationError) {
         return badRequest(error.message);
       }
+      if (error instanceof ImgbbUploadError) {
+        return serverError(error.message);
+      }
       throw error;
     }
-  });
+  }, { roles: ["admin", "editor"] });
 }

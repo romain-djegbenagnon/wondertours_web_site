@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Mail } from "lucide-react";
@@ -5,6 +6,7 @@ import { listUsers } from "@/lib/services/users";
 import { RowActions } from "@/components/dashboard/row-actions";
 import { SearchInput } from "@/components/dashboard/search-input";
 import { formatDate } from "@/lib/format";
+import { getSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +27,14 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 export default async function UsersPage({ searchParams }: UsersPageProps) {
+  // Gestion des comptes : admin uniquement. proxy.ts redirige déjà les
+  // non-admins, ce contrôle serveur est la deuxième ligne de défense
+  // (la page interroge Prisma directement, sans passer par l'API).
+  const session = await getSession();
+  if (!session || session.role !== "admin") {
+    redirect("/dashboard");
+  }
+
   const filters = await searchParams;
   const q = typeof filters.q === "string" ? filters.q : undefined;
   const { items: users, total } = await listUsers({ pageSize: 100, q });

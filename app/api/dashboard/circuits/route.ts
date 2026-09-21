@@ -3,7 +3,7 @@ import {
   created,
   parseBody,
   parseQuery,
-  handleRoute,
+  handleProtectedRoute,
 } from "@/lib/api/utils";
 import { listQuerySchema, circuitCreateSchema } from "@/lib/api/schemas";
 import { listCircuits, createCircuit } from "@/lib/services/circuits";
@@ -16,7 +16,7 @@ function json<T>(value: T | null | undefined): T | typeof DbNull {
 }
 
 export async function GET(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [query, errorResponse] = parseQuery(request, listQuerySchema);
     if (errorResponse) return errorResponse;
 
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [body, errorResponse] = await parseBody(request, circuitCreateSchema);
     if (errorResponse) return errorResponse;
 
@@ -63,5 +63,5 @@ export async function POST(request: Request) {
     });
 
     return created(circuit);
-  });
+  }, { roles: ["admin", "editor"] });
 }

@@ -1,16 +1,37 @@
 "use client";
 
-import { Bell, Search, User, LogOut, X, Check, AlertCircle, Info, Menu, ChevronDown } from "lucide-react";
+import { Bell, Search, LogOut, X, Check, AlertCircle, Info, Menu, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import type { Session } from "@/lib/auth";
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: "Administrateur",
+  editor: "Éditeur",
+  viewer: "Lecteur",
+};
 
 interface HeaderProps {
   onMenuClick?: () => void;
+  /** Session courante (passée par le layout serveur) — nom, email, rôle. */
+  user?: Session | null;
 }
 
-export function Header({ onMenuClick }: HeaderProps) {
+export function Header({ onMenuClick, user }: HeaderProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+
+  const userName = user?.name ?? user?.email ?? "Utilisateur";
+  const userInitial = userName.charAt(0).toUpperCase();
+  const roleLabel = user ? (ROLE_LABELS[user.role] ?? user.role) : null;
+
+  /** Déconnexion : invalide le cookie de session puis recharge —
+   * le proxy redirige alors vers /dashboard/login. */
+  async function handleLogout() {
+    setShowUserMenu(false);
+    await fetch("/api/auth/logout", { method: "POST" }).catch(() => null);
+    window.location.assign("/dashboard/login");
+  }
 
   const notifications = [
     {
@@ -111,16 +132,23 @@ export function Header({ onMenuClick }: HeaderProps) {
                 className="flex items-center gap-1 md:gap-2"
               >
                 <div className="w-8 h-8 md:w-10 md:h-10 bg-black rounded-full flex items-center justify-center text-white font-semibold text-sm md:text-lg border-2 border-amber-500">
-                  A
+                  {userInitial}
                 </div>
+                <span className="hidden md:flex flex-col items-start leading-tight">
+                  <span className="text-sm font-medium text-gray-900">{userName}</span>
+                  {roleLabel && (
+                    <span className="text-xs text-gray-500">{roleLabel}</span>
+                  )}
+                </span>
                 <ChevronDown className="w-4 h-4 text-gray-600 md:hidden" />
               </button>
-              <button 
+              <button
                 className="hidden md:block p-2 text-gray-600 hover:text-red-600 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Handle logout
+                  void handleLogout();
                 }}
+                title="Déconnexion"
               >
                 <LogOut className="w-5 h-5" />
               </button>
@@ -131,11 +159,14 @@ export function Header({ onMenuClick }: HeaderProps) {
                   <div className="p-4 border-b border-gray-200">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center text-white font-semibold text-lg border-2 border-amber-500">
-                        A
+                        {userInitial}
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Admin</p>
-                        <p className="text-sm text-gray-500">admin@wondertours.bj</p>
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 truncate">{userName}</p>
+                        <p className="text-sm text-gray-500 truncate">{user?.email}</p>
+                        {roleLabel && (
+                          <p className="text-xs text-gray-400">{roleLabel}</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -143,8 +174,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                     <button
                       className="w-full flex items-center gap-3 px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                       onClick={() => {
-                        // Handle logout
-                        setShowUserMenu(false);
+                        void handleLogout();
                       }}
                     >
                       <LogOut className="w-5 h-5 text-red-600" />

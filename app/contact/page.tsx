@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/common/whatsapp-button";
@@ -13,12 +13,6 @@ import { Select } from "@/components/ui/select";
 import { SITE_CONFIG } from "@/lib/constants";
 import { useLanguage } from "@/contexts/language-context";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
-
-interface SiteConfig {
-  map: {
-    embedUrl: string;
-  };
-}
 
 export default function ContactPage() {
   const { locale } = useLanguage();
@@ -37,23 +31,12 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [mapEmbedUrl, setMapEmbedUrl] = useState<string>(SITE_CONFIG.map.embedUrl as string);
 
-  // Récupère l'URL de la carte configurée (lib/site-config.json via
-  // /api/settings) ; setState n'est appelé que dans le callback asynchrone,
-  // jamais de façon synchrone dans le corps de l'effet.
-  useEffect(() => {
-    fetch('/api/settings')
-      .then((response) => response.json() as Promise<SiteConfig>)
-      .then((data) => {
-        if (data.map?.embedUrl) {
-          setMapEmbedUrl(data.map.embedUrl);
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching config:', error);
-      });
-  }, []);
+  // URL de la carte : constante statique (SITE_CONFIG, lib/constants.ts).
+  // L'ancienne route /api/settings (lecture FS non persistante) a été
+  // supprimée — la gestion dynamique passe par /api/dashboard/settings
+  // (table `settings`).
+  const mapEmbedUrl = SITE_CONFIG.map.embedUrl;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

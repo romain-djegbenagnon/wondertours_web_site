@@ -3,7 +3,7 @@ import {
   created,
   parseBody,
   parseQuery,
-  handleRoute,
+  handleProtectedRoute,
 } from "@/lib/api/utils";
 import { listQuerySchema, testimonialCreateSchema } from "@/lib/api/schemas";
 import {
@@ -12,7 +12,7 @@ import {
 } from "@/lib/services/testimonials";
 
 export async function GET(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [query, errorResponse] = parseQuery(request, listQuerySchema);
     if (errorResponse) return errorResponse;
 
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [body, errorResponse] = await parseBody(
       request,
       testimonialCreateSchema
@@ -48,5 +48,5 @@ export async function POST(request: Request) {
     });
 
     return created(testimonial);
-  });
+  }, { roles: ["admin", "editor"] });
 }

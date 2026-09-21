@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { ArrowLeft, Save } from "lucide-react";
 import { readApiError } from "@/components/dashboard/api-error";
+import { TranslateButton } from "@/components/dashboard/translate-button";
 import { parseItineraryLines, splitLines } from "@/lib/format";
 
 interface Option {
@@ -179,6 +180,21 @@ export function CircuitForm({
                 rows={6}
                 value={form.descriptionEn}
                 onChange={(e) => update("descriptionEn", e.target.value)}
+              />
+              <TranslateButton
+                fields={{
+                  title: form.title,
+                  subtitle: form.subtitle,
+                  description: form.description,
+                }}
+                onTranslated={(texts) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    titleEn: texts.title ?? prev.titleEn,
+                    subtitleEn: texts.subtitle ?? prev.subtitleEn,
+                    descriptionEn: texts.description ?? prev.descriptionEn,
+                  }))
+                }
               />
             </CardContent>
           </Card>

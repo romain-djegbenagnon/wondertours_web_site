@@ -3,13 +3,13 @@ import {
   created,
   parseBody,
   parseQuery,
-  handleRoute,
+  handleProtectedRoute,
 } from "@/lib/api/utils";
 import { listQuerySchema, serviceCreateSchema } from "@/lib/api/schemas";
 import { listServices, createService } from "@/lib/services/services";
 
 export async function GET(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [query, errorResponse] = parseQuery(request, listQuerySchema);
     if (errorResponse) return errorResponse;
 
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [body, errorResponse] = await parseBody(request, serviceCreateSchema);
     if (errorResponse) return errorResponse;
 
@@ -39,5 +39,5 @@ export async function POST(request: Request) {
     });
 
     return created(service);
-  });
+  }, { roles: ["admin", "editor"] });
 }

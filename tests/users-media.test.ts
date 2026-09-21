@@ -114,6 +114,43 @@ describe("media", () => {
     await expect(fs.access(media.storagePath)).rejects.toThrow();
   });
 
+  test("upload via imgBB quand IMGBB_API_KEY est définie (fetch mocké)", async () => {
+    process.env.IMGBB_API_KEY = "cle-test";
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = (async () =>
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            display_url: "https://i.ibb.co/abc/imgbb-upload.png",
+            delete_url: "https://ibb.co/delete-xyz",
+          },
+        }),
+        { status: 200 }
+      )) as typeof fetch;
+
+    try {
+      const file = new File(
+        [new Uint8Array([0x89, 0x50])],
+        "imgbb-upload.png",
+        { type: "image/png" }
+      );
+      const media = await uploadMedia({ file });
+
+      // URL distante, storagePath = delete_url imgBB (pas un chemin FS).
+      expect(media.url).toBe("https://i.ibb.co/abc/imgbb-upload.png");
+      expect(media.storagePath).toBe("https://ibb.co/delete-xyz");
+
+      // Suppression : la ligne disparaît, sans tentative d'unlink local
+      // (storagePath n'est pas un chemin absolu).
+      await deleteMediaFile(media.id);
+      expect((await listMediaFiles({ q: "imgbb-upload" })).total).toBe(0);
+    } finally {
+      globalThis.fetch = realFetch;
+      delete process.env.IMGBB_API_KEY;
+    }
+  });
+
   test("rejette les types non image", async () => {
     const file = new File([new TextEncoder().encode("hello")], "doc.txt", {
       type: "text/plain",

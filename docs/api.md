@@ -8,7 +8,7 @@ Base locale : `http://localhost:3000`. Toutes les réponses sont en JSON.
 * **Pagination** : `?page=1&pageSize=20` (max 100). Réponse liste : `{ items, total, page, pageSize }`.
 * **Recherche** : `?q=` (insensible à la casse, sur les champs texte principaux).
 * **Succès** : `200` (GET/PUT/PATCH/DELETE), `201` (POST).
-* **Erreurs** : `{ "error": "message" }` avec `400` (validation), `404` (introuvable), `409` (unicité violée), `500` (serveur). La validation renvoie `{ "error": "Données invalides", "details": [...] }` (issues zod).
+* **Erreurs** : `{ "error": "message" }` avec `400` (validation), `404` (introuvable), `409` (unicité violée), `500` (serveur), `503` (service externe non configuré, ex. DeepL sans `DEEPL_API_KEY`). La validation renvoie `{ "error": "Données invalides", "details": [...] }` (issues zod).
 * **Filtres actifs** : les endpoints publics ne renvoient que les éléments actifs/publiés ; les endpoints dashboard voient tout.
 * Les identifiants sont des UUID ; les slugs servent aux URLs publiques.
 * Les champs `BigInt` (`MediaFile.size`) sont sérialisés en chaîne.
@@ -111,9 +111,26 @@ Soumission du formulaire public.
 
 ---
 
+## Authentification
+
+Sessions JWT stockées dans le cookie httpOnly `wt_session` (7 jours, signées avec `AUTH_SECRET`). Trois rôles : `admin`, `editor`, `viewer`. Le seed crée l'admin (`ADMIN_*`) et un éditeur (`EDITOR_*`) depuis le `.env` ; l'admin crée les autres comptes depuis `/dashboard/users/new`.
+
+#### `POST /api/auth/login`
+```json
+{ "email": "admin@wondertours.bj", "password": "motdepasse" }
+```
+* Réponse `200` : `{ "user": { "id", "email", "name", "role" } }` + cookie de session `wt_session` (httpOnly).
+* Identifiants invalides ou compte désactivé → `401` avec un message générique (ne révèle pas si l'email existe).
+
+#### `POST /api/auth/logout`
+Supprime le cookie de session. Réponse `200` : `{ "success": true }`.
+
 ## API dashboard (`/api/dashboard/*`)
 
-> ⚠️ Non protégée pour l'instant (l'auth est la phase 6, optionnelle). Ne pas exposer publiquement.
+> 🔒 **Authentification requise** — sans session → `401`, rôle insuffisant → `403` :
+> * **GET** : tous les rôles authentifiés, sauf `users/**` (admin) ;
+> * **Écritures** (POST/PATCH/DELETE) : `admin` et `editor`, sauf `users/**` (admin) ;
+> * les pages `/dashboard/**` sont gardées par `proxy.ts` : sans session → redirection vers `/dashboard/login` ; `/dashboard/users**` → admin.
 
 ### CRUD générique
 
@@ -215,12 +232,36 @@ Codes : `201` à la création, `404` si l'id n'existe pas, `409` si contrainte d
 ### Médiathèque
 
 * `GET /api/dashboard/media` — liste paginée (`q` sur nom de fichier / alt). `size` en chaîne.
-* `POST /api/dashboard/media` — `multipart/form-data` : `file` (image, 5 Mo max), `altText`, `altTextEn` optionnels. Réponse `201` avec `url` (`/uploads/<timestamp>-<nom>`) et `storagePath`. Fichier stocké sous `public/uploads/`.
-* `DELETE /api/dashboard/media/[id]` — supprime la ligne **et** le fichier physique.
+* `POST /api/dashboard/media` — `multipart/form-data` : `file` (image, 5 Mo max), `altText`, `altTextEn` optionnels. Réponse `201` avec `url` et `storagePath` :
+  * **imgBB activé** (`IMGBB_API_KEY` définie, recommandé en production) : le fichier est hébergé sur imgBB — `url` est l'URL distante (`https://i.ibb.co/…`), `storagePath` conserve le `delete_url` imgBB. Erreur imgBB (clé invalide, réseau…) → `500` avec le message.
+  * **sinon** : stockage local — `url` = `/uploads/<timestamp>-<nom>`, fichier écrit sous `public/uploads/` (non persistant sur Vercel).
+* `DELETE /api/dashboard/media/[id]` — supprime la ligne ; le fichier physique n'est supprimé qu'en mode local (imgBB n'a pas d'API de suppression : l'image distante reste, le `delete_url` conservé en base permet une suppression manuelle).
 
-### Utilisateurs
+### Traduction (DeepL)
 
-* `GET /api/dashboard/users` — liste paginée (`q`, `role`, `active`). **Jamais de `passwordHash`** dans les réponses.
+#### `POST /api/dashboard/translate`
+Traduit en lot des textes du dashboard (bouton « Traduire en anglais » des formulaires circuit, article blog et témoignage). **Admin + éditeur** ; `503` si `DEEPL_API_KEY` n'est pas configurée.
+
+```json
+{
+  "texts": { "title": "Circuit Ganvié", "description": "Découvrez la cité lacustre" },
+  "sourceLocale": "fr",
+  "targetLocale": "en"
+}
+```
+* `texts` : 1 à 20 entrées `clé → texte` — clés libres (noms de champs), valeurs de 1 à 100 000 caractères ;
+* `sourceLocale` optionnel (`fr`/`en`, auto-détection sinon), `targetLocale` requis (`fr`/`en` — l'anglais cible est envoyé à DeepL comme `en-US`).
+
+Réponse `200` :
+```json
+{ "texts": { "title": "Ganvié Tour", "description": "Discover the lake village" }, "targetLocale": "en" }
+```
+
+### Utilisateurs — admin uniquement
+
+Toutes les routes `users/**` exigent le rôle `admin`.
+
+* `GET /api/dashboard/users` — liste paginée (`q`, `role` = `admin|editor|viewer`, `active` = `true|false`). **Jamais de `passwordHash`** dans les réponses.
 * `POST /api/dashboard/users` :
 ```json
 { "email": "…", "password": "8 caractères min", "firstName": "…", "lastName": "…", "role": "admin|editor|viewer (défaut editor)", "isActive": true }
@@ -252,9 +293,5 @@ Le mot de passe est hashé en bcrypt ($2b$).
 
 ## Validation & tests
 
-* `bun test` — 23 tests d'intégration (CRUD par domaine, slug, upload, bcrypt, stats).
-* `./scripts/smoke-api.sh [BASE_URL]` — 32 vérifications curl : tous les endpoints, codes HTTP, création contact/booking (nettoyage automatique). Nécessite `bun run dev` + base seedée (`bun run db:seed`).
-
-## À venir (phase 6, optionnelle)
-
-`POST /api/auth/login` · `POST /api/auth/logout` · `GET /api/auth/me` + protection de `/dashboard/*` et `/api/dashboard/*` via `proxy.ts`.
+* `bun test` — tests d'intégration (CRUD par domaine, slug, upload, bcrypt, stats, sessions JWT).
+* `./scripts/smoke-api.sh [BASE_URL]` — vérifications curl : endpoints publics, authentification (login admin/éditeur, 401/403, logout, redirection proxy), endpoints dashboard, création contact/booking + création/modification/suppression d'un compte test (nettoyage automatique). Nécessite `bun run dev` + base seedée (`bun run db:seed`).

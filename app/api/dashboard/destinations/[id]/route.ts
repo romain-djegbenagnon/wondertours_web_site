@@ -2,7 +2,7 @@ import {
   ok,
   notFound,
   parseBody,
-  handleRoute,
+  handleProtectedRoute,
   uuidSchema,
   prismaErrorResponse,
 } from "@/lib/api/utils";
@@ -15,10 +15,10 @@ import { prisma } from "@/lib/db";
 import { uniqueSlug } from "@/lib/slug";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   ctx: RouteContext<'/api/dashboard/destinations/[id]'>
 ) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const { id } = await ctx.params;
     if (!uuidSchema.safeParse(id).success) return notFound("Destination introuvable");
     const destination = await prisma.destination.findUnique({ where: { id } });
@@ -31,7 +31,7 @@ export async function PATCH(
   request: Request,
   ctx: RouteContext<'/api/dashboard/destinations/[id]'>
 ) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const { id } = await ctx.params;
     if (!uuidSchema.safeParse(id).success) return notFound("Destination introuvable");
 
@@ -54,14 +54,14 @@ export async function PATCH(
       if (prismaResponse) return prismaResponse;
       throw error;
     }
-  });
+  }, { roles: ["admin", "editor"] });
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   ctx: RouteContext<'/api/dashboard/destinations/[id]'>
 ) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const { id } = await ctx.params;
     if (!uuidSchema.safeParse(id).success) return notFound("Destination introuvable");
 
@@ -73,5 +73,5 @@ export async function DELETE(
       throw error;
     }
     return ok({ message: "Destination supprimée", id });
-  });
+  }, { roles: ["admin", "editor"] });
 }

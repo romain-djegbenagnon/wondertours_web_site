@@ -55,26 +55,54 @@ const translatedContent = await translateDynamicObject(content, "en");
 `deepl-node` est un package Node : il ne peut pas être importé dans un
 composant client (`"use client"`), ni via `lib/translations.ts` qui est
 partagé avec le bundle navigateur. Utilisez ces helpers uniquement depuis
-le serveur (Server Component, Route Handler) ou exposez une route API
-que le client appellera :
+le serveur (Server Component, Route Handler). Pour le navigateur, le
+projet expose une route API dédiée — cf. ci-dessous.
 
-```typescript
-// app/api/translate/route.ts (exemple serveur)
-import { translateDynamicText } from "@/lib/services/deepl";
+## Intégration dashboard : `POST /api/dashboard/translate`
 
-export async function POST(request: Request) {
-  const { text, locale } = await request.json();
-  const translated = await translateDynamicText(text, locale ?? "en");
-  return Response.json({ text: translated });
+Route réelle du projet : `app/api/dashboard/translate/route.ts`
+(admin + éditeur uniquement — `401`/`403` sinon, `503` si `DEEPL_API_KEY`
+absente). Elle s'appuie sur `translateTexts`.
+
+Requête — record `clé → texte` (1 à 20 entrées, valeurs
+≤ 100 000 caractères) ; `sourceLocale` optionnel, `targetLocale` requis
+(`fr`/`en`) :
+
+```json
+{
+  "texts": { "title": "Circuit Ganvié", "description": "Découvrez la cité lacustre" },
+  "sourceLocale": "fr",
+  "targetLocale": "en"
 }
 ```
 
+Réponse `200` :
+
+```json
+{
+  "texts": { "title": "Ganvié Tour", "description": "Discover the lake village" },
+  "targetLocale": "en"
+}
+```
+
+Consommée par le composant `components/dashboard/translate-button.tsx`
+(bouton « Traduire en anglais (DeepL) ») branché dans trois formulaires du
+dashboard : circuit (`circuit-form.tsx` : titre, sous-titre, description →
+champs `*En`), article blog (`blog-post-form.tsx` : titre, résumé, contenu)
+et témoignage (`testimonial-form.tsx` : texte → `textEn`). Les champs vides
+sont ignorés ; la traduction pré-remplit les champs anglais, modifiables
+avant enregistrement.
+
 ## Comportement de fallback
 
-Si la clé API DeepL n'est pas configurée ou si une erreur survient lors de la traduction :
-- Le texte original est retourné
-- Un avertissement est affiché dans la console
-- L'application continue de fonctionner normalement
+Si la clé API DeepL n'est pas configurée ou si une erreur survient lors de la traduction, les helpers (`translateDynamicText`, `translateDynamicObject`) :
+- retournent le texte original ;
+- affichent un avertissement dans la console ;
+- laissent l'application fonctionner normalement.
+
+La route `POST /api/dashboard/translate` a un comportement explicite : sans
+`DEEPL_API_KEY`, elle répond `503`. La clé est relue à chaque appel
+(`isDeepLConfigured()`), pas au chargement du module.
 
 ## Limites
 

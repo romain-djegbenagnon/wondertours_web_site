@@ -10,6 +10,7 @@ import { BLOG_POSTS } from "../lib/data/blog";
 import { TESTIMONIALS } from "../lib/data/testimonials";
 import { SERVICES, DESTINATIONS, CATEGORIES, SITE_CONFIG } from "../lib/constants";
 import { slugify } from "../lib/slug";
+import bcrypt from "bcryptjs";
 
 // ⚠️ node-pg ≠ libpq : sslmode=require dans l'URI produit ssl={} qui
 // écrase le ssl du config (cf. pg/lib/connection-parameters.js) → on
@@ -208,6 +209,56 @@ async function main() {
     });
   }
   console.log(`✔ paramètres: ${settings.length}`);
+
+  // ── Comptes initiaux (admin + éditeur) ──
+  // ADMIN_EMAIL/ADMIN_PASSWORD et EDITOR_EMAIL/EDITOR_PASSWORD (ex. .env).
+  // Idempotent : le mot de passe n'est posé qu'à la création — un compte déjà
+  // présent garde le sien (seuls rôle et statut sont re-synchronisés).
+  const accounts = [
+    {
+      email: process.env.ADMIN_EMAIL,
+      password: process.env.ADMIN_PASSWORD,
+      role: "admin" as const,
+      firstName: "Admin",
+      lastName: "Wonder Tours",
+    },
+    {
+      email: process.env.EDITOR_EMAIL,
+      password: process.env.EDITOR_PASSWORD,
+      role: "editor" as const,
+      firstName: "Éditeur",
+      lastName: "Wonder Tours",
+    },
+  ];
+
+  for (const account of accounts) {
+    if (!account.email || !account.password) {
+      console.warn(
+        `⚠ compte ${account.role} ignoré : ${account.role.toUpperCase()}_EMAIL / ${account.role.toUpperCase()}_PASSWORD non définis`
+      );
+      continue;
+    }
+    const existing = await prisma.user.findUnique({
+      where: { email: account.email },
+    });
+    if (existing) {
+      await prisma.user.update({
+        where: { id: existing.id },
+        data: { role: account.role, isActive: true },
+      });
+    } else {
+      await prisma.user.create({
+        data: {
+          email: account.email,
+          passwordHash: bcrypt.hashSync(account.password, 10),
+          firstName: account.firstName,
+          lastName: account.lastName,
+          role: account.role,
+        },
+      });
+    }
+    console.log(`✔ compte ${account.role} prêt (${account.email})`);
+  }
 
   console.log("🌱 Seed terminé.");
 }

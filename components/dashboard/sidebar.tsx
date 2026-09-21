@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import type { LucideIcon } from "lucide-react";
+import type { UserRole } from "@/lib/auth";
 import {
   LayoutDashboard,
   Map,
@@ -19,7 +21,15 @@ import {
   X,
 } from "lucide-react";
 
-const navigation = [
+interface NavItem {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+  /** Réservé aux administrateurs (ex. gestion des comptes). */
+  adminOnly?: boolean;
+}
+
+const navigation: NavItem[] = [
   { name: "Tableau de bord", href: "/dashboard", icon: LayoutDashboard },
   { name: "Circuits", href: "/dashboard/circuits", icon: Map },
   { name: "Destinations", href: "/dashboard/destinations", icon: MapPin },
@@ -30,16 +40,19 @@ const navigation = [
   { name: "Réservations", href: "/dashboard/bookings", icon: Calendar },
   { name: "Contact", href: "/dashboard/contact", icon: Mail },
   { name: "Médiathèque", href: "/dashboard/media", icon: ImageIcon },
-  { name: "Utilisateurs", href: "/dashboard/users", icon: Users },
+  { name: "Utilisateurs", href: "/dashboard/users", icon: Users, adminOnly: true },
   { name: "Paramètres", href: "/dashboard/settings", icon: Settings },
 ];
 
 interface SidebarProps {
   onClose?: () => void;
+  /** Rôle de la session — masque les entrées adminOnly aux autres rôles. */
+  role?: UserRole;
 }
 
-export function Sidebar({ onClose }: SidebarProps) {
+export function Sidebar({ onClose, role }: SidebarProps) {
   const pathname = usePathname();
+  const items = navigation.filter((item) => !item.adminOnly || role === "admin");
 
   return (
     <div className="w-64 md:w-72 lg:w-64 bg-white border-r border-gray-200 flex flex-col h-full">
@@ -61,7 +74,7 @@ export function Sidebar({ onClose }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 p-3 md:p-4 space-y-1 overflow-y-auto">
-        {navigation.map((item) => {
+        {items.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link

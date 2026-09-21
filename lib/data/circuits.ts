@@ -12,6 +12,12 @@ export interface Circuit {
   itinerary: { day: number; title: string; description: string }[];
   included: string[];
   excluded: string[];
+  // Traductions anglaises optionnelles (repli FR si absentes).
+  titleEn?: string;
+  destinationEn?: string;
+  categoryEn?: string;
+  durationEn?: string;
+  descriptionEn?: string;
 }
 
 export const CIRCUITS: Circuit[] = [];

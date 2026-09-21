@@ -79,10 +79,19 @@ Notes :
 3. Environment Variables → ajouter `DATABASE_URL` = URI Aiven (Production)
 4. **Deploy**. Les push suivants sur `master` redéploient automatiquement.
 
-### 2.3 Variable d'environnement optionnelle
+### 2.3 Variables d'environnement complémentaires
 
-`NEXT_PUBLIC_SITE_URL` peut être définie plus tard pour les métadonnées ;
-à défaut, `SITE_CONFIG.url` (`https://wondertours.bj`) est utilisée.
+- `AUTH_SECRET` — **requis** pour le dashboard (sessions JWT) :
+  `echo "<secret>" | bunx vercel env add AUTH_SECRET production`
+- `IMGBB_API_KEY` — **recommandé** : héberge les uploads de la médiathèque
+  sur imgBB. Sans elle, la médiathèque retombe sur `public/uploads/`, non
+  persistant sur Vercel (FS en lecture seule) :
+  `echo "<clé-imgbb>" | bunx vercel env add IMGBB_API_KEY production`
+- `DEEPL_API_KEY` — optionnel : active la traduction assistée du dashboard
+  (`POST /api/dashboard/translate`, bouton « Traduire en anglais ») :
+  `echo "<clé-deepl>" | bunx vercel env add DEEPL_API_KEY production`
+- `NEXT_PUBLIC_SITE_URL` — optionnel, métadonnées ; à défaut
+  `SITE_CONFIG.url` (`https://wondertours.bj`) est utilisée.
 
 ## 3. Vérification post-déploiement
 
@@ -101,19 +110,18 @@ psql "<URI-aiven>" -c "DELETE FROM bookings WHERE email='smoke@example.com';
 
 ## 4. Limitations connues
 
-1. **Uploads média éphémères** : `POST /api/dashboard/media` écrit dans
-   `public/uploads/`. Sur Vercel, le système de fichiers est en lecture
-   seule hors cache → les fichiers téléversés sont **perdus entre les
-   invocations**. Fonctionne en local uniquement. Évolution recommandée :
-   S3, Cloudinary ou Supabase Storage.
-2. **`GET/PUT /api/settings`** lisent/écrivent `lib/site-config.json` sur le
-   système de fichiers (héritage) → non persistant sur Vercel. La page
-   contact utilise la valeur de `SITE_CONFIG.map.embedUrl` en fallback.
-   La gestion via la table `settings` (`/api/dashboard/settings`) fonctionne,
-   elle, correctement.
-3. **Pas d'authentification dashboard** : `/dashboard` et `/api/dashboard/*`
-   sont ouverts (phase 6 auth non implémentée). **Ne pas partager l'URL du
-   dashboard** tant que l'auth n'est pas en place.
+1. **Uploads média** : avec `IMGBB_API_KEY` (cf. §2.3), les images sont
+   hébergées sur imgBB et persistent en production. Sans la clé, la
+   médiathèque écrit dans `public/uploads/` — en lecture seule sur Vercel,
+   les fichiers téléversés sont alors perdus entre les invocations
+   (mode local/dev uniquement).
+2. **Suppression imgBB manuelle** : imgBB n'expose pas d'API de
+   suppression — supprimer un média en dashboard retire la ligne de la
+   base, mais l'image distante reste hébergée ; le `delete_url` conservé
+   (`storagePath`) permet une suppression manuelle depuis un navigateur.
+3. **Sessions JWT irrévocables** : stateless (7 jours) — désactiver ou
+   rétrograder un utilisateur n'invalide pas ses sessions déjà émises ;
+   faire tourner `AUTH_SECRET` pour tout révoquer.
 4. **Images placeholder** : le seed et les pages utilisent des chaînes
    `[PHOTO … À REMPLACER]` — à remplacer par de vraies images client.
 5. **metadataBase non défini** (warning build) : définir

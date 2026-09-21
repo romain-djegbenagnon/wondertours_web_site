@@ -3,7 +3,7 @@ import {
   created,
   parseBody,
   parseQuery,
-  handleRoute,
+  handleProtectedRoute,
 } from "@/lib/api/utils";
 import { listQuerySchema, destinationCreateSchema } from "@/lib/api/schemas";
 import {
@@ -13,7 +13,7 @@ import {
 import { uniqueSlug } from "@/lib/slug";
 
 export async function GET(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [query, errorResponse] = parseQuery(request, listQuerySchema);
     if (errorResponse) return errorResponse;
 
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  return handleRoute(async () => {
+  return handleProtectedRoute(request, async (_session) => {
     const [body, errorResponse] = await parseBody(
       request,
       destinationCreateSchema
@@ -47,5 +47,5 @@ export async function POST(request: Request) {
     });
 
     return created(destination);
-  });
+  }, { roles: ["admin", "editor"] });
 }
