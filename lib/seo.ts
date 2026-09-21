@@ -18,6 +18,14 @@ export function generateMetadata({
   return {
     title: title || SITE_CONFIG.name,
     description: description || SITE_CONFIG.description,
+    keywords: [
+      "Tourisme Bénin",
+      "Vodoun Bénin",
+      "Circuits touristiques Afrique de l'Ouest",
+      "Guide touristique Bénin",
+      "Excursions Ouidah",
+      "Tourisme culturel Afrique",
+    ],
     openGraph: {
       type: "website",
       locale: "fr_FR",
