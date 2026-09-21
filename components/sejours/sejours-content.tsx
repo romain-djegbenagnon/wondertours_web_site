@@ -184,7 +184,7 @@ export function SejoursContent() {
               </div>
               <div className="relative">
                 <img
-                  src="[PHOTO SÉJOUR PERSONNALISÉ À REMPLACER]"
+                  src="/photos_site wonder_tours/sejours.png"
                   alt={isFr ? "Séjour personnalisé" : "Personalized stay"}
                   className="rounded-2xl shadow-2xl"
                 />
