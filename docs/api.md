@@ -229,6 +229,8 @@ Codes : `201` à la création, `404` si l'id n'existe pas, `409` si contrainte d
 ```
 (1 à 100 entrées.)
 
+Clés de contenu : `founder_bio_fr` / `founder_bio_en` — biographie du fondateur affichée sur `/a-propos` (sauts de ligne conservés ; vide → texte statique de repli).
+
 ### Médiathèque
 
 * `GET /api/dashboard/media` — liste paginée (`q` sur nom de fichier / alt). `size` en chaîne.

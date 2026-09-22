@@ -14,9 +14,17 @@ import { useLanguage } from "@/contexts/language-context";
  * la locale (contexte client) : la page serveur garde les métadonnées et
  * délègue l'affichage à ce composant client.
  */
-export function AboutContent() {
+interface AboutContentProps {
+  /** Biographie du fondateur (clé settings `founder_bio_fr`) ; vide → texte statique. */
+  founderBioFr?: string | null;
+  /** Biographie du fondateur (clé settings `founder_bio_en`) ; vide → texte statique. */
+  founderBioEn?: string | null;
+}
+
+export function AboutContent({ founderBioFr, founderBioEn }: AboutContentProps) {
   const { t, locale } = useLanguage();
   const isFr = locale === "fr";
+  const founderBio = ((isFr ? founderBioFr : founderBioEn) ?? "").trim();
 
   const values = isFr
     ? [
@@ -127,14 +135,22 @@ export function AboutContent() {
                   {SITE_CONFIG.founder.name}
                 </h3>
                 <p className="text-accent font-medium mb-6">{isFr ? SITE_CONFIG.founder.title : "Founder"}</p>
-                <p className="text-text-secondary leading-relaxed mb-6">
-                  [BIOGRAPHIE DU FONDATEUR À FOURNIR PAR LE CLIENT]
-                </p>
-                <p className="text-text-secondary leading-relaxed">
-                  {isFr
-                    ? "Passionné par sa région et sa culture, Eric Sylvestre BOKOSSA a consacré sa vie à faire connaître les trésors du Bénin, du Togo et du Ghana aux voyageurs du monde entier. Sa vision : un tourisme respectueux, authentique et mémorable."
-                    : "Passionate about his region and its culture, Eric Sylvestre BOKOSSA has devoted his life to introducing Benin's, Togo's and Ghana's treasures to travelers from around the world. His vision: respectful, authentic and memorable tourism."}
-                </p>
+                {founderBio ? (
+                  <p className="text-text-secondary leading-relaxed whitespace-pre-line">
+                    {founderBio}
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-text-secondary leading-relaxed mb-6">
+                      [BIOGRAPHIE DU FONDATEUR À FOURNIR PAR LE CLIENT]
+                    </p>
+                    <p className="text-text-secondary leading-relaxed">
+                      {isFr
+                        ? "Passionné par sa région et sa culture, Eric Sylvestre BOKOSSA a consacré sa vie à faire connaître les trésors du Bénin, du Togo et du Ghana aux voyageurs du monde entier. Sa vision : un tourisme respectueux, authentique et mémorable."
+                        : "Passionate about his region and its culture, Eric Sylvestre BOKOSSA has devoted his life to introducing Benin's, Togo's and Ghana's treasures to travelers from around the world. His vision: respectful, authentic and memorable tourism."}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>

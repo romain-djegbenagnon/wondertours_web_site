@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Save, Globe, Mail, Phone, MapPin } from "lucide-react";
+import { Save, Globe, Mail, Phone, MapPin, User } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { readApiError } from "@/components/dashboard/api-error";
 
@@ -15,6 +15,8 @@ interface SettingField {
   label: string;
   icon?: LucideIcon;
   multiline?: boolean;
+  /** Lignes du Textarea (multiligne uniquement) — défaut 3. */
+  rows?: number;
 }
 
 /** Groupes affichés ; l'union des clés = celles envoyées au PUT groupé. */
@@ -41,6 +43,25 @@ const FIELD_GROUPS: { title: string; fields: SettingField[] }[] = [
       { key: "social_instagram", label: "Instagram" },
       { key: "social_youtube", label: "YouTube" },
       { key: "whatsapp_number", label: "WhatsApp" },
+    ],
+  },
+  {
+    title: "Biographie du fondateur",
+    fields: [
+      {
+        key: "founder_bio_fr",
+        label: "Biographie — français",
+        icon: User,
+        multiline: true,
+        rows: 6,
+      },
+      {
+        key: "founder_bio_en",
+        label: "Biographie — anglais",
+        icon: User,
+        multiline: true,
+        rows: 6,
+      },
     ],
   },
   {
@@ -114,7 +135,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
                   {field.multiline ? (
                     <Textarea
                       id={field.key}
-                      rows={3}
+                      rows={field.rows ?? 3}
                       value={values[field.key] ?? ""}
                       onChange={(e) => update(field.key, e.target.value)}
                     />
