@@ -137,7 +137,7 @@ export default function ContactPage() {
           secondaryCtaFr="WhatsApp"
           secondaryCtaEn="WhatsApp"
           secondaryCtaHref={SITE_CONFIG.links.whatsapp}
-          image="[PHOTO HERO CONTACT À REMPLACER]"
+          image="/photos_site wonder_tours/IMG-20250116-WA0020.jpg"
         />
 
         {/* Contact Info */}

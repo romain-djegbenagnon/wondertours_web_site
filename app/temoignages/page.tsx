@@ -41,7 +41,7 @@ export default async function TestimonialsPage() {
           ctaFr="Partager mon expérience"
           ctaEn="Share my experience"
           ctaHref="/contact"
-          image="[PHOTO HERO TÉMOIGNAGES À REMPLACER]"
+          image="/photos_site wonder_tours/IMG-20260805-WA0055.jpg"
         />
 
         {/* Corps bilingue (stats, grille, CTA) */}

@@ -50,7 +50,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           ctaFr="Explorer les articles"
           ctaEn="Explore articles"
           ctaHref="#articles"
-          image="[PHOTO HERO BLOG À REMPLACER]"
+          image="/photos_site wonder_tours/IMG_20260315_173923_4.jpg"
         />
 
         {/* Corps bilingue (catégories, articles, newsletter) */}

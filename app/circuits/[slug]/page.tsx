@@ -197,7 +197,7 @@ export default async function CircuitPage({ params }: CircuitPageProps) {
                 <div key={i} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
                   <img
                     src="[PHOTO GALERIE À REMPLACER]"
-                    alt={`Photo ${i}`}
+                    alt={`${circuit.title} gallery photo ${i}`}
                     className="h-full w-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </div>

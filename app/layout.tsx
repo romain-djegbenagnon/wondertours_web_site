@@ -20,12 +20,41 @@ const inter = Inter({
 
 export const metadata: Metadata = generateMetadata({});
 
+// Données structurées Schema.org pour l'organisation
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "TravelAgency",
+  name: SITE_CONFIG.name,
+  description: SITE_CONFIG.description,
+  url: SITE_CONFIG.url,
+  telephone: SITE_CONFIG.contact.phone,
+  email: SITE_CONFIG.contact.email,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: SITE_CONFIG.contact.address,
+    addressCountry: "BJ",
+  },
+  sameAs: [
+    SITE_CONFIG.links.facebook,
+    SITE_CONFIG.links.instagram,
+    SITE_CONFIG.links.whatsapp,
+  ].filter(Boolean),
+  priceRange: "$$",
+  areaServed: ["Bénin", "Togo", "Ghana", "Benin", "Togo", "Ghana"],
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="fr"
       className={`${playfairDisplay.variable} ${inter.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <ReservationsProvider>
           <LanguageProvider>{children}</LanguageProvider>

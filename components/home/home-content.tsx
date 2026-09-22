@@ -82,7 +82,13 @@ export function HomeContent({
             text: isFr ? "Planifier mon voyage" : "Plan my trip",
             href: "/contact",
           }}
-          image="[PHOTO HERO BÉNIN À REMPLACER]"
+          images={[
+            "/images/hero/hero-1.jpg",
+            "/images/hero/hero-2.jpg",
+            "/images/hero/hero-3.jpg",
+            "/images/hero/hero-4.jpg",
+          ]}
+          image="/images/hero/hero-1.jpg"
         />
 
         {/* Experience Section */}
@@ -102,11 +108,11 @@ export function HomeContent({
                     : "Expertise built over many years of guiding travelers from around the world in discovering Benin, Togo and Ghana."}
                 </p>
               </div>
-              <div className="relative">
+              <div className="relative max-w-md mx-auto">
                 <img
-                  src="[PHOTO EXPÉRIENCE À REMPLACER]"
+                  src="/photos_site wonder_tours/FB_IMG_1766953938984.jpg"
                   alt={isFr ? "Notre équipe" : "Our team"}
-                  className="rounded-2xl shadow-2xl"
+                  className="rounded-2xl shadow-2xl w-full"
                 />
               </div>
             </div>
@@ -176,8 +182,8 @@ export function HomeContent({
         <section className="py-20 relative">
           <div className="absolute inset-0">
             <img
-              src="[PHOTO DESTINATION BÉNIN À REMPLACER]"
-              alt={isFr ? "Le Bénin" : "Benin"}
+              src="/photos_site%20wonder_tours/IMG-20260805-WA0065.jpg"
+              alt={isFr ? "Le Bénin, le Togo et le Ghana" : "Benin, Togo and Ghana"}
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-black/60" />
@@ -247,7 +253,7 @@ export function HomeContent({
               </div>
               <div className="order-1 md:order-2">
                 <img
-                  src="[PHOTO VODOUN/CULTURE À REMPLACER]"
+                  src="/photos_site wonder_tours/IMG-20260625-WA0041.jpg"
                   alt={isFr ? "Culture Vodoun" : "Vodoun culture"}
                   className="rounded-2xl shadow-2xl"
                 />
@@ -307,11 +313,11 @@ export function HomeContent({
         <section className="py-20 bg-primary relative">
           <div className="absolute inset-0">
             <img
-              src="[PHOTO CTA À REMPLACER]"
-              alt={isFr ? "Circuit Bénin" : "Benin tour"}
+              src="/photos_site%20wonder_tours/IMG-20260625-WA0040.jpg"
+              alt={isFr ? "Circuit Bénin, Togo et Ghana" : "Benin, Togo and Ghana tour"}
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-primary/90" />
+            <div className="absolute inset-0 bg-black/50" />
           </div>
           <div className="relative z-10 container mx-auto px-4 lg:px-8 text-center text-white">
             <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6">

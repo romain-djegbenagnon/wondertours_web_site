@@ -62,7 +62,7 @@ export function AboutContent({ founderBioFr, founderBioEn }: AboutContentProps) 
           secondaryCtaFr="Contact"
           secondaryCtaEn="Contact"
           secondaryCtaHref="/contact"
-          image="[PHOTO HERO À PROPOS À REMPLACER]"
+          image="/photos_site wonder_tours/IMG_20240113_142443_0.jpg"
         />
 
         {/* History Section */}
@@ -71,9 +71,10 @@ export function AboutContent({ founderBioFr, founderBioEn }: AboutContentProps) 
               <SectionHeading
               title={isFr ? "Notre histoire" : "Our history"}
               align="left"
+              className="md:mb-[-25px] mb-4"
             />
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div>
+            <div className="grid md:grid-cols-2 gap-12 md:items-center items-start">
+              <div className="md:order-1 order-2">
                 <p className="text-text-secondary leading-relaxed mb-6">
                   {isFr ? "Wonder Tours and Services est né d'une passion profonde pour l'Afrique de l'Ouest et de la volonté de partager la richesse culturelle et naturelle du Bénin, du Togo et du Ghana avec le monde entier." : "Wonder Tours and Services was born from a deep passion for West Africa and the desire to share the cultural and natural richness of Benin, Togo and Ghana with the world."}
                 </p>
@@ -84,11 +85,11 @@ export function AboutContent({ founderBioFr, founderBioEn }: AboutContentProps) 
                   {isFr ? "Notre mission : offrir des expériences authentiques, respectueuses des cultures locales et inoubliables à chaque voyageur qui nous fait confiance." : "Our mission: to offer authentic experiences, respectful of local cultures and unforgettable to every traveler who trusts us."}
                 </p>
               </div>
-              <div className="relative">
+              <div className="relative max-w-md mx-auto md:order-2 order-1">
                 <img
-                  src="[PHOTO HISTOIRE À REMPLACER]"
+                  src="/photos_site wonder_tours/ameliorer.png"
                   alt={isFr ? "Notre histoire" : "Our history"}
-                  className="rounded-2xl shadow-2xl"
+                  className="rounded-2xl shadow-2xl w-full"
                 />
               </div>
             </div>
@@ -99,18 +100,18 @@ export function AboutContent({ founderBioFr, founderBioEn }: AboutContentProps) 
         <section className="py-20 bg-primary relative">
           <div className="absolute inset-0">
             <img
-              src="[PHOTO EXPÉRIENCE À REMPLACER]"
+              src="/photos_site wonder_tours/IMG_20260511_125355_183.jpg"
               alt={isFr ? "Notre expérience" : "Our experience"}
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-primary/90" />
+            <div className="absolute inset-0 bg-black/70" />
           </div>
-          <div className="relative z-10 container mx-auto px-4 lg:px-8 text-center text-white">
-            <div className="text-7xl font-heading font-bold mb-4">20+</div>
-            <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">
+          <div className="relative z-10 container mx-auto px-4 lg:px-8 text-center text-white py-12 md:py-20">
+            <div className="text-5xl md:text-7xl font-heading font-bold mb-4">20+</div>
+            <h2 className="font-heading text-2xl md:text-3xl md:text-4xl font-bold mb-4">
               {isFr ? "années d'expérience" : "years of experience"}
             </h2>
-            <p className="text-xl max-w-2xl mx-auto text-gray-200">
+            <p className="text-lg md:text-xl max-w-2xl mx-auto text-gray-200">
               {isFr ? "Deux décennies d'expertise pour vous faire découvrir le meilleur du Bénin, du Togo et du Ghana" : "Two decades of expertise to help you discover the best of Benin, Togo and Ghana"}
             </p>
           </div>
@@ -122,15 +123,15 @@ export function AboutContent({ founderBioFr, founderBioEn }: AboutContentProps) 
             <SectionHeading
               title={isFr ? "Notre fondateur" : "Our founder"}
             />
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="relative">
+            <div className="grid md:grid-cols-2 gap-12 md:items-center items-start">
+              <div className="relative md:order-1 order-1">
                 <img
-                  src="[PHOTO FONDATEUR À REMPLACER]"
+                  src="/photos_site wonder_tours/eric.png"
                   alt={SITE_CONFIG.founder.name}
                   className="rounded-2xl shadow-2xl"
                 />
               </div>
-              <div>
+              <div className="md:order-2 order-2">
                 <h3 className="font-heading text-3xl font-bold text-text mb-2">
                   {SITE_CONFIG.founder.name}
                 </h3>
@@ -162,9 +163,9 @@ export function AboutContent({ founderBioFr, founderBioEn }: AboutContentProps) 
             <SectionHeading
               title={isFr ? "Nos valeurs" : "Our values"}
             />
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {values.map((value, index) => (
-                <div key={index} className="bg-white p-8 rounded-2xl shadow-lg">
+                <div key={index} className="bg-white p-6 md:p-8 rounded-2xl shadow-lg">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                     <span className="text-2xl font-bold text-primary">{index + 1}</span>
                   </div>

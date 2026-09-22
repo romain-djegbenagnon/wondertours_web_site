@@ -65,7 +65,7 @@ export default async function CircuitsPage({ searchParams }: CircuitsPageProps) 
           ctaFr="Demander un devis"
           ctaEn="Request a quote"
           ctaHref="/contact"
-          image="[PHOTO HERO CIRCUITS À REMPLACER]"
+          image="/photos_site wonder_tours/IMG_20240112_112544_4.jpg"
         />
 
         {/* Filtres + grille (composant client) */}
