@@ -17,14 +17,24 @@ export const metadata = generateMetadata({
   path: "/temoignages"
 });
 
-export default async function TestimonialsPage() {
-  const testimonialsPage = await listTestimonials({ active: true });
+interface TestimonialsPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function TestimonialsPage({ searchParams }: TestimonialsPageProps) {
+  const filters = await searchParams;
+  const page = typeof filters.page === "string" ? parseInt(filters.page, 10) : 1;
+  const pageSize = 6;
+
+  const testimonialsPage = await listTestimonials({ active: true, page, pageSize });
   const testimonials = testimonialsPage.items.map(toTestimonialVM);
 
   const averageRating =
     testimonials.length > 0
       ? testimonials.reduce((acc, t) => acc + t.rating, 0) / testimonials.length
       : 0;
+
+  const totalPages = Math.ceil(testimonialsPage.total / pageSize);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -48,6 +58,9 @@ export default async function TestimonialsPage() {
         <TestimonialsPageContent
           testimonials={testimonials}
           averageRating={averageRating}
+          currentPage={page}
+          totalPages={totalPages}
+          totalTestimonials={testimonialsPage.total}
         />
       </main>
 

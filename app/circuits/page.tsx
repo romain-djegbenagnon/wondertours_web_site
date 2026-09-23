@@ -26,9 +26,11 @@ export default async function CircuitsPage({ searchParams }: CircuitsPageProps) 
   const filters = await searchParams;
   const initialCategorySlug =
     typeof filters.category === "string" ? filters.category : "";
+  const page = typeof filters.page === "string" ? parseInt(filters.page, 10) : 1;
+  const pageSize = 6;
 
   const [circuitsPage, destinationsPage, categoriesPage] = await Promise.all([
-    listCircuits({ active: true, pageSize: 100 }),
+    listCircuits({ active: true, page, pageSize }),
     listDestinations({ active: true }),
     listCategories({ active: true }),
   ]);
@@ -74,6 +76,8 @@ export default async function CircuitsPage({ searchParams }: CircuitsPageProps) 
           categories={[...categoryNames.values()]}
           destinations={[...destinationNames.values()]}
           initialCategory={initialCategoryName}
+          currentPage={page}
+          totalPages={Math.ceil(circuitsPage.total / pageSize)}
         />
 
         {/* CTA Section */}

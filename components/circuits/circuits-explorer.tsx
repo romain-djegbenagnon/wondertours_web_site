@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CircuitCard } from "@/components/circuits/circuit-card";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/language-context";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Circuit } from "@/lib/data/circuits";
 
 interface CircuitsExplorerProps {
@@ -11,6 +13,8 @@ interface CircuitsExplorerProps {
   categories: string[];
   destinations: string[];
   initialCategory?: string;
+  currentPage?: number;
+  totalPages?: number;
 }
 
 export function CircuitsExplorer({
@@ -18,9 +22,13 @@ export function CircuitsExplorer({
   categories,
   destinations,
   initialCategory = "all",
+  currentPage = 1,
+  totalPages = 1,
 }: CircuitsExplorerProps) {
   const { locale } = useLanguage();
   const isFr = locale === "fr";
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [selectedDestination, setSelectedDestination] = useState<string>("all");
@@ -38,6 +46,40 @@ export function CircuitsExplorer({
   const resetFilters = () => {
     setSelectedCategory("all");
     setSelectedDestination("all");
+  };
+
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`?${params.toString()}`);
+  };
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+    
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) pages.push(i);
+        pages.push("...");
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push("...");
+        for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push("...");
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+        pages.push("...");
+        pages.push(totalPages);
+      }
+    }
+    return pages;
   };
 
   return (
@@ -113,11 +155,54 @@ export function CircuitsExplorer({
           </div>
           
           {filteredCircuits.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredCircuits.map((circuit) => (
-                <CircuitCard key={circuit.id} circuit={circuit} />
-              ))}
-            </div>
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredCircuits.map((circuit) => (
+                  <CircuitCard key={circuit.id} circuit={circuit} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-12">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+
+                  {getPageNumbers().map((page, index) => (
+                    page === "..." ? (
+                      <span key={`ellipsis-${index}`} className="px-3 py-2 text-text-secondary">
+                        ...
+                      </span>
+                    ) : (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "default" : "outline"}
+                        size="icon"
+                        onClick={() => handlePageChange(page as number)}
+                        className={currentPage === page ? "bg-amber-600 hover:bg-amber-700" : ""}
+                      >
+                        {page}
+                      </Button>
+                    )
+                  ))}
+
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-20">
               <p className="text-text-secondary text-xl mb-6">
