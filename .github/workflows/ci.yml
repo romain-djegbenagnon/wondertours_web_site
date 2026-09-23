@@ -56,7 +56,12 @@ jobs:
         run: bun run lint
 
       - name: Typecheck
-        run: bunx tsc --noEmit
+        # Les types globaux de routes (PageProps, RouteContext…) sont générés
+        # par Next (next dev/build/typegen) — absents d'un checkout frais.
+        # Cf. docs Next : « next typegen && tsc --noEmit » en CI.
+        run: |
+          bunx next typegen
+          bunx tsc --noEmit
 
       - name: Tests
         run: bun test
