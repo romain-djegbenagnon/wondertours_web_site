@@ -135,6 +135,19 @@ Résumé :
 
 > ⚠️ Si le CLI échoue en cours de déploiement avec `Error: fetch failed` pendant l'upload, supprimez le cache local (`rm -rf .next`) — les fichiers `.sst` volumineux du cache turbopack cassent l'upload — puis relancez.
 
+### Hébergement LWS (cPanel mutualisé / Passenger)
+
+Un second hébergement **LWS** est préparé : bundle autonome (`output: "standalone"` dans `next.config.ts`) construit localement ou en CI, déployé via « Setup Node.js App » — aucun build ni `npm install` sur le serveur. La base reste **Aiven** dans un premier temps (bascule future vers le PostgreSQL local LWS documentée). Procédure complète : [`docs/deployment-lws.md`](docs/deployment-lws.md).
+
+```bash
+bash scripts/package-lws.sh --smoke   # build + tar.gz dans dist-lws/ + test local du bundle exact
+```
+
+### CI/CD GitHub Actions
+
+- **CI** — [`.github/workflows/ci.yml`](.github/workflows/ci.yml) : à chaque push `master` et chaque PR — lint, typecheck, tests sur un PostgreSQL 16 éphémère (migrations + seed, aucune clé externe requise), build + vérification du bundle standalone.
+- **Package LWS** — [`.github/workflows/package-lws.yml`](.github/workflows/package-lws.yml) : manuel ou sur tag `lws-v*` — construit le tar.gz de déploiement, le publie en artefact (Release GitHub sur tag). L'upload vers cPanel reste manuel (pas d'accès SSH/API sur le mutualisé).
+
 ## Limitations connues
 
 1. **Sessions JWT irrévocables** : stateless (7 jours) — désactiver ou rétrograder un utilisateur n'invalide pas ses sessions déjà émises ; faire tourner `AUTH_SECRET` pour tout révoquer.
