@@ -135,9 +135,13 @@ model Circuit {
   imageUrl        String?     @map("image_url") @db.VarChar(500)
   gallery         Json?
   highlights      Json?
+  highlightsEn    Json?       @map("highlights_en")
   itinerary       Json?
+  itineraryEn     Json?       @map("itinerary_en")
   included        Json?
+  includedEn      Json?       @map("included_en")
   excluded        Json?
+  excludedEn      Json?       @map("excluded_en")
   difficulty      Difficulty?
   minParticipants Int?        @map("min_participants")
   maxParticipants Int?        @map("max_participants")
