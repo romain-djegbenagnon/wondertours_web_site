@@ -82,7 +82,8 @@ function infoRow(label: string, value: string): string {
 </tr>`;
 }
 
-/** Gabarit commun (styles inline — les clients mail ignorent les <style>). */
+/** Gabarit commun (styles inline — les clients mail ignorent les <style>).
+ * Le titre est échappé ICI — les appelants y interpolent les données brutes. */
 function layout(title: string, bodyHtml: string): string {
   return `<!DOCTYPE html>
 <html lang="fr">
@@ -122,7 +123,7 @@ export function contactConfirmationEmail(data: ContactConfirmationData): EmailCo
   return {
     subject: "Nous avons bien reçu votre demande — Wonder Tours",
     html: layout(
-      `Bonjour ${escapeHtml(data.name)},`,
+      `Bonjour ${data.name},`,
       `<p style="margin:0 0 16px;line-height:1.6;">Merci pour votre message. Votre demande <strong>« ${escapeHtml(typeLabel)} »</strong> a bien été enregistrée.</p>
 <p style="margin:0 0 16px;line-height:1.6;">Notre équipe vous répondra dans les 24 à 48 heures. Nous vous remercions de votre patience et de votre intérêt pour nos services.</p>
 ${button(SITE_CONFIG.url, "Découvrir nos circuits")}`
@@ -186,7 +187,7 @@ export function bookingConfirmationEmail(data: BookingConfirmationData): EmailCo
   return {
     subject: `Confirmation de votre réservation ${data.bookingReference}`,
     html: layout(
-      `Merci ${escapeHtml(data.name)}, votre réservation est enregistrée !`,
+      `Merci ${data.name}, votre réservation est enregistrée !`,
       `<p style="margin:0 0 16px;line-height:1.6;">Voici le récapitulatif de votre demande :</p>
 <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">${[
         infoRow("Référence", `<strong style="color:#B45309;">${escapeHtml(data.bookingReference)}</strong>`),
@@ -264,7 +265,7 @@ export function bookingStatusEmail(data: BookingStatusData): EmailContent {
   return {
     subject: `Votre réservation ${data.bookingReference} est ${label}`,
     html: layout(
-      `Réservation ${escapeHtml(data.bookingReference)} : ${escapeHtml(label)}`,
+      `Réservation ${data.bookingReference} : ${label}`,
       `<p style="margin:0 0 16px;line-height:1.6;">Bonjour ${escapeHtml(data.name)}, le statut de votre réservation ${detail} a été mis à jour.</p>
 <p style="margin:0 0 16px;line-height:1.6;">${escapeHtml(message[data.status] ?? "Connectez-vous à notre site pour plus de détails.")}</p>
 ${button(`${SITE_CONFIG.url}/contact`, "Nous contacter")}`
@@ -286,7 +287,7 @@ export function passwordResetEmail(data: PasswordResetData): EmailContent {
   return {
     subject: "Réinitialisation de votre mot de passe — Wonder Tours",
     html: layout(
-      `Bonjour ${escapeHtml(data.name)},`,
+      `Bonjour ${data.name},`,
       `<p style="margin:0 0 16px;line-height:1.6;">Vous avez demandé la réinitialisation du mot de passe de votre compte dashboard. Cliquez sur le bouton ci-dessous pour en définir un nouveau :</p>
 ${button(data.resetUrl, "Réinitialiser mon mot de passe")}
 <p style="margin:8px 0 16px;line-height:1.6;font-size:12px;color:#6B7280;word-break:break-all;">Ou copiez ce lien dans votre navigateur :<br>${escapeHtml(data.resetUrl)}</p>
@@ -307,7 +308,7 @@ export function passwordResetConfirmationEmail(
   return {
     subject: "Votre mot de passe a été modifié — Wonder Tours",
     html: layout(
-      `Bonjour ${escapeHtml(data.name)},`,
+      `Bonjour ${data.name},`,
       `<p style="margin:0 0 16px;line-height:1.6;">Le mot de passe de votre compte dashboard vient d'être modifié.</p>
 <p style="margin:0;line-height:1.6;">Si vous n'êtes pas à l'origine de ce changement, contactez immédiatement l'administrateur du site.</p>`
     ),
@@ -338,7 +339,7 @@ export function userWelcomeEmail(data: UserWelcomeData): EmailContent {
   return {
     subject: "Votre compte Wonder Tours est prêt",
     html: layout(
-      `Bienvenue ${escapeHtml(data.name)} !`,
+      `Bienvenue ${data.name} !`,
       `<p style="margin:0 0 16px;line-height:1.6;">Un compte <strong>${escapeHtml(ROLE_LABELS[data.role] ?? data.role)}</strong> vient d'être créé pour vous sur le dashboard de Wonder Tours.</p>
 <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">${[
         infoRow("Email de connexion", escapeHtml(data.email)),
