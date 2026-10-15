@@ -19,9 +19,6 @@ export const metadata = generateMetadata({
 });
 
 export default async function Home() {
-  <head>
-    <meta name="google-site-verification" content="XNxsxl8WPhAs9TrCa46idipkrxgpkqSmwAErJ8OVFmY" />
-  </head>
   // Rendu dynamique : données fraîches de la base à chaque requête.
   const [circuitsPage, testimonialsPage, postsPage, services, destinations] =
     await Promise.all([
