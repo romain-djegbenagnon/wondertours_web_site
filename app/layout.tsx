@@ -60,6 +60,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <link rel="icon" type="image/png" href="/croquis.png"></link>
+        <meta name="google-site-verification" content="XNxsxl8WPhAs9TrCa46idipkrxgpkqSmwAErJ8OVFmY" />
       </head>
       <body className="min-h-full flex flex-col">
         <ReservationsProvider>
